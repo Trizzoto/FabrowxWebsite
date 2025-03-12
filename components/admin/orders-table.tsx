@@ -15,179 +15,92 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { useSocket } from "@/contexts/socket-context"
 
 interface Order {
-  _id: string
-  user: {
-    name: string
-    email: string
-  }
-  totalPrice: number
-  status: "Processing" | "Shipped" | "Delivered"
-  isPaid: boolean
-  createdAt: string
+  id: number
+  customerName: string
+  items: string[]
+  total: number
+  status: string
 }
 
-export default function OrdersTable() {
+export function OrdersTable() {
   const [orders, setOrders] = useState<Order[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const { toast } = useToast()
-  const { socket } = useSocket()
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const response = await fetch("/api/orders")
-        if (!response.ok) throw new Error("Failed to fetch orders")
-
-        const data = await response.json()
-        setOrders(data)
-      } catch (error) {
-        console.error("Error fetching orders:", error)
-        toast({
-          title: "Error",
-          description: "Failed to load orders.",
-          variant: "destructive",
-        })
-      } finally {
-        setIsLoading(false)
+    // For demo purposes, simulate loading orders
+    const demoOrders: Order[] = [
+      {
+        id: 1,
+        customerName: "John Doe",
+        items: ["Product 1", "Product 2"],
+        total: 299.99,
+        status: "Pending"
+      },
+      {
+        id: 2,
+        customerName: "Jane Smith",
+        items: ["Product 3"],
+        total: 149.99,
+        status: "Completed"
       }
-    }
+    ]
+    
+    setTimeout(() => {
+      setOrders(demoOrders)
+      setLoading(false)
+    }, 1000)
+  }, [])
 
-    fetchOrders()
-
-    // Join admin room for real-time updates
-    if (socket) {
-      socket.emit("joinAdmin")
-
-      socket.on("orderStatusUpdate", ({ orderId, status }) => {
-        setOrders((prev) => prev.map((order) => (order._id === orderId ? { ...order, status } : order)))
-
-        toast({
-          title: "Order Updated",
-          description: `Order #${orderId.slice(-6)} status changed to ${status}`,
-        })
-      })
-    }
-
-    return () => {
-      if (socket) {
-        socket.off("orderStatusUpdate")
-      }
-    }
-  }, [toast, socket])
-
-  const handleStatusChange = async (orderId: string, status: string) => {
-    try {
-      const response = await fetch(`/api/orders/${orderId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ status }),
-      })
-
-      if (!response.ok) throw new Error("Failed to update order status")
-
-      // Update local state
-      setOrders((prev) =>
-        prev.map((order) =>
-          order._id === orderId ? { ...order, status: status as "Processing" | "Shipped" | "Delivered" } : order,
-        ),
-      )
-
-      toast({
-        title: "Success",
-        description: `Order status updated to ${status}`,
-      })
-    } catch (error) {
-      console.error("Error updating order status:", error)
-      toast({
-        title: "Error",
-        description: "Failed to update order status.",
-        variant: "destructive",
-      })
-    }
+  const updateOrderStatus = (orderId: number, newStatus: string) => {
+    setOrders(orders.map(order => 
+      order.id === orderId ? { ...order, status: newStatus } : order
+    ))
   }
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center p-4">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    )
-  }
-
-  if (orders.length === 0) {
-    return (
-      <div className="text-center py-8">
-        <p className="text-zinc-400">No orders found.</p>
-      </div>
-    )
+  if (loading) {
+    return <div>Loading orders...</div>
   }
 
   return (
-    <div className="overflow-x-auto">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Order ID</TableHead>
-            <TableHead>Customer</TableHead>
-            <TableHead>Date</TableHead>
-            <TableHead>Total</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Payment</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
+    <div className="container mx-auto p-4">
+      <h2 className="text-2xl font-bold mb-4">Orders</h2>
+      <table className="min-w-full bg-white">
+        <thead>
+          <tr>
+            <th className="px-6 py-3 border-b">Order ID</th>
+            <th className="px-6 py-3 border-b">Customer</th>
+            <th className="px-6 py-3 border-b">Items</th>
+            <th className="px-6 py-3 border-b">Total</th>
+            <th className="px-6 py-3 border-b">Status</th>
+            <th className="px-6 py-3 border-b">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
           {orders.map((order) => (
-            <TableRow key={order._id}>
-              <TableCell className="font-medium">#{order._id.slice(-6)}</TableCell>
-              <TableCell>{order.user.name}</TableCell>
-              <TableCell>{new Date(order.createdAt).toLocaleDateString()}</TableCell>
-              <TableCell>${order.totalPrice.toFixed(2)}</TableCell>
-              <TableCell>
-                <Select defaultValue={order.status} onValueChange={(value) => handleStatusChange(order._id, value)}>
-                  <SelectTrigger className="w-[130px]">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Processing">Processing</SelectItem>
-                    <SelectItem value="Shipped">Shipped</SelectItem>
-                    <SelectItem value="Delivered">Delivered</SelectItem>
-                  </SelectContent>
-                </Select>
-              </TableCell>
-              <TableCell>
-                <Badge variant={order.isPaid ? "default" : "destructive"}>{order.isPaid ? "Paid" : "Unpaid"}</Badge>
-              </TableCell>
-              <TableCell className="text-right">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                      <MoreHorizontal className="h-4 w-4" />
-                      <span className="sr-only">Actions</span>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem>
-                      <Eye className="mr-2 h-4 w-4" />
-                      View Details
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>Send Email</DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem className="text-red-500">Cancel Order</DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </TableCell>
-            </TableRow>
+            <tr key={order.id}>
+              <td className="px-6 py-4 border-b">{order.id}</td>
+              <td className="px-6 py-4 border-b">{order.customerName}</td>
+              <td className="px-6 py-4 border-b">{order.items.join(", ")}</td>
+              <td className="px-6 py-4 border-b">${order.total}</td>
+              <td className="px-6 py-4 border-b">{order.status}</td>
+              <td className="px-6 py-4 border-b">
+                <select
+                  value={order.status}
+                  onChange={(e) => updateOrderStatus(order.id, e.target.value)}
+                  className="border rounded p-1"
+                >
+                  <option value="Pending">Pending</option>
+                  <option value="Processing">Processing</option>
+                  <option value="Completed">Completed</option>
+                  <option value="Cancelled">Cancelled</option>
+                </select>
+              </td>
+            </tr>
           ))}
-        </TableBody>
-      </Table>
+        </tbody>
+      </table>
     </div>
   )
 }

@@ -17,58 +17,53 @@ import {
 import { useSocket } from "@/contexts/socket-context"
 
 interface Job {
-  _id: string
-  customer: {
-    name: string
-    email: string
-  }
-  vehicleMake: string
-  vehicleModel: string
-  vehicleYear: string
-  serviceType: string
-  status: "Pending" | "Scheduled" | "In Progress" | "Completed"
-  scheduledDate?: string
-  createdAt: string
+  id: number
+  customerName: string
+  description: string
+  date: string
+  status: string
 }
 
-export default function JobsTable() {
+export function JobsTable() {
   const [jobs, setJobs] = useState<Job[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  const [loading, setLoading] = useState(true)
   const { toast } = useToast()
   const { socket } = useSocket()
 
   useEffect(() => {
-    const fetchJobs = async () => {
-      try {
-        const response = await fetch("/api/jobs")
-        if (!response.ok) throw new Error("Failed to fetch jobs")
-
-        const data = await response.json()
-        setJobs(data)
-      } catch (error) {
-        console.error("Error fetching jobs:", error)
-        toast({
-          title: "Error",
-          description: "Failed to load jobs.",
-          variant: "destructive",
-        })
-      } finally {
-        setIsLoading(false)
+    // For demo purposes, simulate loading jobs
+    const demoJobs: Job[] = [
+      {
+        id: 1,
+        customerName: "John Doe",
+        description: "Custom Fabrication",
+        date: "2024-04-01",
+        status: "Pending"
+      },
+      {
+        id: 2,
+        customerName: "Jane Smith",
+        description: "Welding Repair",
+        date: "2024-04-02",
+        status: "In Progress"
       }
-    }
-
-    fetchJobs()
+    ]
+    
+    setTimeout(() => {
+      setJobs(demoJobs)
+      setLoading(false)
+    }, 1000)
 
     // Join admin room for real-time updates
     if (socket) {
       socket.emit("joinAdmin")
 
       socket.on("jobStatusUpdate", ({ jobId, status }) => {
-        setJobs((prev) => prev.map((job) => (job._id === jobId ? { ...job, status: status as any } : job)))
+        setJobs((prev) => prev.map((job) => (job.id === jobId ? { ...job, status: status as any } : job)))
 
         toast({
           title: "Job Updated",
-          description: `Job #${jobId.slice(-6)} status changed to ${status}`,
+          description: `Job #${jobId} status changed to ${status}`,
         })
       })
     }
@@ -80,115 +75,54 @@ export default function JobsTable() {
     }
   }, [toast, socket])
 
-  const handleStatusChange = async (jobId: string, status: string) => {
-    try {
-      const response = await fetch(`/api/jobs/${jobId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ status }),
-      })
-
-      if (!response.ok) throw new Error("Failed to update job status")
-
-      // Update local state
-      setJobs((prev) => prev.map((job) => (job._id === jobId ? { ...job, status: status as any } : job)))
-
-      toast({
-        title: "Success",
-        description: `Job status updated to ${status}`,
-      })
-    } catch (error) {
-      console.error("Error updating job status:", error)
-      toast({
-        title: "Error",
-        description: "Failed to update job status.",
-        variant: "destructive",
-      })
-    }
+  const updateJobStatus = (jobId: number, newStatus: string) => {
+    setJobs(jobs.map(job => 
+      job.id === jobId ? { ...job, status: newStatus } : job
+    ))
   }
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center p-4">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    )
-  }
-
-  if (jobs.length === 0) {
-    return (
-      <div className="text-center py-8">
-        <p className="text-zinc-400">No jobs found.</p>
-      </div>
-    )
+  if (loading) {
+    return <div>Loading jobs...</div>
   }
 
   return (
-    <div className="overflow-x-auto">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Job ID</TableHead>
-            <TableHead>Customer</TableHead>
-            <TableHead>Vehicle</TableHead>
-            <TableHead>Service Type</TableHead>
-            <TableHead>Date</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
+    <div className="container mx-auto p-4">
+      <h2 className="text-2xl font-bold mb-4">Jobs</h2>
+      <table className="min-w-full bg-white">
+        <thead>
+          <tr>
+            <th className="px-6 py-3 border-b">Job ID</th>
+            <th className="px-6 py-3 border-b">Customer</th>
+            <th className="px-6 py-3 border-b">Description</th>
+            <th className="px-6 py-3 border-b">Date</th>
+            <th className="px-6 py-3 border-b">Status</th>
+            <th className="px-6 py-3 border-b">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
           {jobs.map((job) => (
-            <TableRow key={job._id}>
-              <TableCell className="font-medium">#{job._id.slice(-6)}</TableCell>
-              <TableCell>{job.customer.name}</TableCell>
-              <TableCell>{`${job.vehicleYear} ${job.vehicleMake} ${job.vehicleModel}`}</TableCell>
-              <TableCell>{job.serviceType}</TableCell>
-              <TableCell>{new Date(job.createdAt).toLocaleDateString()}</TableCell>
-              <TableCell>
-                <Select defaultValue={job.status} onValueChange={(value) => handleStatusChange(job._id, value)}>
-                  <SelectTrigger className="w-[130px]">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Pending">Pending</SelectItem>
-                    <SelectItem value="Scheduled">Scheduled</SelectItem>
-                    <SelectItem value="In Progress">In Progress</SelectItem>
-                    <SelectItem value="Completed">Completed</SelectItem>
-                  </SelectContent>
-                </Select>
-              </TableCell>
-              <TableCell className="text-right">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                      <MoreHorizontal className="h-4 w-4" />
-                      <span className="sr-only">Actions</span>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem>
-                      <Eye className="mr-2 h-4 w-4" />
-                      View Details
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Calendar className="mr-2 h-4 w-4" />
-                      Schedule Job
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>Send Email</DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem className="text-red-500">Cancel Job</DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </TableCell>
-            </TableRow>
+            <tr key={job.id}>
+              <td className="px-6 py-4 border-b">{job.id}</td>
+              <td className="px-6 py-4 border-b">{job.customerName}</td>
+              <td className="px-6 py-4 border-b">{job.description}</td>
+              <td className="px-6 py-4 border-b">{job.date}</td>
+              <td className="px-6 py-4 border-b">{job.status}</td>
+              <td className="px-6 py-4 border-b">
+                <select
+                  value={job.status}
+                  onChange={(e) => updateJobStatus(job.id, e.target.value)}
+                  className="border rounded p-1"
+                >
+                  <option value="Pending">Pending</option>
+                  <option value="In Progress">In Progress</option>
+                  <option value="Completed">Completed</option>
+                  <option value="Cancelled">Cancelled</option>
+                </select>
+              </td>
+            </tr>
           ))}
-        </TableBody>
-      </Table>
+        </tbody>
+      </table>
     </div>
   )
 }
