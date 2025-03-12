@@ -4,35 +4,32 @@ import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useCart } from "@/contexts/cart-context"
-import { useSession } from "next-auth/react"
-import { useToast } from "@/components/ui/use-toast"
+import { useCart } from "@/lib/cart-context"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Trash, Plus, Minus, ShoppingCart, ArrowRight } from "lucide-react"
 
 export default function CartPage() {
-  const { cart, removeFromCart, updateQuantity, totalPrice, clearCart } = useCart()
-  const { data: session } = useSession()
+  const { items, removeItem, updateQuantity, clearCart, total, isReady } = useCart()
   const router = useRouter()
-  const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleCheckout = () => {
-    if (!session) {
-      toast({
-        title: "Please sign in",
-        description: "You need to be signed in to checkout.",
-        variant: "destructive",
-      })
-      router.push("/login?redirect=/cart")
-      return
-    }
-
-    router.push("/checkout")
+  // Show loading state while cart is initializing
+  if (!isReady) {
+    return (
+      <div className="container px-4 md:px-6 py-24 mt-16">
+        <div className="max-w-md mx-auto text-center py-12">
+          <div className="animate-pulse">
+            <div className="h-12 w-12 bg-zinc-800 rounded-full mx-auto mb-4"></div>
+            <div className="h-6 bg-zinc-800 rounded w-3/4 mx-auto mb-2"></div>
+            <div className="h-4 bg-zinc-800 rounded w-1/2 mx-auto mb-6"></div>
+          </div>
+        </div>
+      </div>
+    )
   }
 
-  if (cart.length === 0) {
+  if (items.length === 0) {
     return (
       <div className="container px-4 md:px-6 py-24 mt-16">
         <div className="max-w-md mx-auto text-center py-12">
@@ -68,7 +65,7 @@ export default function CartPage() {
               </div>
 
               <div className="divide-y divide-zinc-800">
-                {cart.map((item) => (
+                {items.map((item) => (
                   <div key={item._id} className="py-4 md:grid md:grid-cols-5 md:gap-4 flex flex-col gap-4">
                     <div className="col-span-2 flex items-center gap-4">
                       <div className="w-16 h-16 relative flex-shrink-0">
@@ -82,7 +79,7 @@ export default function CartPage() {
                       <div>
                         <h3 className="font-medium">{item.name}</h3>
                         <button
-                          onClick={() => removeFromCart(item._id)}
+                          onClick={() => removeItem(item._id)}
                           className="text-sm text-red-500 flex items-center mt-1"
                         >
                           <Trash className="h-3 w-3 mr-1" />
@@ -154,7 +151,7 @@ export default function CartPage() {
               <div className="space-y-2 mb-4">
                 <div className="flex justify-between">
                   <span className="text-zinc-400">Subtotal</span>
-                  <span>${totalPrice.toFixed(2)}</span>
+                  <span>${total.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-zinc-400">Shipping</span>
@@ -165,14 +162,14 @@ export default function CartPage() {
               <div className="border-t border-zinc-800 pt-4 mb-6">
                 <div className="flex justify-between font-bold">
                   <span>Total</span>
-                  <span>${totalPrice.toFixed(2)}</span>
+                  <span>${total.toFixed(2)}</span>
                 </div>
               </div>
 
               <Button
                 className="w-full bg-blue-600 hover:bg-blue-700"
                 size="lg"
-                onClick={handleCheckout}
+                onClick={() => router.push("/checkout")}
                 disabled={isLoading}
               >
                 {isLoading ? "Processing..." : "Proceed to Checkout"}

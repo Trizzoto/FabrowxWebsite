@@ -17,27 +17,49 @@ interface CartContextType {
   updateQuantity: (itemId: string, quantity: number) => void
   clearCart: () => void
   total: number
+  isReady: boolean
 }
 
-const CartContext = createContext<CartContextType | undefined>(undefined)
+const CartContext = createContext<CartContextType>({
+  items: [],
+  addItem: () => {},
+  removeItem: () => {},
+  updateQuantity: () => {},
+  clearCart: () => {},
+  total: 0,
+  isReady: false,
+})
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([])
+  const [isReady, setIsReady] = useState(false)
 
   // Load cart from localStorage on mount
   useEffect(() => {
-    const savedCart = localStorage.getItem("cart")
-    if (savedCart) {
-      setItems(JSON.parse(savedCart))
+    try {
+      const savedCart = localStorage.getItem("cart")
+      if (savedCart) {
+        setItems(JSON.parse(savedCart))
+      }
+    } catch (error) {
+      console.error("Failed to load cart from localStorage:", error)
     }
+    setIsReady(true)
   }, [])
 
   // Save cart to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(items))
-  }, [items])
+    if (isReady) {
+      try {
+        localStorage.setItem("cart", JSON.stringify(items))
+      } catch (error) {
+        console.error("Failed to save cart to localStorage:", error)
+      }
+    }
+  }, [items, isReady])
 
   const addItem = (newItem: Omit<CartItem, "quantity">) => {
+    if (!isReady) return
     setItems(currentItems => {
       const existingItem = currentItems.find(item => item._id === newItem._id)
       if (existingItem) {
@@ -52,10 +74,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }
 
   const removeItem = (itemId: string) => {
+    if (!isReady) return
     setItems(currentItems => currentItems.filter(item => item._id !== itemId))
   }
 
   const updateQuantity = (itemId: string, quantity: number) => {
+    if (!isReady) return
     setItems(currentItems =>
       currentItems.map(item =>
         item._id === itemId
@@ -66,6 +90,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }
 
   const clearCart = () => {
+    if (!isReady) return
     setItems([])
   }
 
@@ -80,6 +105,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         updateQuantity,
         clearCart,
         total,
+        isReady,
       }}
     >
       {children}
@@ -89,8 +115,5 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
 export function useCart() {
   const context = useContext(CartContext)
-  if (context === undefined) {
-    throw new Error("useCart must be used within a CartProvider")
-  }
   return context
 } 
