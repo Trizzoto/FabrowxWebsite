@@ -1,11 +1,8 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { useSession } from "next-auth/react"
-import { useToast } from "@/components/ui/use-toast"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -23,9 +20,7 @@ const serviceTypes = [
 ]
 
 export default function JobBookingPage() {
-  const { data: session } = useSession()
   const router = useRouter()
-  const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
 
   const [formData, setFormData] = useState({
@@ -47,49 +42,17 @@ export default function JobBookingPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-
-    if (!session) {
-      toast({
-        title: "Please sign in",
-        description: "You need to be signed in to book a job.",
-        variant: "destructive",
-      })
-      router.push("/login?redirect=/job-booking")
-      return
-    }
-
     setIsLoading(true)
 
-    try {
-      const response = await fetch("/api/jobs", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      })
-
-      if (!response.ok) {
-        throw new Error("Failed to submit job booking")
-      }
-
-      const data = await response.json()
-
-      toast({
-        title: "Job booking submitted",
-        description: "We have received your job booking request and will contact you soon.",
-      })
-
-      router.push(`/account/jobs/${data._id}`)
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to submit job booking. Please try again.",
-        variant: "destructive",
-      })
-    } finally {
-      setIsLoading(false)
-    }
+    // Simulate form submission
+    await new Promise(resolve => setTimeout(resolve, 1500))
+    
+    // For demo purposes, just show the form data in console
+    console.log("Job Booking Form Data:", formData)
+    
+    setIsLoading(false)
+    alert("Thank you for your job booking request! This is a demo site, so no actual submission was made.")
+    router.push("/")
   }
 
   return (
