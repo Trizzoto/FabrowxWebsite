@@ -49,6 +49,7 @@ async function getGalleryImages(): Promise<GalleryImage[]> {
   const host = headersList.get('host');
   const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
   
+  // Fetch all gallery images - the HomeContent component will randomly select 6 to display
   const response = await fetch(`${protocol}://${host}/api/gallery`, {
     next: { revalidate: 60 } // Revalidate every minute
   });

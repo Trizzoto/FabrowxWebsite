@@ -1,9 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
-import { motion } from "framer-motion"
-import { ChevronDown, Filter } from "lucide-react"
+import { Filter, ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Select,
@@ -13,33 +12,72 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { products, productCategories } from "../data"
+import ProductGrid from "@/components/shop/product-grid"
+import { useRouter } from "next/navigation"
+
+interface Settings {
+  heroImage: string
+  heroTagline: string
+}
+
+const DEFAULT_HERO_IMAGE = "/images/placeholder.jpg"
 
 export default function CatalogPage() {
+  const router = useRouter()
   const [selectedCategory, setSelectedCategory] = useState<string>("all")
   const [sortBy, setSortBy] = useState<string>("name")
   const [showMobileFilters, setShowMobileFilters] = useState(false)
+  const [settings, setSettings] = useState<Settings | null>(null)
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const response = await fetch('/api/settings')
+        if (!response.ok) throw new Error('Failed to fetch settings')
+        const data = await response.json()
+        setSettings(data)
+      } catch (error) {
+        console.error('Error fetching settings:', error)
+      }
+    }
+
+    fetchSettings()
+  }, [])
 
   const filteredProducts = products.filter(
     (product) => selectedCategory === "all" || product.category === selectedCategory
   )
 
   const sortedProducts = [...filteredProducts].sort((a, b) => {
-    if (sortBy === "price-asc") return a.price - b.price
-    if (sortBy === "price-desc") return b.price - a.price
+    if (sortBy === "price-asc") return (a.price as number) - (b.price as number)
+    if (sortBy === "price-desc") return (b.price as number) - (a.price as number)
     if (sortBy === "name") return a.name.localeCompare(b.name)
     return 0
   })
 
   return (
     <div className="min-h-screen bg-black text-white">
+      {/* Home Button */}
+      <div className="fixed top-4 left-4 z-50">
+        <Button
+          variant="outline"
+          className="border-orange-500/30 bg-black/20 backdrop-blur-sm hover:bg-black/40 hover:border-orange-500/50 transition-all duration-300"
+          onClick={() => router.push("/")}
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Home
+        </Button>
+      </div>
+
       {/* Hero Section */}
       <div className="relative h-[300px] overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black z-10"></div>
         <Image
-          src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-gKlIX1RnqoHi6QB745twxRV5LBhg61.png"
+          src={settings?.heroImage ?? DEFAULT_HERO_IMAGE}
           alt="Catalog header"
           fill
           className="object-cover object-center"
+          priority
         />
         <div className="relative z-20 container h-full flex flex-col justify-center items-center text-center">
           <h1 className="text-4xl md:text-7xl font-bold mb-4">
@@ -68,7 +106,7 @@ export default function CatalogPage() {
 
           {/* Categories Sidebar */}
           <div className={`lg:col-span-1 ${showMobileFilters ? 'block' : 'hidden'} lg:block`}>
-            <div className="sticky top-4 bg-zinc-900/50 backdrop-blur-sm rounded-2xl p-6">
+            <div className="sticky top-20 bg-zinc-900/50 backdrop-blur-sm rounded-2xl p-6">
               <h2 className="text-xl font-semibold mb-4">Categories</h2>
               <div className="flex flex-col gap-2">
                 <Button
@@ -119,44 +157,7 @@ export default function CatalogPage() {
             </div>
 
             {/* Products */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-              {sortedProducts.map((product, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: index * 0.1 }}
-                  className="group relative bg-zinc-900 rounded-xl overflow-hidden border border-zinc-800 hover:border-orange-500/50 transition-colors"
-                >
-                  <div className="aspect-square relative overflow-hidden">
-                    <Image
-                      src={product.image}
-                      alt={product.name}
-                      fill
-                      className="object-cover transition-transform duration-300 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                  </div>
-                  <div className="p-6">
-                    <div className="mb-4">
-                      <span className="text-sm text-orange-400 font-medium">{product.category}</span>
-                      <h3 className="font-bold text-lg mt-1 line-clamp-2 min-h-[56px]">{product.name}</h3>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-2xl font-bold text-orange-400">${product.price.toFixed(2)}</span>
-                      <Button size="sm" className="bg-orange-600 hover:bg-orange-700">
-                        View Details
-                      </Button>
-                    </div>
-                  </div>
-                  <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Button size="icon" variant="outline" className="rounded-full border-orange-500/30 hover:bg-orange-500/10">
-                      <ChevronDown className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+            <ProductGrid products={sortedProducts} />
           </div>
         </div>
       </div>

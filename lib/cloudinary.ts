@@ -1,3 +1,63 @@
+const CLOUDINARY_CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
+const CLOUDINARY_UPLOAD_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
+
+export async function uploadToCloudinary(file: File): Promise<string> {
+  if (!CLOUDINARY_CLOUD_NAME || !CLOUDINARY_UPLOAD_PRESET) {
+    throw new Error('Cloudinary configuration is missing')
+  }
+
+  const formData = new FormData()
+  formData.append('file', file)
+  formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET)
+
+  const response = await fetch(
+    `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+    {
+      method: 'POST',
+      body: formData
+    }
+  )
+
+  if (!response.ok) {
+    throw new Error('Failed to upload image to Cloudinary')
+  }
+
+  const data = await response.json()
+  return data.secure_url
+}
+
+export function getCloudinaryPublicId(url: string): string {
+  const parts = url.split('/')
+  const filename = parts[parts.length - 1]
+  return filename.split('.')[0]
+}
+
+export function generateCloudinaryUrl(publicId: string, options: {
+  width?: number
+  height?: number
+  quality?: number
+  format?: string
+} = {}): string {
+  if (!CLOUDINARY_CLOUD_NAME) {
+    throw new Error('Cloudinary cloud name is missing')
+  }
+
+  const transformations = []
+
+  if (options.width) transformations.push(`w_${options.width}`)
+  if (options.height) transformations.push(`h_${options.height}`)
+  if (options.quality) transformations.push(`q_${options.quality}`)
+  
+  const format = options.format || 'auto'
+  transformations.push(`f_${format}`)
+
+  const transformationString = transformations.length > 0 
+    ? transformations.join(',') + '/'
+    : ''
+
+  return `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload/${transformationString}${publicId}`
+}
+
 export const getCloudinaryUrl = (publicId: string, options: Record<string, any> = {}) => {
   const defaultOptions = {
     width: 800,

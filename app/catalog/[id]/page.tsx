@@ -1,16 +1,11 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Metadata } from "next"
 import Image from "next/image"
-import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { notFound } from "next/navigation"
-import { getProductById } from "@/lib/api"
-import { Button } from "@/components/ui/button"
 import { ArrowLeft, Minus, Plus, ShoppingCart } from "lucide-react"
+import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { products } from "@/app/data"
 import { cn } from "@/lib/utils"
 
 interface Product {
@@ -22,28 +17,7 @@ interface Product {
   images: string[]
 }
 
-interface ProductPageProps {
-  params: {
-    id: string
-  }
-}
-
-export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
-  const product = await getProductById(params.id)
-
-  if (!product) {
-    return {
-      title: "Product Not Found | Elite Fabworx",
-    }
-  }
-
-  return {
-    title: `${product.name} | Elite Fabworx`,
-    description: product.description,
-  }
-}
-
-export default function ProductPage({ params }: ProductPageProps) {
+export default function ProductPage({ params }: { params: { id: string } }) {
   const router = useRouter()
   const [product, setProduct] = useState<Product | null>(null)
   const [loading, setLoading] = useState(true)
@@ -53,7 +27,7 @@ export default function ProductPage({ params }: ProductPageProps) {
   useEffect(() => {
     async function fetchProduct() {
       try {
-        const response = await fetch(`/api/products/${params.id}`)
+        const response = await fetch(`/api/catalog/${params.id}`)
         if (!response.ok) {
           throw new Error('Product not found')
         }
@@ -72,7 +46,7 @@ export default function ProductPage({ params }: ProductPageProps) {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div>
       </div>
     )
   }
@@ -81,9 +55,9 @@ export default function ProductPage({ params }: ProductPageProps) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh]">
         <h1 className="text-2xl font-bold mb-4">Product not found</h1>
-        <Button onClick={() => router.push("/products")}>
+        <Button onClick={() => router.push("/catalog")} variant="outline" className="border-orange-500/30 hover:bg-orange-500/10">
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Products
+          Back to Catalog
         </Button>
       </div>
     )
@@ -96,18 +70,18 @@ export default function ProductPage({ params }: ProductPageProps) {
   return (
     <div className="container mx-auto px-4 py-8">
       <Button
-        variant="ghost"
-        className="mb-8"
-        onClick={() => router.push("/products")}
+        variant="outline"
+        className="mb-8 border-orange-500/30 hover:bg-orange-500/10"
+        onClick={() => router.push("/catalog")}
       >
         <ArrowLeft className="mr-2 h-4 w-4" />
-        Back to Products
+        Back to Catalog
       </Button>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Image Gallery */}
         <div className="space-y-4">
-          <div className="relative aspect-square overflow-hidden rounded-lg bg-zinc-900">
+          <div className="relative aspect-square overflow-hidden rounded-lg bg-zinc-900 border border-zinc-800">
             {product.images && product.images.length > 0 && (
               <Image
                 src={product.images[selectedImage]}
@@ -127,8 +101,8 @@ export default function ProductPage({ params }: ProductPageProps) {
                   key={image}
                   onClick={() => setSelectedImage(index)}
                   className={cn(
-                    "relative aspect-square overflow-hidden rounded-md",
-                    selectedImage === index && "ring-2 ring-blue-500"
+                    "relative aspect-square overflow-hidden rounded-md border border-zinc-800",
+                    selectedImage === index ? "ring-2 ring-orange-500" : "hover:border-orange-500/50"
                   )}
                 >
                   <Image
@@ -146,8 +120,9 @@ export default function ProductPage({ params }: ProductPageProps) {
         {/* Product Info */}
         <div className="space-y-6">
           <div>
+            <span className="text-sm text-orange-400 font-medium block mb-2">{product.category}</span>
             <h1 className="text-3xl font-bold mb-2">{product.name}</h1>
-            <p className="text-2xl font-semibold text-blue-500">
+            <p className="text-2xl font-semibold text-orange-400">
               ${product.price.toFixed(2)}
             </p>
             <div className="mt-2 text-sm text-zinc-400">
@@ -165,6 +140,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                   size="icon"
                   onClick={() => handleQuantityChange(-1)}
                   disabled={quantity <= 1}
+                  className="border-orange-500/30 hover:bg-orange-500/10"
                 >
                   <Minus className="h-4 w-4" />
                 </Button>
@@ -173,6 +149,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                   variant="outline"
                   size="icon"
                   onClick={() => handleQuantityChange(1)}
+                  className="border-orange-500/30 hover:bg-orange-500/10"
                 >
                   <Plus className="h-4 w-4" />
                 </Button>
@@ -180,23 +157,30 @@ export default function ProductPage({ params }: ProductPageProps) {
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <Button size="lg" variant="outline">
+              <Button 
+                size="lg" 
+                variant="outline"
+                className="border-orange-500/30 hover:bg-orange-500/10"
+              >
                 <ShoppingCart className="mr-2 h-4 w-4" />
                 Add to Cart
               </Button>
-              <Button size="lg">
+              <Button 
+                size="lg"
+                className="bg-orange-600 hover:bg-orange-700"
+              >
                 Buy Now
               </Button>
             </div>
           </div>
 
-          <Card className="bg-zinc-900 p-6">
+          <Card className="bg-zinc-900 border-zinc-800 p-6">
             <h2 className="text-xl font-semibold mb-4">Product Description</h2>
             <p className="text-zinc-300 whitespace-pre-wrap">{product.description}</p>
           </Card>
 
           {/* Specifications */}
-          <Card className="bg-zinc-900 p-6">
+          <Card className="bg-zinc-900 border-zinc-800 p-6">
             <h2 className="text-xl font-semibold mb-4">Specifications</h2>
             <div className="grid grid-cols-1 gap-4">
               <div className="flex justify-between py-2 border-b border-zinc-800">

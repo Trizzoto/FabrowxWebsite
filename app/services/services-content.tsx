@@ -13,10 +13,13 @@ import {
   CheckCircle,
   Settings,
   Zap,
+  ArrowLeft,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import Link from "next/link"
+import Script from "next/script"
+import { useRouter } from "next/navigation"
 
 interface Service {
   title: string
@@ -59,6 +62,8 @@ const benefits = [
 ]
 
 export function ServicesContent({ services }: ServicesContentProps) {
+  const router = useRouter()
+
   const getIcon = (iconName: string) => {
     switch (iconName) {
       case 'Wrench':
@@ -76,33 +81,64 @@ export function ServicesContent({ services }: ServicesContentProps) {
     }
   }
 
+  // Define JSON-LD structured data for SEO
+  const jsonLdData = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "serviceType": "Metal Fabrication",
+    "provider": {
+      "@type": "LocalBusiness",
+      "name": "Elite FabWorx",
+      "url": "https://www.elitefabworx.com",
+      "logo": "https://www.elitefabworx.com/logo.png",
+      "telephone": "+1234567890",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "123 Main St",
+        "addressLocality": "City",
+        "addressRegion": "State",
+        "postalCode": "12345",
+        "addressCountry": "US"
+      }
+    },
+    "areaServed": "United States",
+    "description": "Expert metal fabrication services for performance vehicles and 4WDs."
+  };
+
   return (
-    <div className="bg-black min-h-screen">
+    <main className="bg-black min-h-screen" role="main">
+      {/* Home Button */}
+      <div className="fixed top-4 left-4 z-50">
+        <Button
+          variant="outline"
+          className="border-orange-500/30 bg-black/20 backdrop-blur-sm hover:bg-black/40 hover:border-orange-500/50 transition-all duration-300"
+          onClick={() => router.push("/")}
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Home
+        </Button>
+      </div>
+
       {/* Hero Section */}
-      <section className="relative py-20 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-orange-500/20 to-black/90"></div>
-        <div className="container relative z-10 px-4 md:px-6">
-          <div className="text-center max-w-3xl mx-auto">
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="text-4xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-orange-300"
-            >
-              Our Services
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-lg text-zinc-300 mb-8"
-            >
-              Expert metal fabrication services for performance vehicles and 4WDs.
-              From custom builds to repairs, we've got you covered.
-            </motion.p>
-          </div>
+      <div className="relative h-[300px] overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black z-10"></div>
+        <Image
+          src="https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741783803/lc03gne4mnc77za4awxa.jpg"
+          alt="Services header"
+          fill
+          className="object-cover object-center"
+        />
+        <div className="relative z-20 container h-full flex flex-col justify-center items-center text-center">
+          <h1 className="text-4xl md:text-7xl font-bold mb-4">
+            <span className="text-orange-500 font-extrabold tracking-wider">OUR</span>
+            <span className="font-light tracking-widest ml-2">SERVICES</span>
+          </h1>
+          <p className="text-lg md:text-xl text-zinc-300 max-w-2xl font-light tracking-wide">
+            Expert metal fabrication services for performance vehicles and 4WDs.
+            From custom builds to repairs, we've got you covered.
+          </p>
         </div>
-      </section>
+      </div>
 
       {/* Services Grid */}
       <section className="py-20 bg-zinc-900">
@@ -116,7 +152,7 @@ export function ServicesContent({ services }: ServicesContentProps) {
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 viewport={{ once: true }}
               >
-                <Card className="bg-zinc-800 border-zinc-700 overflow-hidden h-full hover:border-orange-500/50 transition-colors">
+                <Card className="bg-zinc-800 border-zinc-700 overflow-hidden h-full hover:border-orange-500/50 transition-colors shadow-lg">
                   <div className="relative h-64">
                     <Image
                       src={service.image || "/placeholder.svg"}
@@ -229,6 +265,13 @@ export function ServicesContent({ services }: ServicesContentProps) {
           </div>
         </div>
       </section>
-    </div>
+
+      {/* JSON-LD structured data for SEO */}
+      <Script
+        id="services-jsonld"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdData) }}
+      />
+    </main>
   )
 } 

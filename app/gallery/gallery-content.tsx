@@ -3,10 +3,12 @@
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import { motion } from "framer-motion"
-import { ChevronRight, ChevronLeft, X } from "lucide-react"
+import { ChevronRight, ChevronLeft, X, ArrowLeft, MessageSquare } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { useRouter } from "next/navigation"
+import Link from "next/link"
 
 interface GalleryImage {
   id: string
@@ -20,6 +22,7 @@ interface GalleryContentProps {
 }
 
 export function GalleryContent({ galleryImages }: GalleryContentProps) {
+  const router = useRouter()
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null)
   
   const handlePrevImage = () => {
@@ -54,30 +57,51 @@ export function GalleryContent({ galleryImages }: GalleryContentProps) {
 
   return (
     <div className="bg-black min-h-screen">
+      {/* Home Button */}
+      <div className="fixed top-4 left-4 z-50">
+        <Button
+          variant="outline"
+          className="border-orange-500/30 bg-black/20 backdrop-blur-sm hover:bg-black/40 hover:border-orange-500/50 transition-all duration-300"
+          onClick={() => router.push("/")}
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Home
+        </Button>
+      </div>
+
+      {/* Get a Quote Button */}
+      <div className="fixed top-4 right-4 z-50">
+        <Button
+          className="bg-orange-600 hover:bg-orange-700 text-white transition-all duration-300"
+          asChild
+        >
+          <Link href="/contact">
+            <MessageSquare className="mr-2 h-4 w-4" />
+            Get a Quote
+          </Link>
+        </Button>
+      </div>
+
       {/* Hero Section */}
-      <section className="relative py-20 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-orange-500/20 to-black/90"></div>
-        <div className="container relative z-10 px-4 md:px-6">
-          <div className="text-center max-w-3xl mx-auto">
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="text-4xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-orange-300"
-            >
-              Our Gallery
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-lg text-zinc-300 mb-8"
-            >
-              Browse through our portfolio of custom fabrication work and completed projects
-            </motion.p>
-          </div>
+      <div className="relative h-[300px] overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black z-10"></div>
+        <Image
+          src="https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741783803/lc03gne4mnc77za4awxa.jpg"
+          alt="Gallery header"
+          fill
+          className="object-cover object-center"
+          priority
+        />
+        <div className="relative z-20 container h-full flex flex-col justify-center items-center text-center">
+          <h1 className="text-4xl md:text-7xl font-bold mb-4">
+            <span className="text-orange-500 font-extrabold tracking-wider">OUR</span>
+            <span className="font-light tracking-widest ml-2">GALLERY</span>
+          </h1>
+          <p className="text-lg md:text-xl text-zinc-300 max-w-2xl font-light tracking-wide">
+            Browse through our portfolio of custom fabrication work and completed projects
+          </p>
         </div>
-      </section>
+      </div>
 
       {/* Gallery Section */}
       <section className="py-12 bg-zinc-900">

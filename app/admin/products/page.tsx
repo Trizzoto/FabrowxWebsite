@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { useToast } from "@/components/ui/use-toast"
@@ -22,17 +22,38 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog"
 import { Plus, Search, Edit, Trash, MoreHorizontal, Eye } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import { mockProducts } from "@/lib/mock-data"
+import { Product } from "@/app/data"
 
 export default function ProductsPage() {
-  const [products, setProducts] = useState(mockProducts)
+  const [products, setProducts] = useState<Product[]>([])
   const [searchQuery, setSearchQuery] = useState("")
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [productToDelete, setProductToDelete] = useState<string | null>(null)
   const { toast } = useToast()
+
+  useEffect(() => {
+    fetchProducts()
+  }, [])
+
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch('/api/products')
+      if (!response.ok) throw new Error('Failed to fetch products')
+      const data = await response.json()
+      setProducts(data)
+    } catch (error) {
+      console.error('Error fetching products:', error)
+      toast({
+        title: "Error",
+        description: "Failed to load products",
+        variant: "destructive"
+      })
+    }
+  }
 
   // Filter products based on search query
   const filteredProducts = products.filter(
@@ -46,16 +67,30 @@ export default function ProductsPage() {
     setDeleteDialogOpen(true)
   }
 
-  const handleDeleteConfirm = () => {
+  const handleDeleteConfirm = async () => {
     if (!productToDelete) return
 
-    // In a real app, you would call an API to delete the product
-    setProducts(products.filter((product) => product.id !== productToDelete))
+    try {
+      const response = await fetch(`/api/products?id=${productToDelete}`, {
+        method: 'DELETE'
+      })
 
-    toast({
-      title: "Product deleted",
-      description: "The product has been deleted successfully.",
-    })
+      if (!response.ok) throw new Error('Failed to delete product')
+
+      setProducts(products.filter((product) => product.id !== productToDelete))
+
+      toast({
+        title: "Success",
+        description: "Product deleted successfully",
+      })
+    } catch (error) {
+      console.error('Error deleting product:', error)
+      toast({
+        title: "Error",
+        description: "Failed to delete product",
+        variant: "destructive"
+      })
+    }
 
     setDeleteDialogOpen(false)
     setProductToDelete(null)
@@ -89,48 +124,27 @@ export default function ProductsPage() {
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-zinc-800/50">
-              <TableHead className="w-[80px]">Image</TableHead>
               <TableHead>Name</TableHead>
               <TableHead>Category</TableHead>
               <TableHead>Price</TableHead>
-              <TableHead>Stock</TableHead>
-              <TableHead>Featured</TableHead>
+              <TableHead>Description</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredProducts.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-8 text-zinc-500">
+                <TableCell colSpan={5} className="text-center py-8 text-zinc-500">
                   No products found. Try adjusting your search.
                 </TableCell>
               </TableRow>
             ) : (
               filteredProducts.map((product) => (
                 <TableRow key={product.id} className="hover:bg-zinc-800/50">
-                  <TableCell>
-                    <div className="w-12 h-12 relative rounded overflow-hidden">
-                      <Image
-                        src={product.images[0] || "/placeholder.svg"}
-                        alt={product.name}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                  </TableCell>
                   <TableCell className="font-medium">{product.name}</TableCell>
                   <TableCell>{product.category}</TableCell>
                   <TableCell>${product.price.toFixed(2)}</TableCell>
-                  <TableCell>
-                    <Badge variant={product.stockCount > 0 ? "outline" : "destructive"}>{product.stockCount}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    {product.featured ? (
-                      <Badge className="bg-blue-600">Featured</Badge>
-                    ) : (
-                      <Badge variant="outline">No</Badge>
-                    )}
-                  </TableCell>
+                  <TableCell className="max-w-md truncate">{product.description}</TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -143,7 +157,7 @@ export default function ProductsPage() {
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuSeparator className="bg-zinc-800" />
                         <DropdownMenuItem asChild>
-                          <Link href={`/shop/${product.slug}`} className="cursor-pointer">
+                          <Link href={`/catalog/${product.id}`} className="cursor-pointer">
                             <Eye className="mr-2 h-4 w-4" />
                             View
                           </Link>
@@ -175,7 +189,7 @@ export default function ProductsPage() {
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent className="bg-zinc-900 border-zinc-800">
           <DialogHeader>
-            <DialogTitle>Confirm Deletion</DialogTitle>
+            <DialogTitle>Delete Product</DialogTitle>
             <DialogDescription>
               Are you sure you want to delete this product? This action cannot be undone.
             </DialogDescription>

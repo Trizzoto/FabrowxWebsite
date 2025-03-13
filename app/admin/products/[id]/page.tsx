@@ -1,7 +1,5 @@
 "use client"
 
-import type React from "react"
-
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
@@ -12,108 +10,113 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Loader2, ArrowLeft, Upload, X } from "lucide-react"
-import { mockProducts, productCategories } from "@/lib/mock-data"
+import { Loader2, ArrowLeft, Upload, X, GripVertical } from "lucide-react"
+import { productCategories } from "@/app/data"
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd"
+import { uploadToCloudinary } from "@/lib/cloudinary"
+
+interface Product {
+  id?: string
+  name: string
+  category: string
+  price: number
+  description: string
+  images: string[]
+}
 
 export default function ProductForm({ params }: { params: { id: string } }) {
   const isEditing = params.id !== "new"
   const router = useRouter()
   const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
-  const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const [isUploading, setIsUploading] = useState(false)
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<Product>({
     name: "",
-    slug: "",
-    description: "",
     category: "",
-    price: "",
-    stockCount: "",
-    featured: false,
-    // In a real app, you would handle multiple images
-    image: "",
-    // Simplified specifications for this example
-    material: "",
-    finish: "",
-    fitment: "",
-    warranty: "",
-    // Simplified compatible vehicles for this example
-    compatibleVehicles: "",
+    price: 0,
+    description: "",
+    images: []
   })
 
   useEffect(() => {
     if (isEditing) {
-      // Find the product in our mock data
-      const product = mockProducts.find((p) => p.id === params.id)
+      fetchProduct()
+    }
+  }, [isEditing])
 
+  const fetchProduct = async () => {
+    try {
+      const response = await fetch('/api/products')
+      if (!response.ok) throw new Error('Failed to fetch products')
+      const products = await response.json()
+      const product = products.find((p: Product) => p.id === params.id)
+      
       if (product) {
-        setFormData({
-          name: product.name,
-          slug: product.slug,
-          description: product.description,
-          category: product.category,
-          price: product.price.toString(),
-          stockCount: product.stockCount.toString(),
-          featured: product.featured,
-          image: product.images[0],
-          material: product.specifications.material,
-          finish: product.specifications.finish,
-          fitment: product.specifications.fitment,
-          warranty: product.specifications.warranty,
-          compatibleVehicles: product.compatibleVehicles.join(", "),
-        })
-
-        setImagePreview(product.images[0])
+        setFormData(product)
       }
-    }
-  }, [isEditing, params.id])
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-
-    // Auto-generate slug from name
-    if (name === "name") {
-      const slug = value
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/(^-|-$)/g, "")
-      setFormData((prev) => ({ ...prev, slug }))
+    } catch (error) {
+      console.error('Error fetching product:', error)
+      toast({
+        title: "Error",
+        description: "Failed to load product",
+        variant: "destructive"
+      })
     }
   }
 
-  const handleSelectChange = (name: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files
+    if (!files?.length) return
 
-  const handleCheckboxChange = (name: string, checked: boolean) => {
-    setFormData((prev) => ({ ...prev, [name]: checked }))
-  }
+    setIsUploading(true)
+    const uploadedUrls: string[] = []
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
+    try {
+      for (let i = 0; i < files.length; i++) {
+        const url = await uploadToCloudinary(files[i])
+        uploadedUrls.push(url)
+      }
 
-    // Log for debugging
-    console.log('File selected:', file.name, file.type)
+      setFormData(prev => ({
+        ...prev,
+        images: [...prev.images, ...uploadedUrls]
+      }))
 
-    const reader = new FileReader()
-    reader.onload = () => {
-      const result = reader.result as string
-      console.log('File loaded, length:', result.length)
-      setImagePreview(result)
-      setFormData((prev) => ({ ...prev, image: result }))
+      toast({
+        title: "Success",
+        description: "Images uploaded successfully"
+      })
+    } catch (error) {
+      console.error('Error uploading images:', error)
+      toast({
+        title: "Error",
+        description: "Failed to upload images",
+        variant: "destructive"
+      })
+    } finally {
+      setIsUploading(false)
     }
-    reader.onerror = (error) => {
-      console.error('Error reading file:', error)
-    }
-    reader.readAsDataURL(file)
   }
 
-  const removeImage = () => {
-    setImagePreview(null)
-    setFormData((prev) => ({ ...prev, image: "" }))
+  const handleImageReorder = (result: any) => {
+    if (!result.destination) return
+
+    const items = Array.from(formData.images)
+    const [reorderedItem] = items.splice(result.source.index, 1)
+    items.splice(result.destination.index, 0, reorderedItem)
+
+    setFormData(prev => ({
+      ...prev,
+      images: items
+    }))
+  }
+
+  const removeImage = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index)
+    }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -121,26 +124,50 @@ export default function ProductForm({ params }: { params: { id: string } }) {
     setIsLoading(true)
 
     try {
-      // Simulate API call with a delay
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      toast({
-        title: isEditing ? "Product updated" : "Product created",
-        description: isEditing
-          ? "The product has been updated successfully."
-          : "The product has been created successfully.",
+      const method = isEditing ? 'PUT' : 'POST'
+      const response = await fetch('/api/products', {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...formData,
+          id: isEditing ? params.id : undefined
+        }),
       })
 
-      router.push("/admin/products")
+      if (!response.ok) throw new Error('Failed to save product')
+
+      toast({
+        title: "Success",
+        description: `Product ${isEditing ? 'updated' : 'created'} successfully`,
+      })
+
+      router.push('/admin/products')
     } catch (error) {
+      console.error('Error saving product:', error)
       toast({
         title: "Error",
-        description: "An error occurred. Please try again.",
-        variant: "destructive",
+        description: `Failed to ${isEditing ? 'update' : 'create'} product`,
+        variant: "destructive"
       })
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: parseFloat(value) || 0 }))
+  }
+
+  const handleSelectChange = (value: string) => {
+    setFormData((prev) => ({ ...prev, category: value }))
   }
 
   return (
@@ -155,39 +182,21 @@ export default function ProductForm({ params }: { params: { id: string } }) {
       <form onSubmit={handleSubmit} className="space-y-8">
         <Card className="bg-zinc-900 border-zinc-800">
           <CardHeader>
-            <CardTitle>Basic Information</CardTitle>
-            <CardDescription>Enter the basic details of the product.</CardDescription>
+            <CardTitle>Product Information</CardTitle>
+            <CardDescription>Enter the product details.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Product Name</Label>
-                <Input
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  placeholder="Enter product name"
-                  className="bg-zinc-800 border-zinc-700"
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="slug">Slug</Label>
-                <Input
-                  id="slug"
-                  name="slug"
-                  value={formData.slug}
-                  onChange={handleChange}
-                  placeholder="product-slug"
-                  className="bg-zinc-800 border-zinc-700"
-                  required
-                />
-                <p className="text-xs text-zinc-500">
-                  This will be used in the URL: /shop/{formData.slug || "product-slug"}
-                </p>
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="name">Product Name</Label>
+              <Input
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                placeholder="Enter product name"
+                className="bg-zinc-800 border-zinc-700"
+                required
+              />
             </div>
 
             <div className="space-y-2">
@@ -208,7 +217,7 @@ export default function ProductForm({ params }: { params: { id: string } }) {
                 <Label htmlFor="category">Category</Label>
                 <Select
                   value={formData.category}
-                  onValueChange={(value) => handleSelectChange("category", value)}
+                  onValueChange={handleSelectChange}
                   required
                 >
                   <SelectTrigger className="bg-zinc-800 border-zinc-700">
@@ -225,25 +234,6 @@ export default function ProductForm({ params }: { params: { id: string } }) {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="featured">Featured Product</Label>
-                <div className="flex items-center space-x-2 pt-2">
-                  <Checkbox
-                    id="featured"
-                    checked={formData.featured}
-                    onCheckedChange={(checked) => handleCheckboxChange("featured", checked as boolean)}
-                  />
-                  <label
-                    htmlFor="featured"
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    Display this product on the homepage
-                  </label>
-                </div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
                 <Label htmlFor="price">Price ($)</Label>
                 <Input
                   id="price"
@@ -252,181 +242,97 @@ export default function ProductForm({ params }: { params: { id: string } }) {
                   min="0"
                   step="0.01"
                   value={formData.price}
-                  onChange={handleChange}
+                  onChange={handleNumberChange}
                   placeholder="0.00"
                   className="bg-zinc-800 border-zinc-700"
                   required
                 />
               </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="stockCount">Stock Count</Label>
-                <Input
-                  id="stockCount"
-                  name="stockCount"
-                  type="number"
-                  min="0"
-                  value={formData.stockCount}
-                  onChange={handleChange}
-                  placeholder="0"
-                  className="bg-zinc-800 border-zinc-700"
-                  required
-                />
-              </div>
             </div>
           </CardContent>
         </Card>
 
         <Card className="bg-zinc-900 border-zinc-800">
           <CardHeader>
-            <CardTitle>Product Image</CardTitle>
-            <CardDescription>Upload an image for the product.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {imagePreview ? (
-                <div className="relative w-full max-w-md mx-auto">
-                  <div className="aspect-square relative rounded-md overflow-hidden">
-                    <Image
-                      src={imagePreview || "/placeholder.svg"}
-                      alt="Product preview"
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    size="icon"
-                    className="absolute top-2 right-2"
-                    onClick={removeImage}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-              ) : (
-                <div 
-                  className="flex flex-col items-center justify-center border-2 border-dashed border-zinc-700 rounded-md p-12"
-                  onClick={() => document.getElementById('image-upload')?.click()}
-                  onDragOver={(e) => {
-                    e.preventDefault()
-                    e.stopPropagation()
-                  }}
-                  onDrop={(e) => {
-                    e.preventDefault()
-                    e.stopPropagation()
-                    const file = e.dataTransfer.files?.[0]
-                    if (file && file.type.startsWith('image/')) {
-                      handleImageChange({ target: { files: [file] } } as React.ChangeEvent<HTMLInputElement>)
-                    }
-                  }}
-                >
-                  <input
-                    id="image-upload"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    style={{ display: 'none' }}
-                  />
-                  <Upload className="h-8 w-8 text-zinc-500 mb-4" />
-                  <p className="text-sm text-zinc-500 mb-2">Drag and drop an image, or click to browse</p>
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    className="cursor-pointer"
-                  >
-                    Browse
-                  </Button>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-zinc-900 border-zinc-800">
-          <CardHeader>
-            <CardTitle>Specifications</CardTitle>
-            <CardDescription>Enter the specifications of the product.</CardDescription>
+            <CardTitle>Product Images</CardTitle>
+            <CardDescription>Upload and arrange product images. Drag to reorder.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="material">Material</Label>
+            <div className="flex items-center justify-center w-full">
+              <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer border-zinc-700 bg-zinc-800 hover:bg-zinc-700">
+                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                  <Upload className="w-8 h-8 mb-3 text-zinc-400" />
+                  <p className="mb-2 text-sm text-zinc-400">
+                    <span className="font-semibold">Click to upload</span> or drag and drop
+                  </p>
+                </div>
                 <Input
-                  id="material"
-                  name="material"
-                  value={formData.material}
-                  onChange={handleChange}
-                  placeholder="e.g., Stainless Steel"
-                  className="bg-zinc-800 border-zinc-700"
+                  type="file"
+                  className="hidden"
+                  accept="image/*"
+                  multiple
+                  onChange={handleImageUpload}
+                  disabled={isUploading}
                 />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="finish">Finish</Label>
-                <Input
-                  id="finish"
-                  name="finish"
-                  value={formData.finish}
-                  onChange={handleChange}
-                  placeholder="e.g., Polished"
-                  className="bg-zinc-800 border-zinc-700"
-                />
-              </div>
+              </label>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="fitment">Fitment</Label>
-                <Input
-                  id="fitment"
-                  name="fitment"
-                  value={formData.fitment}
-                  onChange={handleChange}
-                  placeholder="e.g., Vehicle Specific"
-                  className="bg-zinc-800 border-zinc-700"
-                />
+            {isUploading && (
+              <div className="flex items-center justify-center">
+                <Loader2 className="h-6 w-6 animate-spin text-blue-500" />
+                <span className="ml-2">Uploading images...</span>
               </div>
+            )}
 
-              <div className="space-y-2">
-                <Label htmlFor="warranty">Warranty</Label>
-                <Input
-                  id="warranty"
-                  name="warranty"
-                  value={formData.warranty}
-                  onChange={handleChange}
-                  placeholder="e.g., 2 Years"
-                  className="bg-zinc-800 border-zinc-700"
-                />
-              </div>
-            </div>
+            <DragDropContext onDragEnd={handleImageReorder}>
+              <Droppable droppableId="images">
+                {(provided) => (
+                  <div
+                    {...provided.droppableProps}
+                    ref={provided.innerRef}
+                    className="space-y-2"
+                  >
+                    {Array.isArray(formData.images) && formData.images.map((url, index) => (
+                      <Draggable key={url} draggableId={url} index={index}>
+                        {(provided) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            className="flex items-center gap-2 p-2 bg-zinc-800 rounded-lg group"
+                          >
+                            <div {...provided.dragHandleProps} className="cursor-move">
+                              <GripVertical className="h-5 w-5 text-zinc-400" />
+                            </div>
+                            <div className="relative w-16 h-16">
+                              <Image
+                                src={url}
+                                alt={`Product image ${index + 1}`}
+                                fill
+                                className="object-cover rounded-md"
+                              />
+                            </div>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              className="ml-auto opacity-0 group-hover:opacity-100"
+                              onClick={() => removeImage(index)}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </DragDropContext>
           </CardContent>
         </Card>
 
-        <Card className="bg-zinc-900 border-zinc-800">
-          <CardHeader>
-            <CardTitle>Compatible Vehicles</CardTitle>
-            <CardDescription>Enter the vehicles compatible with this product.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              <Label htmlFor="compatibleVehicles">Compatible Vehicles</Label>
-              <Textarea
-                id="compatibleVehicles"
-                name="compatibleVehicles"
-                value={formData.compatibleVehicles}
-                onChange={handleChange}
-                placeholder="Enter compatible vehicles, separated by commas"
-                className="min-h-[80px] bg-zinc-800 border-zinc-700"
-              />
-              <p className="text-xs text-zinc-500">
-                Enter vehicle makes and models separated by commas (e.g., Toyota 86, Subaru BRZ)
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <CardFooter className="flex justify-end space-x-4 px-0">
+        <div className="flex justify-end space-x-4">
           <Button type="button" variant="outline" onClick={() => router.push("/admin/products")}>
             Cancel
           </Button>
@@ -434,7 +340,7 @@ export default function ProductForm({ params }: { params: { id: string } }) {
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {isEditing ? "Update Product" : "Create Product"}
           </Button>
-        </CardFooter>
+        </div>
       </form>
     </div>
   )

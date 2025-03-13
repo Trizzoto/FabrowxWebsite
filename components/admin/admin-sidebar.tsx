@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { LayoutDashboard, Package, ShoppingBag, Users, Settings, Wrench } from "lucide-react"
+import Image from "next/image"
 
 export default function AdminSidebar() {
   const pathname = usePathname()
@@ -12,20 +13,31 @@ export default function AdminSidebar() {
   }
 
   return (
-    <div className="flex flex-col h-full bg-zinc-950 border-r border-zinc-800">
-      <div className="flex h-14 items-center border-b border-zinc-800 px-4">
+    <div className="flex flex-col h-full bg-black border-r border-zinc-800">
+      <div className="flex h-20 items-center border-b border-zinc-800 px-4">
         <Link href="/admin" className="flex items-center gap-2 font-semibold">
-          <Wrench className="h-6 w-6 text-blue-500" />
-          <span>Elite FabWorx Admin</span>
+          <Image
+            src="/logo.png"
+            alt="Elite FabWorx Logo"
+            width={40}
+            height={40}
+            className="rounded-full"
+          />
+          <div>
+            <span className="text-orange-500 font-extrabold tracking-wider">ELITE</span>
+            <span className="font-light tracking-widest ml-1">FABWORX</span>
+          </div>
         </Link>
       </div>
 
-      <div className="flex-1 overflow-auto py-2">
-        <nav className="grid items-start px-2 text-sm font-medium">
+      <div className="flex-1 overflow-auto py-4">
+        <nav className="grid items-start px-2 text-sm font-medium gap-1">
           <Link
             href="/admin"
             className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
-              isActive("/admin") ? "bg-zinc-800 text-zinc-50" : "text-zinc-400 hover:text-zinc-50 hover:bg-zinc-900"
+              isActive("/admin") 
+                ? "bg-orange-500/20 text-orange-400 border-l-2 border-orange-500" 
+                : "text-zinc-400 hover:text-orange-400 hover:bg-orange-500/10"
             }`}
           >
             <LayoutDashboard className="h-4 w-4" />
@@ -36,8 +48,8 @@ export default function AdminSidebar() {
             href="/admin/products"
             className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
               pathname.startsWith("/admin/products")
-                ? "bg-zinc-800 text-zinc-50"
-                : "text-zinc-400 hover:text-zinc-50 hover:bg-zinc-900"
+                ? "bg-orange-500/20 text-orange-400 border-l-2 border-orange-500"
+                : "text-zinc-400 hover:text-orange-400 hover:bg-orange-500/10"
             }`}
           >
             <Package className="h-4 w-4" />
@@ -48,8 +60,8 @@ export default function AdminSidebar() {
             href="/admin/orders"
             className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
               pathname.startsWith("/admin/orders")
-                ? "bg-zinc-800 text-zinc-50"
-                : "text-zinc-400 hover:text-zinc-50 hover:bg-zinc-900"
+                ? "bg-orange-500/20 text-orange-400 border-l-2 border-orange-500"
+                : "text-zinc-400 hover:text-orange-400 hover:bg-orange-500/10"
             }`}
           >
             <ShoppingBag className="h-4 w-4" />
@@ -60,8 +72,8 @@ export default function AdminSidebar() {
             href="/admin/customers"
             className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
               pathname.startsWith("/admin/customers")
-                ? "bg-zinc-800 text-zinc-50"
-                : "text-zinc-400 hover:text-zinc-50 hover:bg-zinc-900"
+                ? "bg-orange-500/20 text-orange-400 border-l-2 border-orange-500"
+                : "text-zinc-400 hover:text-orange-400 hover:bg-orange-500/10"
             }`}
           >
             <Users className="h-4 w-4" />
@@ -72,8 +84,8 @@ export default function AdminSidebar() {
             href="/admin/settings"
             className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
               pathname.startsWith("/admin/settings")
-                ? "bg-zinc-800 text-zinc-50"
-                : "text-zinc-400 hover:text-zinc-50 hover:bg-zinc-900"
+                ? "bg-orange-500/20 text-orange-400 border-l-2 border-orange-500"
+                : "text-zinc-400 hover:text-orange-400 hover:bg-orange-500/10"
             }`}
           >
             <Settings className="h-4 w-4" />

@@ -55,13 +55,13 @@ export function ContactForm({ topics = defaultTopics }: ContactFormProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="w-full max-w-2xl mx-auto p-4"
+      className="w-full max-w-2xl mx-auto"
     >
-      <Card>
+      <Card className="bg-zinc-800 border-zinc-700 shadow-lg">
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6 mt-6">
             <div className="space-y-2">
-              <Label htmlFor="name">Name *</Label>
+              <Label htmlFor="name" className="text-zinc-300">Name *</Label>
               <Input
                 id="name"
                 required
@@ -70,11 +70,12 @@ export function ContactForm({ topics = defaultTopics }: ContactFormProps) {
                   setFormData({ ...formData, name: e.target.value })
                 }
                 placeholder="Your full name"
+                className="bg-zinc-900 border-zinc-700 text-white focus:border-orange-500 focus:ring-orange-500/20 focus-visible:ring-orange-500/20 focus-visible:ring-offset-0"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email *</Label>
+              <Label htmlFor="email" className="text-zinc-300">Email *</Label>
               <Input
                 id="email"
                 type="email"
@@ -84,11 +85,12 @@ export function ContactForm({ topics = defaultTopics }: ContactFormProps) {
                   setFormData({ ...formData, email: e.target.value })
                 }
                 placeholder="your.email@example.com"
+                className="bg-zinc-900 border-zinc-700 text-white focus:border-orange-500 focus:ring-orange-500/20 focus-visible:ring-orange-500/20 focus-visible:ring-offset-0"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="phone">Phone Number</Label>
+              <Label htmlFor="phone" className="text-zinc-300">Phone Number</Label>
               <Input
                 id="phone"
                 type="tel"
@@ -97,11 +99,12 @@ export function ContactForm({ topics = defaultTopics }: ContactFormProps) {
                   setFormData({ ...formData, phone: e.target.value })
                 }
                 placeholder="Your phone number"
+                className="bg-zinc-900 border-zinc-700 text-white focus:border-orange-500 focus:ring-orange-500/20 focus-visible:ring-orange-500/20 focus-visible:ring-offset-0"
               />
             </div>
 
             <div className="space-y-2">
-              <Label>Preferred Contact Method *</Label>
+              <Label className="text-zinc-300">Preferred Contact Method *</Label>
               <RadioGroup
                 value={formData.preferredContact}
                 onValueChange={(value) =>
@@ -110,18 +113,26 @@ export function ContactForm({ topics = defaultTopics }: ContactFormProps) {
                 className="flex space-x-4"
               >
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="email" id="contact-email" />
-                  <Label htmlFor="contact-email">Email</Label>
+                  <RadioGroupItem 
+                    value="email" 
+                    id="contact-email" 
+                    className="text-orange-500 border-orange-500 focus:ring-orange-500/20 focus-visible:ring-orange-500/20 focus-visible:ring-offset-0" 
+                  />
+                  <Label htmlFor="contact-email" className="text-zinc-300">Email</Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="phone" id="contact-phone" />
-                  <Label htmlFor="contact-phone">Phone</Label>
+                  <RadioGroupItem 
+                    value="phone" 
+                    id="contact-phone" 
+                    className="text-orange-500 border-orange-500 focus:ring-orange-500/20 focus-visible:ring-orange-500/20 focus-visible:ring-offset-0" 
+                  />
+                  <Label htmlFor="contact-phone" className="text-zinc-300">Phone</Label>
                 </div>
               </RadioGroup>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="topic">Topic *</Label>
+              <Label htmlFor="topic" className="text-zinc-300">Topic *</Label>
               <Select
                 value={formData.topic}
                 onValueChange={(value) =>
@@ -129,12 +140,16 @@ export function ContactForm({ topics = defaultTopics }: ContactFormProps) {
                 }
                 required
               >
-                <SelectTrigger>
+                <SelectTrigger className="bg-zinc-900 border-zinc-700 text-white focus:border-orange-500 focus:ring-orange-500/20 focus-visible:ring-orange-500/20 focus-visible:ring-offset-0">
                   <SelectValue placeholder="Select a topic" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-zinc-800 border-zinc-700 text-white">
                   {topics.map((topic) => (
-                    <SelectItem key={topic.value} value={topic.value}>
+                    <SelectItem 
+                      key={topic.value} 
+                      value={topic.value}
+                      className="focus:bg-orange-500/20 focus:text-orange-400 data-[highlighted]:bg-orange-500/20 data-[highlighted]:text-orange-400"
+                    >
                       {topic.label}
                     </SelectItem>
                   ))}
@@ -143,7 +158,7 @@ export function ContactForm({ topics = defaultTopics }: ContactFormProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="message">Message *</Label>
+              <Label htmlFor="message" className="text-zinc-300">Message *</Label>
               <Textarea
                 id="message"
                 required
@@ -152,11 +167,14 @@ export function ContactForm({ topics = defaultTopics }: ContactFormProps) {
                   setFormData({ ...formData, message: e.target.value })
                 }
                 placeholder="Please describe your project or inquiry"
-                className="min-h-[150px]"
+                className="min-h-[150px] bg-zinc-900 border-zinc-700 text-white focus:border-orange-500 focus:ring-orange-500/20 focus-visible:ring-orange-500/20 focus-visible:ring-offset-0"
               />
             </div>
 
-            <Button type="submit" className="w-full">
+            <Button 
+              type="submit" 
+              className="w-full bg-orange-600 hover:bg-orange-700 text-white focus-visible:ring-orange-500 focus-visible:ring-offset-0"
+            >
               Send Message
               <ChevronRight className="ml-2 h-4 w-4" />
             </Button>

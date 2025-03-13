@@ -3,7 +3,7 @@
 import { useRef, useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { motion, useScroll, useTransform } from "framer-motion"
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion"
 import {
   ChevronRight,
   Mail,
@@ -68,6 +68,23 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
 
   const y = useTransform(scrollYProgress, [0, 1], ["0%", "40%"])
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0])
+
+  // Get 6 random gallery images that change on each page load
+  const [randomGalleryImages, setRandomGalleryImages] = useState<GalleryImage[]>([])
+  
+  useEffect(() => {
+    // Shuffle the gallery images and take the first 6
+    const shuffled = [...galleryImages].sort(() => 0.5 - Math.random())
+    setRandomGalleryImages(shuffled.slice(0, 6))
+    
+    // Set up an interval to rotate the images every 10 seconds
+    const intervalId = setInterval(() => {
+      const newShuffled = [...galleryImages].sort(() => 0.5 - Math.random())
+      setRandomGalleryImages(newShuffled.slice(0, 6))
+    }, 10000) // 10 seconds
+    
+    return () => clearInterval(intervalId)
+  }, [galleryImages])
 
   return (
     <div className="bg-black text-white">
@@ -222,33 +239,38 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 viewport={{ once: true }}
               >
-                <Card className="bg-zinc-800 border-zinc-700 overflow-hidden group hover:border-orange-500/50 transition-colors">
-                  <div className="h-64 relative">
-                    <Image
-                      src={product.image}
-                      alt={product.name}
-                      fill
-                      className="object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-black/20"></div>
-                  </div>
-                  <CardContent className="p-6">
-                    <h3 className="text-xl font-bold mb-2">{product.name}</h3>
-                    <p className="text-zinc-400 mb-4">{product.description}</p>
-                    <div className="flex justify-between items-center">
-                      <span className="text-orange-400 font-semibold">${product.price}</span>
-                      <Button variant="outline" size="sm" className="border-orange-500 text-orange-400 hover:bg-orange-950/50">
-                        View Details
-                      </Button>
+                <Link href={`/catalog/${product.id}`} className="group transition-transform hover:-translate-y-1 duration-300">
+                  <Card className="overflow-hidden border-zinc-800 bg-zinc-900 hover:border-orange-500/50 transition-all duration-300 h-full flex flex-col">
+                    <div className="relative aspect-square">
+                      <Image
+                        src={product.image || "/placeholder.jpg"}
+                        alt={product.name}
+                        fill
+                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     </div>
-                  </CardContent>
-                </Card>
+                    <div className="p-4 flex flex-col flex-1">
+                      <div className="mb-2">
+                        <span className="text-sm text-orange-400 font-medium block mb-1">{product.category}</span>
+                        <h3 className="font-semibold text-lg line-clamp-2 group-hover:text-orange-400 transition-colors duration-300 min-h-[56px]">
+                          {product.name}
+                        </h3>
+                      </div>
+                      <div className="mt-auto text-right">
+                        <p className="text-xl font-bold text-orange-400">
+                          ${product.price.toFixed(2)}
+                        </p>
+                      </div>
+                    </div>
+                  </Card>
+                </Link>
               </motion.div>
             ))}
           </div>
 
           <div className="mt-12 text-center">
-            <Link href="/shop">
+            <Link href="/catalog">
               <Button variant="outline" className="border-orange-500 text-orange-400 hover:bg-orange-950/50">
                 View All Products
                 <ChevronRight className="ml-2 h-4 w-4" />
@@ -321,49 +343,63 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
       {/* Gallery Section */}
       <section className="py-20 bg-black">
         <div className="container px-4 md:px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              viewport={{ once: true }}
+              className="text-3xl md:text-4xl font-bold mb-4"
+            >
               Our <span className="text-orange-500">Gallery</span>
-            </h2>
-            <p className="text-zinc-400 max-w-2xl mx-auto">
-              Explore our portfolio of custom fabrication work and completed projects.
-            </p>
+            </motion.h2>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              viewport={{ once: true }}
+              className="text-zinc-400"
+            >
+              Browse through our portfolio of custom fabrication work and completed projects
+            </motion.p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {galleryImages.map((image, index) => (
-              <motion.div
-                key={image.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
-              >
-                <Card className="bg-zinc-800 border-zinc-700 overflow-hidden group hover:border-orange-500/50 transition-colors">
-                  <div className="h-64 relative">
-                    <Image
-                      src={image.url}
-                      alt={image.caption || 'Gallery image'}
-                      fill
-                      className="object-cover transition-transform duration-300 group-hover:scale-105"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    />
-                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-opacity"></div>
-                  </div>
-                  {image.caption && (
-                    <CardContent className="p-4">
-                      <p className="text-zinc-300">{image.caption}</p>
-                      {image.category && (
-                        <span className="text-sm text-orange-400 mt-2 inline-block">
-                          {image.category}
-                        </span>
-                      )}
-                    </CardContent>
-                  )}
-                </Card>
-              </motion.div>
-            ))}
-          </div>
+          <AnimatePresence mode="wait">
+            <div key={randomGalleryImages.map(img => img.id).join('-')} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {randomGalleryImages.map((image, index) => (
+                <motion.div
+                  key={image.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="relative"
+                >
+                  <Card className="bg-zinc-800 border-zinc-700 overflow-hidden group hover:border-orange-500/50 transition-colors">
+                    <div className="h-64 relative">
+                      <Image
+                        src={image.url}
+                        alt={image.caption || 'Gallery image'}
+                        fill
+                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      />
+                      <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-opacity"></div>
+                    </div>
+                    {image.caption && (
+                      <CardContent className="p-4">
+                        <p className="text-zinc-300">{image.caption}</p>
+                        {image.category && (
+                          <span className="text-sm text-orange-400 mt-2 inline-block">
+                            {image.category}
+                          </span>
+                        )}
+                      </CardContent>
+                    )}
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
+          </AnimatePresence>
 
           <div className="mt-12 text-center">
             <Link href="/gallery">
