@@ -94,7 +94,11 @@ export default function OrdersPage() {
                       <div className="text-xs text-zinc-500">{order.email}</div>
                     </div>
                   </TableCell>
-                  <TableCell>{new Date(order.date).toLocaleDateString()}</TableCell>
+                  <TableCell>{new Date(order.date).toLocaleDateString('en-GB', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric'
+                  })}</TableCell>
                   <TableCell>{getStatusBadge(order.status)}</TableCell>
                   <TableCell>{order.items}</TableCell>
                   <TableCell>${order.total.toFixed(2)}</TableCell>

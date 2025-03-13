@@ -1,0 +1,55 @@
+{
+  "heroImage": "https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741783803/lc03gne4mnc77za4awxa.jpg",
+  "heroTagline": "Adelaide Custom Metal & Welding Solutions | 4WDs, Performance & Industrial Fabrication",
+  "aboutText": "With over a decade of experience in metal fabrication, we specialize in creating custom solutions for performance vehicles and 4WDs. Our team of skilled craftsmen combines traditional techniques with modern technology to deliver exceptional results.",
+  "aboutImage": "/fabrication.jpg",
+  "contactInfo": {
+    "phone": "+61 123 456 789",
+    "email": "info@elitefabworx.com.au",
+    "location": "Adelaide, Australia"
+  },
+  "services": [
+    {
+      "title": "Custom Fabrication",
+      "description": "Custom metal fabrication for your unique requirements",
+      "image": "https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741819492/elite-fabworx/service-1/tbypybcrwyihe5wxezsp.jpg",
+      "icon": "Wrench",
+      "slug": "custom-fabrication"
+    },
+    {
+      "title": "Performance Upgrades",
+      "description": "High-performance modifications for your vehicle",
+      "image": "https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741818971/elite-fabworx/service-2/lftf9v2h31iynhtg7ygm.jpg",
+      "icon": "Car",
+      "slug": "performance-upgrades"
+    },
+    {
+      "title": "4WD Modifications",
+      "description": "Specialized modifications for off-road vehicles",
+      "image": "https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741819120/elite-fabworx/service-3/o4foeuvqxofrmcykqz7y.jpg",
+      "icon": "Truck",
+      "slug": "4wd-modifications"
+    },
+    {
+      "title": "Exhaust Systems",
+      "description": "Custom exhaust systems and modifications",
+      "image": "https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741784167/elite-fabworx/service-4/gnogoariquz6t2rmahkc.jpg",
+      "icon": "Cog",
+      "slug": "exhaust-systems"
+    },
+    {
+      "title": "Roll Cages",
+      "description": "Safety roll cages and chassis reinforcement",
+      "image": "https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741784065/elite-fabworx/service-5/soe5h9ayegtuffwakj3u.jpg",
+      "icon": "Shield",
+      "slug": "roll-cages"
+    },
+    {
+      "title": "Prototyping",
+      "description": "In-house design",
+      "image": "https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741784060/elite-fabworx/service-6/dmgofbnih4qztwkzndup.jpg",
+      "icon": "Truck",
+      "slug": "prototyping"
+    }
+  ]
+}

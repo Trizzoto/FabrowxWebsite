@@ -76,7 +76,11 @@ export default function CustomersPage() {
                       <div className="text-xs text-zinc-500">{customer.email}</div>
                     </div>
                   </TableCell>
-                  <TableCell>{new Date(customer.joinDate).toLocaleDateString()}</TableCell>
+                  <TableCell>{new Date(customer.joinDate).toLocaleDateString('en-GB', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric'
+                  })}</TableCell>
                   <TableCell>
                     {customer.status === "active" ? (
                       <Badge className="bg-green-600">Active</Badge>

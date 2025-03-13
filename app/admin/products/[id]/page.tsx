@@ -95,12 +95,18 @@ export default function ProductForm({ params }: { params: { id: string } }) {
     const file = e.target.files?.[0]
     if (!file) return
 
-    // In a real app, you would upload the image to a storage service
-    // For this example, we'll just create a local preview
+    // Log for debugging
+    console.log('File selected:', file.name, file.type)
+
     const reader = new FileReader()
     reader.onload = () => {
-      setImagePreview(reader.result as string)
-      setFormData((prev) => ({ ...prev, image: reader.result as string }))
+      const result = reader.result as string
+      console.log('File loaded, length:', result.length)
+      setImagePreview(result)
+      setFormData((prev) => ({ ...prev, image: result }))
+    }
+    reader.onerror = (error) => {
+      console.error('Error reading file:', error)
     }
     reader.readAsDataURL(file)
   }
@@ -299,11 +305,36 @@ export default function ProductForm({ params }: { params: { id: string } }) {
                   </Button>
                 </div>
               ) : (
-                <div className="flex flex-col items-center justify-center border-2 border-dashed border-zinc-700 rounded-md p-12">
+                <div 
+                  className="flex flex-col items-center justify-center border-2 border-dashed border-zinc-700 rounded-md p-12"
+                  onClick={() => document.getElementById('image-upload')?.click()}
+                  onDragOver={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                  }}
+                  onDrop={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    const file = e.dataTransfer.files?.[0]
+                    if (file && file.type.startsWith('image/')) {
+                      handleImageChange({ target: { files: [file] } } as React.ChangeEvent<HTMLInputElement>)
+                    }
+                  }}
+                >
+                  <input
+                    id="image-upload"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    style={{ display: 'none' }}
+                  />
                   <Upload className="h-8 w-8 text-zinc-500 mb-4" />
                   <p className="text-sm text-zinc-500 mb-2">Drag and drop an image, or click to browse</p>
-                  <Input id="image" type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
-                  <Button type="button" variant="outline" onClick={() => document.getElementById("image")?.click()}>
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    className="cursor-pointer"
+                  >
                     Browse
                   </Button>
                 </div>

@@ -1,106 +1,5 @@
 // Mock Products
-export const mockProducts = [
-  {
-    id: "1",
-    name: "Performance Exhaust Header",
-    slug: "performance-exhaust-header",
-    description:
-      "High-performance exhaust header designed for maximum flow and power gains. Made from 304 stainless steel with precision TIG welding.",
-    category: "Exhaust Systems",
-    price: 899,
-    stockCount: 15,
-    images: ["https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-O6uyXI2qKZ2CwTXjc9Z4xBQyd4B1wD.png"],
-    featured: true,
-    specifications: {
-      material: "304 Stainless Steel",
-      finish: "Polished",
-      fitment: "Vehicle Specific",
-      warranty: "2 Years",
-    },
-    compatibleVehicles: ["Toyota 86", "Subaru BRZ", "Subaru WRX"],
-    createdAt: "2023-11-01",
-  },
-  {
-    id: "2",
-    name: "4WD Snorkel Kit",
-    slug: "4wd-snorkel-kit",
-    description:
-      "Increase your 4WD's wading depth and protect your engine from dust with our premium snorkel kit. UV-resistant material with all mounting hardware included.",
-    category: "4WD Accessories",
-    price: 349,
-    stockCount: 20,
-    images: ["https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-rD6gLiohsmuiKpJWETlWAsG6YGWk5x.png"],
-    featured: true,
-    specifications: {
-      material: "High-density polyethylene",
-      color: "Black",
-      installation: "Professional installation recommended",
-      warranty: "1 Year",
-    },
-    compatibleVehicles: ["Toyota Landcruiser", "Nissan Patrol", "Ford Ranger", "Toyota Hilux"],
-    createdAt: "2023-11-02",
-  },
-  {
-    id: "3",
-    name: "Roll Cage Kit",
-    slug: "roll-cage-kit",
-    description:
-      "CAMS/Motorsport Australia approved roll cage kit for racing and track applications. Includes all necessary tubes, bends, and mounting hardware.",
-    category: "Safety Equipment",
-    price: 1299,
-    stockCount: 5,
-    images: ["https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-gKlIX1RnqoHi6QB745twxRV5LBhg61.png"],
-    featured: false,
-    specifications: {
-      material: "Chromoly steel",
-      certification: "CAMS/Motorsport Australia approved",
-      installation: "Professional installation required",
-      warranty: "5 Years",
-    },
-    compatibleVehicles: ["Universal fit with vehicle-specific mounting points"],
-    createdAt: "2023-11-03",
-  },
-  {
-    id: "4",
-    name: "Intercooler Upgrade",
-    slug: "intercooler-upgrade",
-    description:
-      "High-performance front-mount intercooler for turbocharged vehicles. Provides significantly improved cooling efficiency for increased power and reduced heat soak.",
-    category: "Performance Parts",
-    price: 749,
-    stockCount: 8,
-    images: ["https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-nusbLTFm2veKAWoXvCpnjNnx2duleH.png"],
-    featured: true,
-    specifications: {
-      core: "Bar and plate design",
-      connections: "TIG welded aluminum",
-      size: "600mm x 300mm x 76mm",
-      warranty: "2 Years",
-    },
-    compatibleVehicles: ["Mitsubishi Lancer Evolution", "Subaru WRX STI", "Ford Focus RS"],
-    createdAt: "2023-11-04",
-  },
-  {
-    id: "5",
-    name: "Custom Intake Manifold",
-    slug: "custom-intake-manifold",
-    description:
-      "CNC machined aluminum intake manifold designed for optimal airflow and power delivery. Custom port matching available for your specific application.",
-    category: "Engine Components",
-    price: 1199,
-    stockCount: 3,
-    images: ["/placeholder.svg?height=300&width=300"],
-    featured: false,
-    specifications: {
-      material: "6061-T6 Aluminum",
-      finish: "Raw or anodized (optional)",
-      design: "Individual runner",
-      warranty: "1 Year",
-    },
-    compatibleVehicles: ["Custom application - contact for fitment details"],
-    createdAt: "2023-11-05",
-  },
-]
+export const mockProducts = []
 
 // Mock Orders
 export const mockOrders = [
@@ -202,13 +101,10 @@ export const mockCustomers = [
 
 // Product Categories
 export const productCategories = [
-  "Exhaust Systems",
+  "Fabrication",
+  "Performance",
+  "Protection",
   "4WD Accessories",
-  "Safety Equipment",
-  "Performance Parts",
-  "Engine Components",
-  "Chassis Components",
-  "Forced Induction",
-  "4WD Protection",
+  "Custom Work"
 ]
 

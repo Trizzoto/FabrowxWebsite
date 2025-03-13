@@ -1,29 +1,38 @@
-import type { Metadata } from "next"
+import { Metadata } from "next"
+import { getProducts } from "@/lib/api"
 import ProductGrid from "@/components/shop/product-grid"
 import ProductFilters from "@/components/shop/product-filters"
-import { getProducts } from "@/lib/api"
 
 export const metadata: Metadata = {
-  title: "Shop - Elite FabWorx",
-  description: "Browse our selection of custom-fabricated performance parts for your vehicle",
+  title: "Shop | Elite Fabworx",
+  description: "Browse our selection of high-quality automotive products and services.",
 }
 
-export default async function ShopPage({
-  searchParams,
-}: {
-  searchParams: { category?: string; sort?: string }
-}) {
+interface ShopPageProps {
+  searchParams: {
+    category?: string
+    sort?: string
+  }
+}
+
+export default async function ShopPage({ searchParams }: ShopPageProps) {
   const products = await getProducts(searchParams)
 
   return (
-    <div className="container px-4 md:px-6 py-24 mt-16">
-      <h1 className="text-3xl md:text-4xl font-bold mb-8 text-center">
-        Shop <span className="text-blue-500">Products</span>
-      </h1>
-
-      <div className="grid md:grid-cols-[240px_1fr] gap-8">
-        <ProductFilters />
-        <ProductGrid products={products} />
+    <div className="container py-10">
+      <div className="flex flex-col md:flex-row gap-8">
+        <aside className="w-full md:w-64 flex-shrink-0">
+          <ProductFilters />
+        </aside>
+        <main className="flex-1">
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold mb-2">Our Products</h1>
+            <p className="text-zinc-400">
+              Browse our selection of high-quality automotive products and services.
+            </p>
+          </div>
+          <ProductGrid products={products} />
+        </main>
       </div>
     </div>
   )
