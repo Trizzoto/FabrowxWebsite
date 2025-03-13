@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
-import { v2 as cloudinary } from 'cloudinary';
+import * as cloudinary from 'cloudinary';
 
-cloudinary.config({
+// Configure Cloudinary
+cloudinary.v2.config({
   cloud_name: 'dz8iqfdvf',
   api_key: '533469477878659',
   api_secret: 'BUbjVnSyBZJ0RD_xiKV5Fsn3KZc'
@@ -26,7 +27,7 @@ export async function POST(request: Request) {
 
     // Upload to Cloudinary with folder structure
     const result = await new Promise((resolve, reject) => {
-      cloudinary.uploader.upload_stream(
+      cloudinary.v2.uploader.upload_stream(
         {
           resource_type: 'auto',
           folder: `elite-fabworx/${section}`,
