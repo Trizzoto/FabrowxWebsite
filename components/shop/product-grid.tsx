@@ -10,7 +10,7 @@ interface ProductGridProps {
 
 export default function ProductGrid({ products }: ProductGridProps) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-6">
       {products.map((product) => (
         <Link
           key={product.id}
@@ -27,15 +27,15 @@ export default function ProductGrid({ products }: ProductGridProps) {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </div>
-            <div className="p-4 flex flex-col flex-1">
-              <div className="mb-2">
-                <span className="text-sm text-orange-400 font-medium block mb-1">{product.category}</span>
-                <h3 className="font-semibold text-lg line-clamp-2 group-hover:text-orange-400 transition-colors duration-300 min-h-[56px]">
+            <div className="p-2 md:p-4 flex flex-col flex-1">
+              <div className="mb-1 md:mb-2">
+                <span className="text-xs md:text-sm text-orange-400 font-medium block mb-1">{product.category}</span>
+                <h3 className="font-semibold text-sm md:text-lg line-clamp-2 group-hover:text-orange-400 transition-colors duration-300 min-h-[40px] md:min-h-[56px]">
                   {product.name}
                 </h3>
               </div>
               <div className="mt-auto text-right">
-                <p className="text-xl font-bold text-orange-400">
+                <p className="text-base md:text-xl font-bold text-orange-400">
                   ${product.price.toFixed(2)}
                 </p>
               </div>
