@@ -7,14 +7,11 @@ import { Button } from "@/components/ui/button"
 import { ArrowLeft, Minus, Plus, ShoppingCart } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
+import { Product as ApiProduct } from "@/lib/api"
 
-interface Product {
-  id: string
-  name: string
-  description: string
-  price: number
-  category: string
-  images: string[]
+// Extended product interface that includes images array
+interface Product extends ApiProduct {
+  images?: string[]
 }
 
 interface ProductDetailProps {
@@ -39,9 +36,17 @@ export function ProductDetail({ product, id }: ProductDetailProps) {
     )
   }
 
+  // Create an images array from the single image if needed
+  const productImages = product.images || (product.image ? [product.image] : [])
+  
   const handleQuantityChange = (delta: number) => {
     setQuantity(prev => Math.max(1, prev + delta))
   }
+
+  // Convert price to number if it's a string
+  const price = typeof product.price === "number" 
+    ? product.price 
+    : parseFloat(product.price.replace(/[^0-9.-]+/g, ""))
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -58,9 +63,9 @@ export function ProductDetail({ product, id }: ProductDetailProps) {
         {/* Image Gallery */}
         <div className="space-y-4">
           <div className="relative aspect-square overflow-hidden rounded-lg bg-zinc-900">
-            {product.images && product.images.length > 0 && (
+            {productImages.length > 0 && (
               <Image
-                src={product.images[selectedImage]}
+                src={productImages[selectedImage]}
                 alt={product.name}
                 fill
                 className="object-cover"
@@ -70,9 +75,9 @@ export function ProductDetail({ product, id }: ProductDetailProps) {
           </div>
           
           {/* Thumbnails */}
-          {product.images && product.images.length > 1 && (
+          {productImages.length > 1 && (
             <div className="grid grid-cols-4 gap-2">
-              {product.images.map((image, index) => (
+              {productImages.map((image, index) => (
                 <button
                   key={image}
                   onClick={() => setSelectedImage(index)}
@@ -98,10 +103,10 @@ export function ProductDetail({ product, id }: ProductDetailProps) {
           <div>
             <h1 className="text-3xl font-bold mb-2">{product.name}</h1>
             <p className="text-2xl font-semibold text-orange-500">
-              ${product.price.toFixed(2)}
+              ${price.toFixed(2)}
             </p>
             <div className="mt-2 text-sm text-zinc-400">
-              or 4 interest-free payments of ${(product.price / 4).toFixed(2)} with
+              or 4 interest-free payments of ${(price / 4).toFixed(2)} with
               <span className="font-semibold ml-1">Afterpay</span>
             </div>
           </div>

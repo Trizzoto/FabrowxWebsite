@@ -110,31 +110,33 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
             className="max-w-3xl"
           >
             <div className="w-full text-center">
-              <div className="flex items-center justify-center gap-2 mb-4">
+              <div className="flex flex-col md:flex-row items-center justify-center gap-2 mb-4">
+                <h1 className="text-3xl sm:text-4xl md:text-7xl font-bold tracking-tight text-white order-1">
+                  <span className="text-orange-500 font-extrabold tracking-wider">ELITE</span>
+                  <span className="font-light tracking-widest ml-1 md:ml-2">FABWORX</span>
+                </h1>
                 <Image
                   src="/logo.png"
                   alt="Elite FabWorx Logo"
                   width={150}
                   height={150}
-                  className="rounded-full"
+                  className="rounded-full object-contain w-auto h-auto max-w-[150px] md:max-w-[225px] order-2 md:ml-4"
                   priority
+                  quality={100}
+                  unoptimized
                 />
-                <h1 className="text-4xl md:text-7xl font-bold tracking-tight text-white">
-                  <span className="text-orange-500 font-extrabold tracking-wider">ELITE</span>
-                  <span className="font-light tracking-widest ml-2">FABWORX</span>
-                </h1>
               </div>
-              <p className="text-lg md:text-2xl mb-8 text-zinc-300 mx-auto max-w-3xl font-light tracking-wide">
+              <p className="text-base sm:text-lg md:text-2xl mb-6 md:mb-8 text-zinc-300 mx-auto max-w-3xl font-light tracking-wide">
                 {settings.heroTagline || "Precision metal fabrication for performance vehicles and 4WDs"}
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button size="lg" className="bg-orange-600 hover:bg-orange-700 text-white" asChild>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <Button size="lg" className="bg-orange-600 hover:bg-orange-700 text-white px-4 sm:px-6 py-2 h-auto" asChild>
                   <Link href="/services">
                     Our Services
                     <ChevronRight className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>
-                <Button size="lg" variant="outline" className="border-orange-500 text-orange-400 hover:bg-orange-950/50" asChild>
+                <Button size="lg" variant="outline" className="border-orange-500 text-orange-400 hover:bg-orange-950/50 px-4 sm:px-6 py-2 h-auto" asChild>
                   <Link href="/catalog">
                     View Catalogue
                     <ChevronRight className="ml-2 h-4 w-4" />
@@ -158,7 +160,7 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
             {settings.services.map((service, index) => (
               <motion.div
                 key={index}
@@ -168,35 +170,35 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
                 viewport={{ once: true }}
               >
                 <Card className="bg-zinc-800 border-zinc-700 overflow-hidden h-full group hover:border-orange-500/50 transition-colors border-0">
-                  <div className="h-64 relative">
+                  <div className="h-48 md:h-64 relative">
                     <Image
                       src={service.image || "/placeholder.svg"}
                       alt={service.title}
                       fill
                       className="object-cover transition-transform duration-300 group-hover:scale-105"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
                       priority={index < 3}
                     />
                     <div className="absolute inset-0 bg-black/20 transition-transform duration-300 group-hover:scale-105"></div>
                   </div>
-                  <CardContent className="p-6">
-                    <div className="flex items-center mb-4">
-                      <div className="w-10 h-10 rounded-full bg-orange-500/20 flex items-center justify-center mr-4">
-                        {service.icon === 'Wrench' && <Wrench className="h-5 w-5 text-orange-400" />}
-                        {service.icon === 'Cog' && <Cog className="h-5 w-5 text-orange-400" />}
-                        {service.icon === 'Car' && <Car className="h-5 w-5 text-orange-400" />}
-                        {service.icon === 'Truck' && <Truck className="h-5 w-5 text-orange-400" />}
-                        {service.icon === 'Shield' && <Shield className="h-5 w-5 text-orange-400" />}
+                  <CardContent className="p-4 md:p-6">
+                    <div className="flex items-center mb-3 md:mb-4">
+                      <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-orange-500/20 flex items-center justify-center mr-3 md:mr-4">
+                        {service.icon === 'Wrench' && <Wrench className="h-4 w-4 md:h-5 md:w-5 text-orange-400" />}
+                        {service.icon === 'Cog' && <Cog className="h-4 w-4 md:h-5 md:w-5 text-orange-400" />}
+                        {service.icon === 'Car' && <Car className="h-4 w-4 md:h-5 md:w-5 text-orange-400" />}
+                        {service.icon === 'Truck' && <Truck className="h-4 w-4 md:h-5 md:w-5 text-orange-400" />}
+                        {service.icon === 'Shield' && <Shield className="h-4 w-4 md:h-5 md:w-5 text-orange-400" />}
                       </div>
-                      <h3 className="text-xl font-bold">{service.title}</h3>
+                      <h3 className="text-base md:text-xl font-bold line-clamp-1">{service.title}</h3>
                     </div>
-                    <p className="text-zinc-400 mb-4">{service.description}</p>
+                    <p className="text-zinc-400 mb-3 md:mb-4 text-sm md:text-base line-clamp-3">{service.description}</p>
                     <Link
                       href={`/services/${service.slug}`}
-                      className="text-orange-400 hover:text-orange-300 inline-flex items-center"
+                      className="text-orange-400 hover:text-orange-300 inline-flex items-center text-sm md:text-base"
                     >
                       Learn more
-                      <ChevronRight className="ml-1 h-4 w-4" />
+                      <ChevronRight className="ml-1 h-3 w-3 md:h-4 md:w-4" />
                     </Link>
                   </CardContent>
                 </Card>
@@ -230,7 +232,7 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
             {featuredProducts.map((product, index) => (
               <motion.div
                 key={product.id}
@@ -247,18 +249,19 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
                         alt={product.name}
                         fill
                         className="object-cover transition-transform duration-300 group-hover:scale-105"
+                        sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     </div>
-                    <div className="p-4 flex flex-col flex-1">
-                      <div className="mb-2">
-                        <span className="text-sm text-orange-400 font-medium block mb-1">{product.category}</span>
-                        <h3 className="font-semibold text-lg line-clamp-2 group-hover:text-orange-400 transition-colors duration-300 min-h-[56px]">
+                    <div className="p-3 md:p-4 flex flex-col flex-1">
+                      <div className="mb-1 md:mb-2">
+                        <span className="text-xs md:text-sm text-orange-400 font-medium block mb-1">{product.category}</span>
+                        <h3 className="font-semibold text-sm md:text-lg line-clamp-2 group-hover:text-orange-400 transition-colors duration-300 min-h-[40px] md:min-h-[56px]">
                           {product.name}
                         </h3>
                       </div>
                       <div className="mt-auto text-right">
-                        <p className="text-xl font-bold text-orange-400">
+                        <p className="text-base md:text-xl font-bold text-orange-400">
                           ${product.price.toFixed(2)}
                         </p>
                       </div>
@@ -413,13 +416,13 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-20 bg-zinc-900">
+      <section className="py-16 md:py-20 bg-zinc-900">
         <div className="container px-4 md:px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+          <div className="text-center mb-10 md:mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-3 md:mb-4">
               Client <span className="text-orange-500">Testimonials</span>
             </h2>
-            <p className="text-zinc-400 max-w-2xl mx-auto">
+            <p className="text-zinc-400 max-w-2xl mx-auto text-sm md:text-base">
               Read our latest reviews from Facebook
             </p>
           </div>
@@ -607,7 +610,7 @@ function TestimonialSlider() {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
       {testimonials.map((testimonial, index) => (
         <motion.div
           key={index}
@@ -617,9 +620,9 @@ function TestimonialSlider() {
           viewport={{ once: true }}
         >
           <Card className="bg-zinc-800 border-zinc-700 h-full">
-            <CardContent className="p-6">
+            <CardContent className="p-3 md:p-6">
               <div className="flex flex-col items-center">
-                <div className="w-16 h-16 rounded-full overflow-hidden mb-4">
+                <div className="w-12 h-12 md:w-16 md:h-16 rounded-full overflow-hidden mb-2 md:mb-4">
                   <Image
                     src={testimonial.avatar || "/placeholder-avatar.png"}
                     alt={testimonial.name}
@@ -629,17 +632,17 @@ function TestimonialSlider() {
                   />
                 </div>
                 <div className="text-center">
-                  <div className="flex items-center justify-center mb-2">
+                  <div className="flex items-center justify-center mb-1 md:mb-2">
                     {[...Array(5)].map((_, i) => (
                       <Star
                         key={i}
-                        className="h-4 w-4 text-orange-400 fill-orange-400"
+                        className="h-3 w-3 md:h-4 md:w-4 text-orange-400 fill-orange-400"
                       />
                     ))}
                   </div>
-                  <p className="text-zinc-300 italic mb-4">"{testimonial.content}"</p>
-                  <div className="font-semibold text-white">{testimonial.name}</div>
-                  <div className="text-sm text-zinc-400">{testimonial.vehicle}</div>
+                  <p className="text-zinc-300 italic mb-2 md:mb-4 text-xs md:text-base line-clamp-4 md:line-clamp-none">"{testimonial.content}"</p>
+                  <div className="font-semibold text-white text-sm md:text-base">{testimonial.name}</div>
+                  <div className="text-xs md:text-sm text-zinc-400">{testimonial.role}</div>
                 </div>
               </div>
             </CardContent>

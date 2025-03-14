@@ -26,5 +26,5 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 export default async function ProductPage({ params }: ProductPageProps) {
   const product = await getProductById(params.id)
   
-  return <ProductDetail product={product} id={params.id} />
+  return <ProductDetail product={product || null} id={params.id} />
 } 
