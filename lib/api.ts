@@ -11,6 +11,17 @@ export interface Product {
   compatibleVehicles?: string[]
 }
 
+export async function getProductBySlug(slug: string): Promise<Product | undefined> {
+  try {
+    const response = await fetch(`/api/products/${slug}`)
+    if (!response.ok) return undefined
+    return await response.json()
+  } catch (error) {
+    console.error('Error fetching product by slug:', error)
+    return undefined
+  }
+}
+
 // Mock product data
 const products: Product[] = []
 
@@ -84,15 +95,4 @@ export async function getProductById(id: string): Promise<Product | undefined> {
 
 export function getProductsByCategory(category: string): Product[] {
   return products.filter(product => product.category === category)
-}
-
-export async function getProductBySlug(slug: string): Promise<Product | undefined> {
-  try {
-    const response = await fetch(`/api/products/${slug}`)
-    if (!response.ok) return undefined
-    return await response.json()
-  } catch (error) {
-    console.error('Error fetching product by slug:', error)
-    return undefined
-  }
 } 

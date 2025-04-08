@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
-import { getProductBySlug, getFeaturedProducts } from "@/lib/api"
+import { getProductBySlug, getFeaturedProducts, type Product } from "@/lib/api"
 import AddToCartButton from "@/components/shop/add-to-cart-button"
 import ProductGallery from "@/components/shop/product-gallery"
 import RelatedProducts from "@/components/shop/related-products"
