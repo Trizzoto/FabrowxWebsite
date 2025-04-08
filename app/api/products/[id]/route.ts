@@ -16,6 +16,11 @@ async function readProducts(): Promise<Product[]> {
   }
 }
 
+// Helper function to write products to file
+async function writeProducts(products: Product[]): Promise<void> {
+  await fs.writeFile(dataFilePath, JSON.stringify(products, null, 2))
+}
+
 export async function GET(
   request: Request,
   { params }: { params: { id: string } }
@@ -32,5 +37,83 @@ export async function GET(
   } catch (error) {
     console.error("[PRODUCT_GET]", error)
     return new NextResponse("Internal error", { status: 500 })
+  }
+}
+
+export async function PUT(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const updatedProduct = await request.json()
+    
+    if (!updatedProduct || !updatedProduct.id) {
+      return NextResponse.json(
+        { error: 'Invalid product data' },
+        { status: 400 }
+      )
+    }
+
+    // Read existing products
+    const products = await readProducts()
+    
+    // Find the index of the product to update
+    const productIndex = products.findIndex(p => p.id === params.id)
+    
+    if (productIndex === -1) {
+      return NextResponse.json(
+        { error: 'Product not found' },
+        { status: 404 }
+      )
+    }
+    
+    // Update the product
+    products[productIndex] = {
+      ...products[productIndex],
+      ...updatedProduct,
+      id: params.id // Ensure ID doesn't change
+    }
+    
+    // Save updated products
+    await writeProducts(products)
+    
+    return NextResponse.json({ success: true, product: products[productIndex] })
+  } catch (error) {
+    console.error("[PRODUCT_PUT]", error)
+    return NextResponse.json(
+      { error: 'Failed to update product' },
+      { status: 500 }
+    )
+  }
+}
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    // Read existing products
+    const products = await readProducts()
+    
+    // Filter out the product to delete
+    const filteredProducts = products.filter(p => p.id !== params.id)
+    
+    if (filteredProducts.length === products.length) {
+      return NextResponse.json(
+        { error: 'Product not found' },
+        { status: 404 }
+      )
+    }
+    
+    // Save filtered products
+    await writeProducts(filteredProducts)
+    
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    console.error("[PRODUCT_DELETE]", error)
+    return NextResponse.json(
+      { error: 'Failed to delete product' },
+      { status: 500 }
+    )
   }
 } 

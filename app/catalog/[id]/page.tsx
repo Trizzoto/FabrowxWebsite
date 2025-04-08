@@ -7,18 +7,27 @@ import { ArrowLeft, Minus, Plus, ShoppingCart, ChevronRight } from "lucide-react
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
-import { Product } from "@/types"
+import { Product, ProductVariant, ProductOption } from "@/types"
+import { Badge } from '@/components/ui/badge'
+import { Separator } from '@/components/ui/separator'
 
-export default function ProductPage({ params }: { params: { id: string } }) {
+interface ProductPageProps {
+  params: {
+    id: string
+  }
+}
+
+export default function ProductPage({ params }: ProductPageProps) {
   const router = useRouter()
   const [product, setProduct] = useState<Product | null>(null)
   const [loading, setLoading] = useState(true)
   const [selectedImage, setSelectedImage] = useState(0)
   const [quantity, setQuantity] = useState(1)
-  const [selectedVariant, setSelectedVariant] = useState<number>(0)
+  const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({})
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null)
 
   useEffect(() => {
-    async function fetchProduct() {
+    const fetchProduct = async () => {
       try {
         const response = await fetch(`/api/products/${params.id}`)
         if (!response.ok) {
@@ -26,6 +35,17 @@ export default function ProductPage({ params }: { params: { id: string } }) {
         }
         const data = await response.json()
         setProduct(data)
+        
+        // Initialize selected options with first value of each option
+        if (data.options) {
+          const initialOptions: Record<string, string> = {}
+          data.options.forEach((option: ProductOption) => {
+            if (option.values.length > 0) {
+              initialOptions[option.name] = option.values[0]
+            }
+          })
+          setSelectedOptions(initialOptions)
+        }
       } catch (error) {
         console.error('Error fetching product:', error)
       } finally {
@@ -35,6 +55,30 @@ export default function ProductPage({ params }: { params: { id: string } }) {
 
     fetchProduct()
   }, [params.id])
+
+  useEffect(() => {
+    if (product?.variants && Object.keys(selectedOptions).length > 0) {
+      // Find the variant that matches all selected options
+      const variant = product.variants.find((v) => {
+        return product.options?.every((opt, index) => {
+          const optionKey = `option${index + 1}` as keyof ProductVariant
+          return v[optionKey] === selectedOptions[opt.name]
+        })
+      })
+      setSelectedVariant(variant || null)
+    }
+  }, [selectedOptions, product])
+
+  const handleQuantityChange = (delta: number) => {
+    setQuantity(prev => Math.max(1, prev + delta))
+  }
+
+  const handleOptionSelect = (optionName: string, value: string) => {
+    setSelectedOptions((prev) => ({
+      ...prev,
+      [optionName]: value,
+    }))
+  }
 
   if (loading) {
     return (
@@ -60,13 +104,8 @@ export default function ProductPage({ params }: { params: { id: string } }) {
     )
   }
 
-  const handleQuantityChange = (delta: number) => {
-    setQuantity(prev => Math.max(1, prev + delta))
-  }
-
-  const currentVariant = product.variants?.[selectedVariant]
-  const price = currentVariant?.price || product.price
-  const compareAtPrice = currentVariant?.compareAtPrice || product.originalPrice
+  const price = selectedVariant?.price || product.price
+  const compareAtPrice = selectedVariant?.compareAtPrice || product.originalPrice
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -147,28 +186,48 @@ export default function ProductPage({ params }: { params: { id: string } }) {
               </div>
             </div>
 
-            {/* Variants */}
-            {product.variants && product.variants.length > 0 && (
-              <div className="space-y-4">
-                <h3 className="font-medium">Options</h3>
-                <div className="grid grid-cols-2 gap-2">
-                  {product.variants.map((variant, index) => (
-                    <button
-                      key={variant.sku || index}
-                      onClick={() => setSelectedVariant(index)}
-                      className={cn(
-                        "px-4 py-2 rounded-lg border text-sm",
-                        selectedVariant === index
-                          ? "border-orange-500 bg-orange-500/10 text-orange-400"
-                          : "border-zinc-800 hover:border-orange-500/30"
-                      )}
-                    >
-                      {variant.option1}
-                      {variant.option2 && ` - ${variant.option2}`}
-                    </button>
-                  ))}
-                </div>
+            {/* Product Options */}
+            {product.options && product.options.length > 0 && product.options.some(opt => opt.name !== 'Title' && opt.values.some(v => v !== 'Default Title')) && (
+              <div className="space-y-6">
+                {product.options.map((option, optionIndex) => (
+                  option.name !== 'Title' && option.values.some(v => v !== 'Default Title') && (
+                    <div key={option.name} className="space-y-3">
+                      <h3 className="font-semibold text-lg">{option.name}</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {option.values.filter(value => value !== 'Default Title').map((value) => (
+                          <Button
+                            key={value}
+                            variant={selectedOptions[option.name] === value ? "default" : "outline"}
+                            onClick={() => handleOptionSelect(option.name, value)}
+                            className="min-w-[4rem]"
+                          >
+                            {value}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                  )
+                ))}
               </div>
+            )}
+
+            {selectedVariant && product.options && product.options.some(opt => opt.name !== 'Title' && opt.values.some(v => v !== 'Default Title')) && (
+              <Card className="p-4 space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">SKU: {selectedVariant.sku}</span>
+                  <span className="text-sm text-gray-600">
+                    Stock: {selectedVariant.inventory > 0 ? `${selectedVariant.inventory} available` : 'Out of stock'}
+                  </span>
+                </div>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-2xl font-bold">${selectedVariant.price.toFixed(2)}</span>
+                  {selectedVariant.compareAtPrice && (
+                    <span className="text-lg text-gray-500 line-through">
+                      ${selectedVariant.compareAtPrice.toFixed(2)}
+                    </span>
+                  )}
+                </div>
+              </Card>
             )}
 
             <div className="space-y-4">
@@ -201,9 +260,10 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                   size="lg" 
                   variant="outline"
                   className="border-orange-500/30 hover:bg-orange-500/10"
+                  disabled={!selectedVariant || selectedVariant.inventory === 0}
                 >
                   <ShoppingCart className="mr-2 h-4 w-4" />
-                  Add to Cart
+                  {selectedVariant?.inventory === 0 ? 'Out of Stock' : 'Add to Cart'}
                 </Button>
                 <Button 
                   size="lg"
@@ -229,15 +289,15 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                   <span className="text-zinc-400">Category</span>
                   <span className="font-medium">{product.category}</span>
                 </div>
-                {currentVariant && (
+                {selectedVariant && (
                   <>
                     <div className="flex justify-between py-2 border-b border-zinc-800">
                       <span className="text-zinc-400">SKU</span>
-                      <span className="font-medium">{currentVariant.sku}</span>
+                      <span className="font-medium">{selectedVariant.sku}</span>
                     </div>
                     <div className="flex justify-between py-2 border-b border-zinc-800">
                       <span className="text-zinc-400">Stock</span>
-                      <span className="font-medium">{currentVariant.inventory} units</span>
+                      <span className="font-medium">{selectedVariant.inventory} units</span>
                     </div>
                   </>
                 )}

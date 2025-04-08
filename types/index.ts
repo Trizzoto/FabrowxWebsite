@@ -2,16 +2,15 @@ export interface ProductVariant {
   sku: string
   price: number
   compareAtPrice?: number
-  option1: string
+  option1?: string
   option2?: string
   option3?: string
   inventory: number
 }
 
-export interface ProductOptions {
-  option1?: string
-  option2?: string
-  option3?: string
+export interface ProductOption {
+  name: string
+  values: string[]
 }
 
 export interface Product {
@@ -24,7 +23,13 @@ export interface Product {
   description: string
   images?: string[]
   variants?: ProductVariant[]
-  options?: ProductOptions
+  options?: ProductOption[]
+}
+
+export interface ProductOptions {
+  option1?: string
+  option2?: string
+  option3?: string
 }
 
 export interface Category {
@@ -33,9 +38,10 @@ export interface Category {
 }
 
 export interface GalleryImage {
+  id: string
   url: string
-  alt: string
-  description?: string
+  alt?: string
+  category?: string
 }
 
 export interface Testimonial {
@@ -44,4 +50,5 @@ export interface Testimonial {
   role?: string
   content: string
   rating: number
+  image?: string
 } 

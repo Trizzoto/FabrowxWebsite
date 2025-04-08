@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
-import { Product } from '@/types'
-import { promises as fs } from 'fs'
+import { Product, ProductOption, ProductVariant } from '@/types'
+import fs from 'fs'
 import path from 'path'
 
 const dataFilePath = path.join(process.cwd(), 'data', 'products.json')
@@ -8,20 +8,17 @@ const dataFilePath = path.join(process.cwd(), 'data', 'products.json')
 // Helper function to read products from file
 async function readProducts(): Promise<Product[]> {
   try {
-    await fs.access(dataFilePath)
-    const data = await fs.readFile(dataFilePath, 'utf-8')
+    const data = fs.readFileSync(dataFilePath, 'utf-8')
     return JSON.parse(data)
   } catch (error) {
-    // If file doesn't exist or is invalid, return empty array
+    console.error('Error reading products:', error)
     return []
   }
 }
 
 // Helper function to write products to file
 async function writeProducts(products: Product[]): Promise<void> {
-  // Ensure the directory exists
-  await fs.mkdir(path.dirname(dataFilePath), { recursive: true })
-  await fs.writeFile(dataFilePath, JSON.stringify(products, null, 2))
+  fs.writeFileSync(dataFilePath, JSON.stringify(products, null, 2))
 }
 
 export async function GET() {
@@ -36,11 +33,14 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const newProducts = await request.json()
+    const data = await request.json()
     
-    if (!Array.isArray(newProducts)) {
+    // Handle both single product and array of products
+    const newProducts = Array.isArray(data) ? data : [data]
+    
+    if (newProducts.length === 0) {
       return NextResponse.json(
-        { error: 'Invalid products data. Expected an array.' },
+        { error: 'No product data provided' },
         { status: 400 }
       )
     }
@@ -73,6 +73,26 @@ export async function POST(request: Request) {
 
     // Add or update new products
     newProducts.forEach(product => {
+      // Ensure options and variants are properly formatted
+      if (product.options) {
+        product.options = product.options.map((option: ProductOption) => ({
+          name: option.name || '',
+          values: Array.isArray(option.values) ? option.values : []
+        }))
+      }
+      
+      if (product.variants) {
+        product.variants = product.variants.map((variant: ProductVariant) => ({
+          sku: variant.sku || '',
+          price: typeof variant.price === 'number' ? variant.price : product.price,
+          compareAtPrice: variant.compareAtPrice,
+          option1: variant.option1,
+          option2: variant.option2,
+          option3: variant.option3,
+          inventory: typeof variant.inventory === 'number' ? variant.inventory : 0
+        }))
+      }
+      
       productMap.set(product.id, product)
     })
 
@@ -82,7 +102,11 @@ export async function POST(request: Request) {
     // Save all products to file
     await writeProducts(mergedProducts)
 
-    return NextResponse.json({ success: true, products: mergedProducts })
+    // Return the newly created/updated product(s)
+    return NextResponse.json({ 
+      success: true, 
+      products: Array.isArray(data) ? mergedProducts : mergedProducts.find(p => p.id === data.id) 
+    })
   } catch (error) {
     console.error('Error updating products:', error)
     return NextResponse.json(

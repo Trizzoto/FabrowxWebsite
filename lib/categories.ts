@@ -1,7 +1,11 @@
+import { ChevronRight } from "lucide-react"
+import React from 'react'
+
 export interface CategoryLevel {
   name: string
   fullPath: string
   children: Map<string, CategoryLevel>
+  count?: number
 }
 
 export function buildCategoryTree(categories: string[]): Map<string, CategoryLevel> {
@@ -11,23 +15,15 @@ export function buildCategoryTree(categories: string[]): Map<string, CategoryLev
     return tree
   }
 
-  categories.forEach((category: string) => {
-    const parts = category.split(' > ')
-    let currentMap = tree
-    let currentPath = ''
+  // Sort categories alphabetically
+  const sortedCategories = [...categories].sort((a, b) => a.localeCompare(b))
 
-    parts.forEach((part: string, index: number) => {
-      currentPath = currentPath ? `${currentPath} > ${part}` : part
-      if (!currentMap.has(part)) {
-        currentMap.set(part, {
-          name: part,
-          fullPath: currentPath,
-          children: new Map()
-        })
-      }
-      if (index < parts.length - 1) {
-        currentMap = currentMap.get(part)!.children
-      }
+  // Create a flat structure
+  sortedCategories.forEach((category: string) => {
+    tree.set(category, {
+      name: category,
+      fullPath: category,
+      children: new Map(),
     })
   })
 
@@ -47,10 +43,8 @@ export function renderCategoryLevel(
   }
 
   return (
-    <div className={`
-      ${level === 0 ? '' : 'ml-4 border-l border-zinc-800/50 mt-1'}
-    `}>
-      {Array.from(categories.entries()).map(([key, category]) => (
+    <div className="space-y-1">
+      {Array.from(categories.entries()).map(([key, category]: [string, CategoryLevel]) => (
         <div 
           key={category.fullPath}
           className="relative"
@@ -63,39 +57,17 @@ export function renderCategoryLevel(
               cursor-pointer
               transition-all
               duration-200
-              ${selectedCategory === category.fullPath ? 'text-orange-400' : 'text-white'}
-              ${level === 0 ? 'border-b border-zinc-800/50 last:border-none' : ''}
+              rounded-lg
+              ${selectedCategory === category.fullPath ? 'bg-orange-500/20 text-orange-400 font-medium' : 'text-white hover:bg-zinc-800/50'} 
+              border border-zinc-800/50 hover:border-orange-500/30
             `}
             onClick={() => handleCategoryClick(category.fullPath)}
           >
-            <div className="flex items-center gap-2">
-              {category.children.size > 0 && (
-                <ChevronRight 
-                  className={`
-                    h-4 w-4 
-                    text-zinc-400 
-                    transition-transform 
-                    duration-200
-                    ${expandedCategories.has(category.fullPath) ? 'rotate-90' : ''}
-                  `}
-                  onClick={(e) => toggleCategory(category.fullPath, e)}
-                />
-              )}
-              <span className="select-none">{category.name}</span>
-            </div>
+            <span className="select-none">{category.name}</span>
+            {category.count !== undefined && (
+              <span className="text-sm text-zinc-500">{category.count}</span>
+            )}
           </div>
-          {category.children.size > 0 && expandedCategories.has(category.fullPath) && (
-            <div className="overflow-hidden">
-              {renderCategoryLevel(
-                category.children,
-                selectedCategory,
-                expandedCategories,
-                handleCategoryClick,
-                toggleCategory,
-                level + 1
-              )}
-            </div>
-          )}
         </div>
       ))}
     </div>

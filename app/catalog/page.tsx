@@ -24,44 +24,41 @@ export default function CatalogPage() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch('/api/products')
-        if (!response.ok) throw new Error('Failed to fetch products')
-        const data = await response.json()
-        setProducts(data)
-        setFilteredProducts(data)
+        const [productsResponse, categoriesResponse, settingsResponse] = await Promise.all([
+          fetch('/api/products'),
+          fetch('/api/categories'),
+          fetch('/api/settings')
+        ])
+        
+        if (!productsResponse.ok || !categoriesResponse.ok || !settingsResponse.ok) {
+          throw new Error('Failed to fetch data')
+        }
 
-        // Extract unique categories from products and sort them alphabetically
-        const categories = Array.from(
-          new Set(
-            (data as Product[])
-              .map(product => product.category)
-              .filter((category): category is string => typeof category === 'string')
-              .sort((a: string, b: string) => a.localeCompare(b))
-          )
-        )
-        setCategoryTree(buildCategoryTree(categories))
+        const productsData = await productsResponse.json()
+        const categoriesData = await categoriesResponse.json() as string[]
+        const settingsData = await settingsResponse.json()
+        
+        setProducts(productsData)
+        setFilteredProducts(productsData)
+        setSettings(settingsData)
+        
+        // Build category tree with counts
+        const tree = buildCategoryTree(categoriesData)
+        // Add counts to categories
+        tree.forEach((category, categoryName) => {
+          category.count = productsData.filter((p: Product) => p.category === categoryName).length
+        })
+        setCategoryTree(tree)
       } catch (error) {
-        console.error('Error fetching products:', error)
+        console.error('Error fetching data:', error)
       } finally {
         setIsLoading(false)
       }
     }
 
-    const fetchSettings = async () => {
-      try {
-        const response = await fetch('/api/settings')
-        if (!response.ok) throw new Error('Failed to fetch settings')
-        const data = await response.json()
-        setSettings(data)
-      } catch (error) {
-        console.error('Error fetching settings:', error)
-      }
-    }
-
-    fetchProducts()
-    fetchSettings()
+    fetchData()
   }, [])
 
   // Filter products whenever filters change
@@ -69,9 +66,7 @@ export default function CatalogPage() {
     let filtered = [...products]
 
     if (selectedCategory !== "all") {
-      filtered = filtered.filter(product => {
-        return product.category.startsWith(selectedCategory)
-      })
+      filtered = filtered.filter(product => product.category === selectedCategory)
     }
 
     if (searchQuery) {
@@ -188,15 +183,24 @@ export default function CatalogPage() {
                   <span>All Products</span>
                   <span className="text-sm text-zinc-500">{products.length}</span>
                 </div>
-                {renderCategoryLevel({
-                  categories: categoryTree,
-                  selectedCategory,
-                  expandedCategories,
-                  handleCategoryClick,
-                  toggleCategory,
-                  level: 0,
-                  products // Pass products to count items in each category
-                })}
+                {Array.from(categoryTree.entries()).map(([categoryName, category]) => (
+                  <div 
+                    key={categoryName}
+                    className={`
+                      px-4 py-2 
+                      rounded-lg 
+                      cursor-pointer 
+                      ${selectedCategory === categoryName ? 'bg-orange-500/20 text-orange-400 font-medium' : 'text-white hover:bg-zinc-800/50'} 
+                      transition-colors
+                      border border-zinc-800/50 hover:border-orange-500/30
+                      flex items-center justify-between
+                    `}
+                    onClick={() => handleCategoryClick(categoryName)}
+                  >
+                    <span className="select-none">{category.name}</span>
+                    <span className="text-sm text-zinc-500">{category.count}</span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
