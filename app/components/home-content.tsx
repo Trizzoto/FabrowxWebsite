@@ -140,57 +140,37 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
             priority
           />
         </motion.div>
-        <div className="container relative z-20 h-full flex flex-col justify-center items-start px-4 md:px-6">
+        <div className="container relative z-20 h-full flex flex-col justify-center items-center px-4 md:px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="w-full"
+            className="w-full max-w-5xl mx-auto"
           >
-            <div className="relative w-full">
-              {/* Content with centered alignment */}
-              <div className="w-full text-center max-w-3xl mx-auto">
-                <div className="relative mb-4">
-                  <h1 className="text-3xl sm:text-4xl md:text-7xl font-bold tracking-tight text-white relative">
-                    <span className="text-orange-500 font-extrabold tracking-wider">ELITE</span>
-                    <span className="font-light tracking-widest ml-1 md:ml-2">FABWORX</span>
-                    
-                    {/* Logo positioned absolutely to align with both parts of the title */}
-                    <div className="absolute right-[-70px] sm:right-[-90px] md:right-[-130px] top-[50%] transform -translate-y-1/2 z-10">
-                      <div className="relative rounded-full inline-block">
-                        <Image
-                          src="/logo.png"
-                          alt="Elite FabWorx Logo"
-                          width={250}
-                          height={250}
-                          className="w-[64px] h-[64px] sm:w-[96px] sm:h-[96px] md:w-[140px] md:h-[140px] object-cover rounded-full"
-                          priority
-                          quality={100}
-                          unoptimized
-                        />
-                        <div className="absolute inset-0 rounded-full border-2 sm:border-3 md:border-4 border-orange-500 pointer-events-none"></div>
-                      </div>
-                    </div>
-                  </h1>
-                </div>
-                
-                <p className="text-base sm:text-lg md:text-2xl mb-6 md:mb-8 text-zinc-300 mx-auto max-w-2xl font-light tracking-wide">
-                  {settings.heroTagline || "Precision metal fabrication for performance vehicles and 4WDs"}
-                </p>
-                <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                  <Button size="lg" className="bg-orange-600 hover:bg-orange-700 text-white px-4 sm:px-6 py-2 h-auto" asChild>
-                    <Link href="/services">
-                      Our Services
-                      <ChevronRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </Button>
-                  <Button size="lg" variant="outline" className="border-orange-500 text-orange-400 hover:bg-orange-950/50 px-4 sm:px-6 py-2 h-auto" asChild>
-                    <Link href="/catalog">
-                      View Catalogue
-                      <ChevronRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </Button>
-                </div>
+            <div className="text-center mb-8">
+              <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold tracking-tight text-white mb-4">
+                <span className="text-orange-500 font-extrabold tracking-wider">ELITE</span>
+                <span className="font-light tracking-widest ml-1 md:ml-2">FABWORX</span>
+              </h1>
+              <p className="text-xl sm:text-2xl md:text-3xl text-orange-500 font-light tracking-wider mb-6">
+                CUSTOM METAL FABRICATION
+              </p>
+              <p className="text-base sm:text-lg md:text-xl mb-8 text-zinc-300 max-w-2xl mx-auto font-light tracking-wide">
+                {settings.heroTagline || "Precision metal fabrication for performance vehicles and 4WDs"}
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button size="lg" className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 h-auto text-base">
+                  <Link href="/services" className="flex items-center">
+                    Our Services
+                    <ChevronRight className="ml-2 h-5 w-5" />
+                  </Link>
+                </Button>
+                <Button size="lg" variant="outline" className="border-orange-500 text-orange-400 hover:bg-orange-950/50 px-6 py-3 h-auto text-base">
+                  <Link href="/catalog" className="flex items-center">
+                    View Catalogue
+                    <ChevronRight className="ml-2 h-5 w-5" />
+                  </Link>
+                </Button>
               </div>
             </div>
           </motion.div>
@@ -545,14 +525,9 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
                 </div>
               </div>
             </motion.div>
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
-            >
+            <div className="w-full max-w-2xl mx-auto">
               <ContactForm />
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>
@@ -660,7 +635,12 @@ function TestimonialSlider() {
         const response = await fetch('/api/testimonials')
         if (!response.ok) throw new Error('Failed to fetch testimonials')
         const data = await response.json()
-        setTestimonials(data)
+        // Ensure each testimonial has an id
+        const testimonialsWithIds = data.map((testimonial: Testimonial, index: number) => ({
+          ...testimonial,
+          id: testimonial.id || `temp-id-${index}`
+        }))
+        setTestimonials(testimonialsWithIds)
       } catch (err) {
         setError('Failed to load reviews')
         console.error('Error fetching testimonials:', err)
@@ -694,14 +674,15 @@ function TestimonialSlider() {
   }
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
+    <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8 relative">
       {testimonials.map((testimonial, index) => (
         <motion.div
-          key={testimonial.id}
+          key={`testimonial-${testimonial.id || index}`}
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: index * 0.1 }}
           viewport={{ once: true }}
+          className="relative"
         >
           <Card className="bg-zinc-800 border-zinc-700 h-full">
             <CardContent className="p-3 md:p-6">
@@ -709,7 +690,7 @@ function TestimonialSlider() {
                 <div className="w-12 h-12 md:w-16 md:h-16 rounded-full overflow-hidden mb-2 md:mb-4 bg-zinc-700 border-2 border-orange-500/20">
                   <div className="w-full h-full flex items-center justify-center text-orange-400">
                     <svg
-                      key={`${testimonial.id}-avatar`}
+                      key={`avatar-${testimonial.id || index}`}
                       className="w-8 h-8 md:w-10 md:h-10"
                       fill="currentColor"
                       viewBox="0 0 24 24"
@@ -722,7 +703,7 @@ function TestimonialSlider() {
                   <div className="flex items-center justify-center mb-1 md:mb-2">
                     {Array.from({ length: 5 }, (_, i) => (
                       <Star
-                        key={`${testimonial.id}-star-${i}`}
+                        key={`star-${testimonial.id || index}-${i}`}
                         className="h-3 w-3 md:h-4 md:w-4 text-orange-400 fill-orange-400"
                       />
                     ))}
