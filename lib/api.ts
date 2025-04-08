@@ -60,9 +60,23 @@ export async function getProducts(searchParams?: { category?: string; sort?: str
           products.sort((a: Product, b: Product) => a.name.localeCompare(b.name))
           break
         default:
-          // Featured sorting (default) - no change to order
+          // Default sorting - by category, then by name within each category
+          products.sort((a: Product, b: Product) => {
+            // First sort by category
+            const categoryCompare = a.category.localeCompare(b.category)
+            if (categoryCompare !== 0) return categoryCompare
+            // If categories are the same, sort by name
+            return a.name.localeCompare(b.name)
+          })
           break
       }
+    } else {
+      // If no sort parameter is provided, use the default category + name sorting
+      products.sort((a: Product, b: Product) => {
+        const categoryCompare = a.category.localeCompare(b.category)
+        if (categoryCompare !== 0) return categoryCompare
+        return a.name.localeCompare(b.name)
+      })
     }
 
     return products
