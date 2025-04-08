@@ -11,7 +11,7 @@ import { Product as ApiProduct } from "@/lib/api"
 
 // Extended product interface that includes images array
 interface Product extends ApiProduct {
-  images?: string[]
+  // images is already defined in ApiProduct
 }
 
 interface ProductDetailProps {
@@ -37,7 +37,7 @@ export function ProductDetail({ product, id }: ProductDetailProps) {
   }
 
   // Create an images array from the single image if needed
-  const productImages = product.images || (product.image ? [product.image] : [])
+  const productImages = product.images || []
   
   const handleQuantityChange = (delta: number) => {
     setQuantity(prev => Math.max(1, prev + delta))

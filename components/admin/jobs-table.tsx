@@ -14,7 +14,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { useSocket } from "@/contexts/socket-context"
 
 interface Job {
   id: number
@@ -28,7 +27,6 @@ export function JobsTable() {
   const [jobs, setJobs] = useState<Job[]>([])
   const [loading, setLoading] = useState(true)
   const { toast } = useToast()
-  const { socket } = useSocket()
 
   useEffect(() => {
     // For demo purposes, simulate loading jobs
@@ -53,27 +51,7 @@ export function JobsTable() {
       setJobs(demoJobs)
       setLoading(false)
     }, 1000)
-
-    // Join admin room for real-time updates
-    if (socket) {
-      socket.emit("joinAdmin")
-
-      socket.on("jobStatusUpdate", ({ jobId, status }) => {
-        setJobs((prev) => prev.map((job) => (job.id === jobId ? { ...job, status: status as any } : job)))
-
-        toast({
-          title: "Job Updated",
-          description: `Job #${jobId} status changed to ${status}`,
-        })
-      })
-    }
-
-    return () => {
-      if (socket) {
-        socket.off("jobStatusUpdate")
-      }
-    }
-  }, [toast, socket])
+  }, [toast])
 
   const updateJobStatus = (jobId: number, newStatus: string) => {
     setJobs(jobs.map(job => 

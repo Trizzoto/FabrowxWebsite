@@ -27,6 +27,11 @@ interface Settings {
     location: string
   }
   services: Service[]
+  socialLinks?: {
+    facebook?: string
+    youtube?: string
+    instagram?: string
+  }
 }
 
 async function getSettings(): Promise<Settings> {

@@ -26,6 +26,39 @@ async function writeGalleryData(data: GalleryImage[]) {
   await fs.writeFile(dataFilePath, JSON.stringify(data, null, 2))
 }
 
+// PATCH /api/gallery/[id] - Update a gallery image
+export async function PATCH(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const body = await request.json()
+    const { caption, category } = body
+
+    const images = await readGalleryData()
+    const imageIndex = images.findIndex(img => img.id === params.id)
+
+    if (imageIndex === -1) {
+      return NextResponse.json({ error: 'Image not found' }, { status: 404 })
+    }
+
+    // Update only the fields that are provided
+    const updatedImage = {
+      ...images[imageIndex],
+      ...(caption !== undefined && { caption }),
+      ...(category !== undefined && { category })
+    }
+
+    images[imageIndex] = updatedImage
+    await writeGalleryData(images)
+
+    return NextResponse.json(updatedImage)
+  } catch (error) {
+    console.error('Error updating image:', error)
+    return NextResponse.json({ error: 'Failed to update image' }, { status: 500 })
+  }
+}
+
 // DELETE /api/gallery/[id] - Delete a gallery image
 export async function DELETE(
   request: Request,

@@ -4,8 +4,8 @@
   "aboutText": "With over a decade of experience in metal fabrication, we specialize in creating custom solutions for performance vehicles and 4WDs. Our team of skilled craftsmen combines traditional techniques with modern technology to deliver exceptional results.",
   "aboutImage": "https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741865726/elite-fabworx/about/pt5ptshhdaik5gw5oda4.jpg",
   "contactInfo": {
-    "phone": "+61 123 456 789",
-    "email": "info@elitefabworx.com.au",
+    "phone": "0499 638 046",
+    "email": "Elitefabworx@outlook.com",
     "location": "Adelaide, Australia"
   },
   "services": [
@@ -51,5 +51,78 @@
       "icon": "Truck",
       "slug": "prototyping"
     }
-  ]
+  ],
+  "theme": {
+    "primary": "orange-500",
+    "secondary": "zinc-800",
+    "accent": "orange-400",
+    "background": "black",
+    "text": "white"
+  },
+  "galleryImages": [
+    {
+      "id": "gallery-1",
+      "url": "https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741819492/elite-fabworx/service-1/tbypybcrwyihe5wxezsp.jpg",
+      "caption": "Custom Fabrication Project",
+      "category": "Custom Fabrication"
+    },
+    {
+      "id": "gallery-2",
+      "url": "https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741818971/elite-fabworx/service-2/lftf9v2h31iynhtg7ygm.jpg",
+      "caption": "Performance Vehicle Modifications",
+      "category": "Performance Upgrades"
+    },
+    {
+      "id": "gallery-3",
+      "url": "https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741819120/elite-fabworx/service-3/o4foeuvqxofrmcykqz7y.jpg",
+      "caption": "4WD Custom Build",
+      "category": "4WD Modifications"
+    },
+    {
+      "id": "gallery-4",
+      "url": "https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741784167/elite-fabworx/service-4/gnogoariquz6t2rmahkc.jpg",
+      "caption": "Custom Exhaust System Installation",
+      "category": "Exhaust Systems"
+    },
+    {
+      "id": "gallery-5",
+      "url": "https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741784065/elite-fabworx/service-5/soe5h9ayegtuffwakj3u.jpg",
+      "caption": "Race Car Roll Cage Installation",
+      "category": "Roll Cages"
+    },
+    {
+      "id": "gallery-6",
+      "url": "https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741784060/elite-fabworx/service-6/dmgofbnih4qztwkzndup.jpg",
+      "caption": "Prototype Design Implementation",
+      "category": "Prototyping"
+    }
+  ],
+  "testimonials": [
+    {
+      "id": "testimonial-1",
+      "name": "John Smith",
+      "role": "Car Enthusiast",
+      "content": "Elite FabWorx transformed my project car with their custom exhaust system. Exceptional craftsmanship and attention to detail!",
+      "rating": 5
+    },
+    {
+      "id": "testimonial-2",
+      "name": "Sarah Johnson",
+      "role": "Race Team Manager",
+      "content": "We've been working with Elite FabWorx for our safety equipment needs for years. Their roll cages are second to none.",
+      "rating": 5
+    },
+    {
+      "id": "testimonial-3",
+      "name": "Mike Davis",
+      "role": "Automotive Shop Owner",
+      "content": "As a shop owner, I appreciate Elite FabWorx's reliability and quality. Their custom solutions have helped us serve our customers better.",
+      "rating": 4
+    }
+  ],
+  "footerText": "© 2023 Elite FabWorx - Professional Metal Fabrication Services",
+  "socialLinks": {
+    "facebook": "https://www.facebook.com/ELITEFABWORX",
+    "instagram": "https://www.instagram.com/elite_fabworx/"
+  }
 }

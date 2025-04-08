@@ -38,13 +38,17 @@ export default async function ProductPage({ params }: ProductPageProps) {
   return (
     <div className="container px-4 md:px-6 py-24 mt-16">
       <div className="grid md:grid-cols-2 gap-8 lg:gap-16">
-        <ProductGallery images={product.images} name={product.name} />
+        <ProductGallery images={product.images || []} name={product.name} />
 
         <div>
           <h1 className="text-3xl font-bold mb-2">{product.name}</h1>
           <p className="text-zinc-400 mb-4">{product.category}</p>
 
-          <div className="text-2xl font-bold text-blue-500 mb-6">${product.price.toFixed(2)}</div>
+          <div className="text-2xl font-bold text-blue-500 mb-6">
+            ${typeof product.price === 'number' 
+              ? product.price.toFixed(2) 
+              : parseFloat(product.price.toString()).toFixed(2)}
+          </div>
 
           <div className="prose prose-invert max-w-none mb-8">
             <p>{product.description}</p>
@@ -76,7 +80,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-2">
               <span className="text-zinc-400">Availability:</span>
-              {product.stockCount > 0 ? (
+              {(product.stockCount ?? 0) > 0 ? (
                 <span className="text-green-500">In Stock ({product.stockCount} available)</span>
               ) : (
                 <span className="text-red-500">Out of Stock</span>
@@ -88,7 +92,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         </div>
       </div>
 
-      <RelatedProducts products={relatedProducts} currentProductId={product._id} />
+      <RelatedProducts products={relatedProducts} currentProductId={product._id || product.id} />
     </div>
   )
 }

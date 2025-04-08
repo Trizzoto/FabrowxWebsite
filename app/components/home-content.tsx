@@ -19,13 +19,13 @@ import {
   Facebook,
   Youtube,
   Star,
+  ArrowRight,
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { ParticleContainer } from "@/components/particle-container"
-import { Product, Testimonial } from "../data"
-import { products, productCategories, featuredProducts, testimonials } from "../data"
+import { Product } from "@/types"
 import { ContactForm } from "../contact/contact-form"
 
 interface Service {
@@ -43,6 +43,15 @@ interface GalleryImage {
   category: string
 }
 
+interface Testimonial {
+  id: string
+  name: string
+  role?: string
+  content: string
+  rating: number
+  avatar?: string
+}
+
 interface HomeContentProps {
   settings: {
     heroImage: string
@@ -55,6 +64,11 @@ interface HomeContentProps {
       location: string
     }
     services: Service[]
+    socialLinks?: {
+      facebook?: string
+      youtube?: string
+      instagram?: string
+    }
   }
   galleryImages: GalleryImage[]
 }
@@ -86,6 +100,30 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
     return () => clearInterval(intervalId)
   }, [galleryImages])
 
+  // Get random featured products that change on each page load
+  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchFeaturedProducts = async () => {
+      try {
+        const response = await fetch('/api/products')
+        if (!response.ok) throw new Error('Failed to fetch products')
+        const products = await response.json()
+        
+        // Shuffle all products and take 3 random ones
+        const shuffledProducts = [...products].sort(() => 0.5 - Math.random())
+        setFeaturedProducts(shuffledProducts.slice(0, 3))
+      } catch (error) {
+        console.error('Error fetching featured products:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchFeaturedProducts()
+  }, [])
+
   return (
     <div className="bg-black text-white">
       {/* Hero Section */}
@@ -107,41 +145,52 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="max-w-3xl"
+            className="w-full"
           >
-            <div className="w-full text-center">
-              <div className="flex flex-col md:flex-row items-center justify-center gap-2 mb-4">
-                <h1 className="text-3xl sm:text-4xl md:text-7xl font-bold tracking-tight text-white order-1">
-                  <span className="text-orange-500 font-extrabold tracking-wider">ELITE</span>
-                  <span className="font-light tracking-widest ml-1 md:ml-2">FABWORX</span>
-                </h1>
-                <Image
-                  src="/logo.png"
-                  alt="Elite FabWorx Logo"
-                  width={150}
-                  height={150}
-                  className="rounded-full object-contain w-auto h-auto max-w-[150px] md:max-w-[225px] order-2 md:ml-4"
-                  priority
-                  quality={100}
-                  unoptimized
-                />
-              </div>
-              <p className="text-base sm:text-lg md:text-2xl mb-6 md:mb-8 text-zinc-300 mx-auto max-w-3xl font-light tracking-wide">
-                {settings.heroTagline || "Precision metal fabrication for performance vehicles and 4WDs"}
-              </p>
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Button size="lg" className="bg-orange-600 hover:bg-orange-700 text-white px-4 sm:px-6 py-2 h-auto" asChild>
-                  <Link href="/services">
-                    Our Services
-                    <ChevronRight className="ml-2 h-4 w-4" />
-                  </Link>
-                </Button>
-                <Button size="lg" variant="outline" className="border-orange-500 text-orange-400 hover:bg-orange-950/50 px-4 sm:px-6 py-2 h-auto" asChild>
-                  <Link href="/catalog">
-                    View Catalogue
-                    <ChevronRight className="ml-2 h-4 w-4" />
-                  </Link>
-                </Button>
+            <div className="relative w-full">
+              {/* Content with centered alignment */}
+              <div className="w-full text-center max-w-3xl mx-auto">
+                <div className="relative mb-4">
+                  <h1 className="text-3xl sm:text-4xl md:text-7xl font-bold tracking-tight text-white relative">
+                    <span className="text-orange-500 font-extrabold tracking-wider">ELITE</span>
+                    <span className="font-light tracking-widest ml-1 md:ml-2">FABWORX</span>
+                    
+                    {/* Logo positioned absolutely to align with both parts of the title */}
+                    <div className="absolute right-[-70px] sm:right-[-90px] md:right-[-130px] top-[50%] transform -translate-y-1/2 z-10">
+                      <div className="relative rounded-full inline-block">
+                        <Image
+                          src="/logo.png"
+                          alt="Elite FabWorx Logo"
+                          width={250}
+                          height={250}
+                          className="w-[64px] h-[64px] sm:w-[96px] sm:h-[96px] md:w-[140px] md:h-[140px] object-cover rounded-full"
+                          priority
+                          quality={100}
+                          unoptimized
+                        />
+                        <div className="absolute inset-0 rounded-full border-2 sm:border-3 md:border-4 border-orange-500 pointer-events-none"></div>
+                      </div>
+                    </div>
+                  </h1>
+                </div>
+                
+                <p className="text-base sm:text-lg md:text-2xl mb-6 md:mb-8 text-zinc-300 mx-auto max-w-2xl font-light tracking-wide">
+                  {settings.heroTagline || "Precision metal fabrication for performance vehicles and 4WDs"}
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <Button size="lg" className="bg-orange-600 hover:bg-orange-700 text-white px-4 sm:px-6 py-2 h-auto" asChild>
+                    <Link href="/services">
+                      Our Services
+                      <ChevronRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                  <Button size="lg" variant="outline" className="border-orange-500 text-orange-400 hover:bg-orange-950/50 px-4 sm:px-6 py-2 h-auto" asChild>
+                    <Link href="/catalog">
+                      View Catalogue
+                      <ChevronRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                </div>
               </div>
             </div>
           </motion.div>
@@ -233,43 +282,62 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
-            {featuredProducts.map((product, index) => (
-              <motion.div
-                key={product.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
-              >
-                <Link href={`/catalog/${product.id}`} className="group transition-transform hover:-translate-y-1 duration-300">
-                  <Card className="overflow-hidden border-zinc-800 bg-zinc-900 hover:border-orange-500/50 transition-all duration-300 h-full flex flex-col">
-                    <div className="relative aspect-square">
-                      <Image
-                        src={product.image || "/placeholder.jpg"}
-                        alt={product.name}
-                        fill
-                        className="object-cover transition-transform duration-300 group-hover:scale-105"
-                        sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            {featuredProducts.length > 0 ? (
+              featuredProducts.map((product: Product, index: number) => (
+                <motion.div
+                  key={product.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="group relative"
+                >
+                  <Link href={`/catalog/${product.id}`}>
+                    <div className="aspect-square bg-zinc-800 rounded-lg overflow-hidden">
+                      {product.images && product.images[0] ? (
+                        <img
+                          src={product.images[0]}
+                          alt={product.name}
+                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-zinc-600">
+                          No Image
+                        </div>
+                      )}
                     </div>
-                    <div className="p-3 md:p-4 flex flex-col flex-1">
-                      <div className="mb-1 md:mb-2">
-                        <span className="text-xs md:text-sm text-orange-400 font-medium block mb-1">{product.category}</span>
-                        <h3 className="font-semibold text-sm md:text-lg line-clamp-2 group-hover:text-orange-400 transition-colors duration-300 min-h-[40px] md:min-h-[56px]">
-                          {product.name}
-                        </h3>
-                      </div>
-                      <div className="mt-auto text-right">
-                        <p className="text-base md:text-xl font-bold text-orange-400">
+                    <div className="mt-4">
+                      <h3 className="font-semibold text-lg group-hover:text-orange-500 transition-colors">
+                        {product.name}
+                      </h3>
+                      <p className="text-zinc-400 text-sm line-clamp-2 mt-1">
+                        {product.description}
+                      </p>
+                      <div className="mt-2">
+                        <span className="text-orange-500 font-semibold">
                           ${product.price.toFixed(2)}
-                        </p>
+                        </span>
+                        {product.originalPrice && (
+                          <span className="ml-2 text-sm text-zinc-500 line-through">
+                            ${product.originalPrice.toFixed(2)}
+                          </span>
+                        )}
                       </div>
                     </div>
-                  </Card>
+                  </Link>
+                </motion.div>
+              ))
+            ) : (
+              <div className="col-span-full text-center py-12">
+                <p className="text-zinc-400">No featured products available at the moment.</p>
+                <Link href="/catalog" className="mt-4 inline-block">
+                  <Button variant="outline">
+                    View All Products
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
                 </Link>
-              </motion.div>
-            ))}
+              </div>
+            )}
           </div>
 
           <div className="mt-12 text-center">
@@ -502,15 +570,21 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
                 Precision metal fabrication for performance vehicles and 4WDs. Quality craftsmanship and exceptional service.
               </p>
               <div className="flex space-x-4">
-                <Link href="#" className="text-zinc-400 hover:text-orange-500">
-                  <Instagram className="h-6 w-6" />
-                </Link>
-                <Link href="#" className="text-zinc-400 hover:text-orange-500">
-                  <Facebook className="h-6 w-6" />
-                </Link>
-                <Link href="#" className="text-zinc-400 hover:text-orange-500">
-                  <Youtube className="h-6 w-6" />
-                </Link>
+                {settings.socialLinks?.instagram && (
+                  <Link href={settings.socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-orange-500">
+                    <Instagram className="h-6 w-6" />
+                  </Link>
+                )}
+                {settings.socialLinks?.facebook && (
+                  <Link href={settings.socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-orange-500">
+                    <Facebook className="h-6 w-6" />
+                  </Link>
+                )}
+                {settings.socialLinks?.youtube && (
+                  <Link href={settings.socialLinks.youtube} target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-orange-500">
+                    <Youtube className="h-6 w-6" />
+                  </Link>
+                )}
               </div>
             </div>
             <div>
@@ -527,7 +601,7 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/products" className="text-zinc-400 hover:text-orange-500">
+                  <Link href="/catalog" className="text-zinc-400 hover:text-orange-500">
                     Products
                   </Link>
                 </li>
@@ -574,6 +648,11 @@ function TestimonialSlider() {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
     const fetchTestimonials = async () => {
@@ -590,8 +669,13 @@ function TestimonialSlider() {
       }
     }
 
-    fetchTestimonials()
-  }, [])
+    if (mounted) {
+      fetchTestimonials()
+    }
+  }, [mounted])
+
+  // Don't render anything until after hydration
+  if (!mounted) return null
 
   if (isLoading) {
     return (
@@ -613,7 +697,7 @@ function TestimonialSlider() {
     <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
       {testimonials.map((testimonial, index) => (
         <motion.div
-          key={index}
+          key={testimonial.id}
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: index * 0.1 }}
@@ -622,27 +706,32 @@ function TestimonialSlider() {
           <Card className="bg-zinc-800 border-zinc-700 h-full">
             <CardContent className="p-3 md:p-6">
               <div className="flex flex-col items-center">
-                <div className="w-12 h-12 md:w-16 md:h-16 rounded-full overflow-hidden mb-2 md:mb-4">
-                  <Image
-                    src={testimonial.avatar || "/placeholder-avatar.png"}
-                    alt={testimonial.name}
-                    width={64}
-                    height={64}
-                    className="object-cover"
-                  />
+                <div className="w-12 h-12 md:w-16 md:h-16 rounded-full overflow-hidden mb-2 md:mb-4 bg-zinc-700 border-2 border-orange-500/20">
+                  <div className="w-full h-full flex items-center justify-center text-orange-400">
+                    <svg
+                      key={`${testimonial.id}-avatar`}
+                      className="w-8 h-8 md:w-10 md:h-10"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" />
+                    </svg>
+                  </div>
                 </div>
                 <div className="text-center">
                   <div className="flex items-center justify-center mb-1 md:mb-2">
-                    {[...Array(5)].map((_, i) => (
+                    {Array.from({ length: 5 }, (_, i) => (
                       <Star
-                        key={i}
+                        key={`${testimonial.id}-star-${i}`}
                         className="h-3 w-3 md:h-4 md:w-4 text-orange-400 fill-orange-400"
                       />
                     ))}
                   </div>
                   <p className="text-zinc-300 italic mb-2 md:mb-4 text-xs md:text-base line-clamp-4 md:line-clamp-none">"{testimonial.content}"</p>
                   <div className="font-semibold text-white text-sm md:text-base">{testimonial.name}</div>
-                  <div className="text-xs md:text-sm text-zinc-400">{testimonial.role}</div>
+                  {testimonial.role && (
+                    <div className="text-xs md:text-sm text-zinc-400">{testimonial.role}</div>
+                  )}
                 </div>
               </div>
             </CardContent>
