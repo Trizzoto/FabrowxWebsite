@@ -142,6 +142,7 @@ export function ContactForm({ topics = defaultTopics }: ContactFormProps) {
                 <RadioGroupItem 
                   value="email" 
                   id="r-email"
+                  aria-label="Email contact method"
                   className="text-orange-500 border-orange-500 focus:ring-orange-500/20 focus-visible:ring-orange-500/20 focus-visible:ring-offset-0" 
                 />
                 <Label 
@@ -155,6 +156,7 @@ export function ContactForm({ topics = defaultTopics }: ContactFormProps) {
                 <RadioGroupItem 
                   value="phone" 
                   id="r-phone"
+                  aria-label="Phone contact method"
                   className="text-orange-500 border-orange-500 focus:ring-orange-500/20 focus-visible:ring-orange-500/20 focus-visible:ring-offset-0" 
                 />
                 <Label 
@@ -179,6 +181,7 @@ export function ContactForm({ topics = defaultTopics }: ContactFormProps) {
             >
               <SelectTrigger 
                 id="contact-topic" 
+                aria-label="Select a topic for your inquiry"
                 className="bg-zinc-900 border-zinc-700 text-white focus:border-orange-500 focus:ring-orange-500/20 focus-visible:ring-orange-500/20 focus-visible:ring-offset-0"
               >
                 <SelectValue placeholder="Select a topic" />

@@ -10,9 +10,9 @@ import { ArrowLeft, Filter, ChevronRight } from "lucide-react"
 import { Product } from "@/types"
 import { buildCategoryTree, CategoryLevel } from "@/lib/categories"
 
-const DEFAULT_HERO_IMAGE = "/hero-catalog.jpg"
+const DEFAULT_HERO_IMAGE = "/hero-catalogue.jpg"
 
-export default function CatalogPage() {
+export default function CataloguePage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [showMobileFilters, setShowMobileFilters] = useState(false)
   const [products, setProducts] = useState<Product[]>([])
@@ -136,7 +136,7 @@ export default function CatalogPage() {
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black z-10"></div>
         <Image
           src={settings?.heroImage ?? DEFAULT_HERO_IMAGE}
-          alt="Catalog header"
+          alt="Catalogue header"
           fill
           sizes="100vw"
           className="object-cover object-center"
@@ -145,25 +145,11 @@ export default function CatalogPage() {
         <div className="relative z-20 container h-full flex flex-col justify-center items-center text-center">
           <h1 className="text-4xl md:text-7xl font-bold mb-4">
             <span className="text-orange-500 font-extrabold tracking-wider">PRODUCT</span>
-            <span className="font-light tracking-widest ml-2">CATALOG</span>
+            <span className="font-light tracking-widest ml-2">CATALOGUE</span>
           </h1>
           <p className="text-lg md:text-xl text-zinc-300 max-w-2xl font-light tracking-wide">
             Browse our comprehensive range of high-performance parts and fabrication supplies
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-orange-700 hover:bg-orange-800 text-white px-6 py-3 h-auto text-base focus-visible:ring-orange-600">
-              <Link href="/services" className="flex items-center">
-                Our Services
-                <ChevronRight className="ml-2 h-5 w-5" />
-              </Link>
-            </Button>
-            <Button size="lg" variant="outline" className="border-orange-600 text-orange-300 hover:bg-orange-950/50 px-6 py-3 h-auto text-base focus-visible:ring-orange-600">
-              <Link href="/catalog" className="flex items-center">
-                View Catalogue
-                <ChevronRight className="ml-2 h-5 w-5" />
-              </Link>
-            </Button>
-          </div>
         </div>
       </div>
 
@@ -236,25 +222,27 @@ export default function CatalogPage() {
                     <h2 className="text-2xl font-bold mb-6 text-orange-400">{category.name}</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                       {categoryProducts.map((product) => (
-                        <Link key={product.id} href={`/catalog/${product.id}`} className="group">
+                        <Link key={product.id} href={`/catalogue/${product.id}`} className="group">
                           <Card className="bg-zinc-900/50 border-zinc-800 backdrop-blur-sm overflow-hidden hover:border-orange-500/50 transition-colors h-full">
-                            <div className="aspect-square relative bg-zinc-800">
+                            <div className="aspect-square relative bg-zinc-800 overflow-hidden">
                               {product.images && product.images[0] ? (
-                                <Image
-                                  src={product.images[0]}
-                                  alt={product.name}
-                                  fill
-                                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                                  className="object-cover transition-transform duration-300 group-hover:scale-105"
-                                  loading="lazy"
-                                  quality={75}
-                                />
+                                <>
+                                  <Image
+                                    src={product.images[0]}
+                                    alt={product.name}
+                                    fill
+                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                    loading="lazy"
+                                    quality={75}
+                                  />
+                                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:scale-105" />
+                                </>
                               ) : (
                                 <div className="absolute inset-0 flex items-center justify-center text-zinc-600">
                                   No Image
                                 </div>
                               )}
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                             </div>
                             <CardContent className="p-4">
                               <div className="mb-2">

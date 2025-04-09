@@ -28,7 +28,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <CartProvider>
-            {children}
+            <main id="main-content">
+              {children}
+            </main>
           </CartProvider>
         </ThemeProvider>
       </body>

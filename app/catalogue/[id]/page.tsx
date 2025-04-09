@@ -95,9 +95,9 @@ export default function ProductPage({ params }: ProductPageProps) {
       <div className="min-h-screen bg-black text-white">
         <div className="flex flex-col items-center justify-center min-h-[60vh]">
           <h1 className="text-2xl font-bold mb-4">Product not found</h1>
-          <Button onClick={() => router.push("/catalog")} variant="outline" className="border-orange-500/30 hover:bg-orange-500/10">
+          <Button onClick={() => router.push("/catalogue")} variant="outline" className="border-orange-500/30 hover:bg-orange-500/10">
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Catalog
+            Back to Catalogue
           </Button>
         </div>
       </div>
@@ -113,10 +113,10 @@ export default function ProductPage({ params }: ProductPageProps) {
         <Button
           variant="outline"
           className="mb-8 border-orange-500/30 hover:bg-orange-500/10"
-          onClick={() => router.push("/catalog")}
+          onClick={() => router.push("/catalogue")}
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Catalog
+          Back to Catalogue
         </Button>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -198,8 +198,13 @@ export default function ProductPage({ params }: ProductPageProps) {
                           <Button
                             key={value}
                             variant={selectedOptions[option.name] === value ? "default" : "outline"}
+                            className={cn(
+                              selectedOptions[option.name] === value
+                                ? "bg-orange-500 text-white hover:bg-orange-600"
+                                : "border-orange-500/30 text-orange-300 hover:bg-orange-500/10",
+                              "focus-visible:ring-orange-500"
+                            )}
                             onClick={() => handleOptionSelect(option.name, value)}
-                            className="min-w-[4rem]"
                           >
                             {value}
                           </Button>
@@ -211,98 +216,47 @@ export default function ProductPage({ params }: ProductPageProps) {
               </div>
             )}
 
-            {selectedVariant && product.options && product.options.some(opt => opt.name !== 'Title' && opt.values.some(v => v !== 'Default Title')) && (
-              <Card className="p-4 space-y-2">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">SKU: {selectedVariant.sku}</span>
-                  <span className="text-sm text-gray-600">
-                    Stock: {selectedVariant.inventory > 0 ? `${selectedVariant.inventory} available` : 'Out of stock'}
-                  </span>
-                </div>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-2xl font-bold">${selectedVariant.price.toFixed(2)}</span>
-                  {selectedVariant.compareAtPrice && (
-                    <span className="text-lg text-gray-500 line-through">
-                      ${selectedVariant.compareAtPrice.toFixed(2)}
-                    </span>
-                  )}
-                </div>
-              </Card>
-            )}
-
-            <div className="space-y-4">
-              <div className="flex items-center space-x-4">
-                <span className="font-medium">Quantity</span>
-                <div className="flex items-center space-x-2">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => handleQuantityChange(-1)}
-                    disabled={quantity <= 1}
-                    className="border-orange-500/30 hover:bg-orange-500/10"
-                  >
-                    <Minus className="h-4 w-4" />
-                  </Button>
-                  <span className="w-12 text-center">{quantity}</span>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => handleQuantityChange(1)}
-                    className="border-orange-500/30 hover:bg-orange-500/10"
-                  >
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <Button 
-                  size="lg" 
+            {/* Quantity Selector */}
+            <div className="space-y-3">
+              <h3 className="font-semibold text-lg">Quantity</h3>
+              <div className="flex items-center space-x-2">
+                <Button
                   variant="outline"
-                  className="border-orange-500/30 hover:bg-orange-500/10"
-                  disabled={!selectedVariant || selectedVariant.inventory === 0}
+                  size="icon"
+                  className="border-orange-500/30 text-orange-300 hover:bg-orange-500/10 focus-visible:ring-orange-500"
+                  onClick={() => handleQuantityChange(-1)}
                 >
-                  <ShoppingCart className="mr-2 h-4 w-4" />
-                  {selectedVariant?.inventory === 0 ? 'Out of Stock' : 'Add to Cart'}
+                  <Minus className="h-4 w-4" />
                 </Button>
-                <Button 
-                  size="lg"
-                  className="bg-orange-600 hover:bg-orange-700"
+                <span className="w-12 text-center">{quantity}</span>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="border-orange-500/30 text-orange-300 hover:bg-orange-500/10 focus-visible:ring-orange-500"
+                  onClick={() => handleQuantityChange(1)}
                 >
-                  Buy Now
+                  <Plus className="h-4 w-4" />
                 </Button>
               </div>
             </div>
 
-            <Card className="bg-zinc-900 border-zinc-800 p-6">
-              <h2 className="text-xl font-semibold mb-4">Product Description</h2>
-              <div className="prose prose-invert max-w-none">
-                <div dangerouslySetInnerHTML={{ __html: product.description }} />
-              </div>
-            </Card>
+            {/* Add to Cart Button */}
+            <Button
+              size="lg"
+              className="w-full bg-orange-500 hover:bg-orange-600 text-white"
+            >
+              <ShoppingCart className="mr-2 h-5 w-5" />
+              Add to Cart
+            </Button>
 
-            {/* Specifications */}
-            <Card className="bg-zinc-900 border-zinc-800 p-6">
-              <h2 className="text-xl font-semibold mb-4">Specifications</h2>
-              <div className="grid grid-cols-1 gap-4">
-                <div className="flex justify-between py-2 border-b border-zinc-800">
-                  <span className="text-zinc-400">Category</span>
-                  <span className="font-medium">{product.category}</span>
-                </div>
-                {selectedVariant && (
-                  <>
-                    <div className="flex justify-between py-2 border-b border-zinc-800">
-                      <span className="text-zinc-400">SKU</span>
-                      <span className="font-medium">{selectedVariant.sku}</span>
-                    </div>
-                    <div className="flex justify-between py-2 border-b border-zinc-800">
-                      <span className="text-zinc-400">Stock</span>
-                      <span className="font-medium">{selectedVariant.inventory} units</span>
-                    </div>
-                  </>
-                )}
+            {/* Product Description */}
+            <div className="space-y-4 pt-6">
+              <Separator className="bg-zinc-800" />
+              <div className="prose prose-invert max-w-none">
+                <h3 className="text-lg font-semibold mb-2">Description</h3>
+                <div className="text-zinc-400 space-y-4" dangerouslySetInnerHTML={{ __html: product.description }} />
               </div>
-            </Card>
+            </div>
           </div>
         </div>
       </div>

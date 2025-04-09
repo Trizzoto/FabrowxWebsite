@@ -528,7 +528,7 @@ export default function ProductsPage() {
                   </Button>
                   <Button
                     variant="outline"
-                    onClick={() => window.open(`/catalog/${product.id}`, '_blank')}
+                    onClick={() => window.open(`/catalogue/${product.id}`, '_blank')}
                     className="h-8 border-orange-500/30 hover:bg-orange-500/10"
                   >
                     <Eye className="h-4 w-4 mr-2" />

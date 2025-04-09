@@ -166,7 +166,7 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
                   </Link>
                 </Button>
                 <Button size="lg" variant="outline" className="border-orange-600 text-orange-300 hover:bg-orange-950/50 px-6 py-3 h-auto text-base focus-visible:ring-orange-600">
-                  <Link href="/catalog" className="flex items-center">
+                  <Link href="/catalogue" className="flex items-center">
                     View Catalogue
                     <ChevronRight className="ml-2 h-5 w-5" />
                   </Link>
@@ -272,7 +272,7 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   className="group relative"
                 >
-                  <Link href={`/catalog/${product.id}`}>
+                  <Link href={`/catalogue/${product.id}`}>
                     <div className="aspect-square bg-zinc-800 rounded-lg overflow-hidden">
                       {product.images && product.images[0] ? (
                         <img
@@ -310,7 +310,7 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
             ) : (
               <div className="col-span-full text-center py-12">
                 <p className="text-zinc-400">No featured products available at the moment.</p>
-                <Link href="/catalog" className="mt-4 inline-block">
+                <Link href="/catalogue" className="mt-4 inline-block">
                   <Button variant="outline" className="border-orange-600 text-orange-300 hover:bg-orange-950/50 focus-visible:ring-orange-600">
                     View All Products
                     <ChevronRight className="ml-2 h-4 w-4" />
@@ -321,7 +321,7 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
           </div>
 
           <div className="mt-12 text-center">
-            <Link href="/catalog">
+            <Link href="/catalogue">
               <Button variant="outline" className="border-orange-600 text-orange-300 hover:bg-orange-950/50 focus-visible:ring-orange-600">
                 View All Products
                 <ChevronRight className="ml-2 h-4 w-4" />
@@ -546,17 +546,17 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
               </p>
               <div className="flex space-x-4">
                 {settings.socialLinks?.instagram && (
-                  <Link href={settings.socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-orange-500">
+                  <Link href={settings.socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-orange-500" aria-label="Follow us on Instagram">
                     <Instagram className="h-6 w-6" />
                   </Link>
                 )}
                 {settings.socialLinks?.facebook && (
-                  <Link href={settings.socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-orange-500">
+                  <Link href={settings.socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-orange-500" aria-label="Follow us on Facebook">
                     <Facebook className="h-6 w-6" />
                   </Link>
                 )}
                 {settings.socialLinks?.youtube && (
-                  <Link href={settings.socialLinks.youtube} target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-orange-500">
+                  <Link href={settings.socialLinks.youtube} target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-orange-500" aria-label="Subscribe to our YouTube channel">
                     <Youtube className="h-6 w-6" />
                   </Link>
                 )}
@@ -576,7 +576,7 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/catalog" className="text-zinc-400 hover:text-orange-500">
+                  <Link href="/catalogue" className="text-zinc-400 hover:text-orange-500">
                     Products
                   </Link>
                 </li>
