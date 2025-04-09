@@ -159,13 +159,13 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
                 {settings.heroTagline || "Precision metal fabrication for performance vehicles and 4WDs"}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button size="lg" className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 h-auto text-base">
+                <Button size="lg" className="bg-orange-700 hover:bg-orange-800 text-white px-6 py-3 h-auto text-base focus-visible:ring-orange-600">
                   <Link href="/services" className="flex items-center">
                     Our Services
                     <ChevronRight className="ml-2 h-5 w-5" />
                   </Link>
                 </Button>
-                <Button size="lg" variant="outline" className="border-orange-500 text-orange-400 hover:bg-orange-950/50 px-6 py-3 h-auto text-base">
+                <Button size="lg" variant="outline" className="border-orange-600 text-orange-300 hover:bg-orange-950/50 px-6 py-3 h-auto text-base focus-visible:ring-orange-600">
                   <Link href="/catalog" className="flex items-center">
                     View Catalogue
                     <ChevronRight className="ml-2 h-5 w-5" />
@@ -240,7 +240,7 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
               And much more! From custom one-off projects to full vehicle builds, we have the expertise to bring your vision to life.
             </p>
             <Link href="/services">
-              <Button variant="outline" className="border-orange-500 text-orange-400 hover:bg-orange-950/50">
+              <Button variant="outline" className="border-orange-600 text-orange-300 hover:bg-orange-950/50 focus-visible:ring-orange-600">
                 View All Services
                 <ChevronRight className="ml-2 h-4 w-4" />
               </Button>
@@ -311,9 +311,9 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
               <div className="col-span-full text-center py-12">
                 <p className="text-zinc-400">No featured products available at the moment.</p>
                 <Link href="/catalog" className="mt-4 inline-block">
-                  <Button variant="outline">
+                  <Button variant="outline" className="border-orange-600 text-orange-300 hover:bg-orange-950/50 focus-visible:ring-orange-600">
                     View All Products
-                    <ArrowRight className="ml-2 h-4 w-4" />
+                    <ChevronRight className="ml-2 h-4 w-4" />
                   </Button>
                 </Link>
               </div>
@@ -322,7 +322,7 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
 
           <div className="mt-12 text-center">
             <Link href="/catalog">
-              <Button variant="outline" className="border-orange-500 text-orange-400 hover:bg-orange-950/50">
+              <Button variant="outline" className="border-orange-600 text-orange-300 hover:bg-orange-950/50 focus-visible:ring-orange-600">
                 View All Products
                 <ChevronRight className="ml-2 h-4 w-4" />
               </Button>
@@ -367,7 +367,7 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
                   </div>
                 </div>
               </div>
-              <Button className="bg-orange-600 hover:bg-orange-700 text-white">
+              <Button className="bg-orange-700 hover:bg-orange-800 text-white focus-visible:ring-orange-600">
                 Learn More About Us
                 <ChevronRight className="ml-2 h-4 w-4" />
               </Button>
@@ -454,7 +454,7 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
 
           <div className="mt-12 text-center">
             <Link href="/gallery">
-              <Button variant="outline" className="border-orange-500 text-orange-400 hover:bg-orange-950/50">
+              <Button variant="outline" className="border-orange-600 text-orange-300 hover:bg-orange-950/50 focus-visible:ring-orange-600">
                 View Full Gallery
                 <ChevronRight className="ml-2 h-4 w-4" />
               </Button>

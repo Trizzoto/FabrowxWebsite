@@ -6,7 +6,7 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
-import { ArrowLeft, Filter } from "lucide-react"
+import { ArrowLeft, Filter, ChevronRight } from "lucide-react"
 import { Product } from "@/types"
 import { buildCategoryTree, CategoryLevel } from "@/lib/categories"
 
@@ -123,7 +123,7 @@ export default function CatalogPage() {
         <Link href="/" className="pointer-events-auto">
           <Button
             variant="outline"
-            className="border-orange-500/30 bg-black/20 backdrop-blur-sm hover:bg-black/40 hover:border-orange-500/50 transition-all duration-300 pointer-events-auto"
+            className="border-orange-600/50 bg-black/40 backdrop-blur-sm hover:bg-black/60 hover:border-orange-600/70 transition-all duration-300 text-orange-300 focus-visible:ring-orange-600"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Home
@@ -150,6 +150,20 @@ export default function CatalogPage() {
           <p className="text-lg md:text-xl text-zinc-300 max-w-2xl font-light tracking-wide">
             Browse our comprehensive range of high-performance parts and fabrication supplies
           </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button size="lg" className="bg-orange-700 hover:bg-orange-800 text-white px-6 py-3 h-auto text-base focus-visible:ring-orange-600">
+              <Link href="/services" className="flex items-center">
+                Our Services
+                <ChevronRight className="ml-2 h-5 w-5" />
+              </Link>
+            </Button>
+            <Button size="lg" variant="outline" className="border-orange-600 text-orange-300 hover:bg-orange-950/50 px-6 py-3 h-auto text-base focus-visible:ring-orange-600">
+              <Link href="/catalog" className="flex items-center">
+                View Catalogue
+                <ChevronRight className="ml-2 h-5 w-5" />
+              </Link>
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -159,7 +173,7 @@ export default function CatalogPage() {
           <div className="lg:hidden mb-4">
             <Button 
               variant="outline" 
-              className="w-full border-orange-500/30 hover:bg-orange-500/10"
+              className="w-full border-orange-600/50 hover:bg-orange-700/20 text-orange-300 focus-visible:ring-orange-600"
               onClick={() => setShowMobileFilters(!showMobileFilters)}
             >
               <Filter className="h-4 w-4 mr-2" />
