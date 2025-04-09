@@ -784,9 +784,6 @@ export default function ProductsPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold tracking-tight">Products</h1>
         <div className="flex items-center gap-4">
-          <Button onClick={() => setShowImport(true)}>
-            Import Products
-          </Button>
           <Button onClick={() => setIsCreatingProduct(true)}>
             <Plus className="mr-2 h-4 w-4" />
             Add Product

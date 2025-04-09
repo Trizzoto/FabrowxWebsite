@@ -109,75 +109,51 @@ export default function AdminDashboard() {
       <div className="container max-w-6xl py-8">
         {/* Stats Overview */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <Card className="bg-zinc-900 border-zinc-800">
-          <CardContent className="pt-6">
-              <div className="flex items-center justify-between mb-2">
-                <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
-                  <Package className="h-4 w-4 text-blue-400" />
-              </div>
-                <Button variant="ghost" size="sm" className="text-zinc-500" asChild>
-                  <Link href="/admin/products">
-                    <ChevronRight className="h-4 w-4" />
-                  </Link>
-                </Button>
-              </div>
-              <p className="text-2xl font-semibold mb-1">{stats?.products || 0}</p>
-              <p className="text-sm text-zinc-500">Products</p>
-          </CardContent>
-        </Card>
+          <Card className="bg-zinc-900/50 border-zinc-800 backdrop-blur-sm hover:border-orange-500/50 transition-colors">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Products</CardTitle>
+              <Package className="h-4 w-4 text-orange-400" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats?.products || 0}</div>
+              <p className="text-xs text-zinc-400">Total products in catalog</p>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-zinc-900/50 border-zinc-800 backdrop-blur-sm hover:border-orange-500/50 transition-colors">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Orders</CardTitle>
+              <ShoppingBag className="h-4 w-4 text-orange-400" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats?.recentOrders || 0}</div>
+              <p className="text-xs text-zinc-400">Recent orders</p>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-zinc-900/50 border-zinc-800 backdrop-blur-sm hover:border-orange-500/50 transition-colors">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Low Stock</CardTitle>
+              <AlertCircle className="h-4 w-4 text-orange-400" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats?.lowStock || 0}</div>
+              <p className="text-xs text-zinc-400">Items need attention</p>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-zinc-900/50 border-zinc-800 backdrop-blur-sm hover:border-orange-500/50 transition-colors">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Enquiries</CardTitle>
+              <MessageSquare className="h-4 w-4 text-orange-400" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats?.pendingEnquiries || 0}</div>
+              <p className="text-xs text-zinc-400">Pending messages</p>
+            </CardContent>
+          </Card>
+        </div>
         
-          <Card className="bg-zinc-900 border-zinc-800">
-          <CardContent className="pt-6">
-              <div className="flex items-center justify-between mb-2">
-                <div className="w-8 h-8 rounded-lg bg-green-500/10 flex items-center justify-center">
-                  <ShoppingBag className="h-4 w-4 text-green-400" />
-              </div>
-                <Button variant="ghost" size="sm" className="text-zinc-500" asChild>
-                  <Link href="/admin/orders">
-                    <ChevronRight className="h-4 w-4" />
-                  </Link>
-                </Button>
-              </div>
-              <p className="text-2xl font-semibold mb-1">{stats?.recentOrders || 0}</p>
-              <p className="text-sm text-zinc-500">New Orders</p>
-          </CardContent>
-        </Card>
-        
-          <Card className="bg-zinc-900 border-zinc-800">
-          <CardContent className="pt-6">
-              <div className="flex items-center justify-between mb-2">
-                <div className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center">
-                  <AlertCircle className="h-4 w-4 text-red-400" />
-              </div>
-                <Button variant="ghost" size="sm" className="text-zinc-500" asChild>
-                  <Link href="/admin/products?filter=low-stock">
-                    <ChevronRight className="h-4 w-4" />
-                  </Link>
-                </Button>
-              </div>
-              <p className="text-2xl font-semibold mb-1">{stats?.lowStock || 0}</p>
-              <p className="text-sm text-zinc-500">Low Stock</p>
-          </CardContent>
-        </Card>
-        
-          <Card className="bg-zinc-900 border-zinc-800">
-          <CardContent className="pt-6">
-              <div className="flex items-center justify-between mb-2">
-                <div className="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center">
-                  <MessageSquare className="h-4 w-4 text-purple-400" />
-              </div>
-                <Button variant="ghost" size="sm" className="text-zinc-500" asChild>
-                  <Link href="/admin/enquiries">
-                    <ChevronRight className="h-4 w-4" />
-                  </Link>
-                </Button>
-              </div>
-              <p className="text-2xl font-semibold mb-1">{stats?.pendingEnquiries || 0}</p>
-              <p className="text-sm text-zinc-500">Enquiries</p>
-          </CardContent>
-        </Card>
-      </div>
-      
         {/* Revenue & Activity */}
         <div className="grid md:grid-cols-2 gap-6">
           {/* Revenue Card */}
@@ -194,21 +170,21 @@ export default function AdminDashboard() {
                 <div>
                   <p className="text-sm text-zinc-500 mb-1">This Week</p>
                   <p className="text-2xl font-semibold">${stats?.revenue.thisWeek.toLocaleString()}</p>
-              </div>
+                </div>
                 <div>
                   <p className="text-sm text-zinc-500 mb-1">This Month</p>
                   <p className="text-2xl font-semibold">${stats?.revenue.thisMonth.toLocaleString()}</p>
+                </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-        
+            </CardContent>
+          </Card>
+          
           {/* Activity Feed */}
           <Card className="bg-zinc-900 border-zinc-800">
-          <CardHeader>
+            <CardHeader>
               <CardTitle>Recent Activity</CardTitle>
-          </CardHeader>
-          <CardContent>
+            </CardHeader>
+            <CardContent>
               <div className="space-y-4">
                 {isLoading ? (
                   Array.from({ length: 3 }).map((_, i) => (
@@ -244,9 +220,9 @@ export default function AdminDashboard() {
                     </div>
                   ))
                 )}
-            </div>
-          </CardContent>
-        </Card>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

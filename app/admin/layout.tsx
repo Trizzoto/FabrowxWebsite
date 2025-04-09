@@ -11,17 +11,21 @@ export default function AdminLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="grid min-h-screen w-full lg:grid-cols-[280px_1fr] bg-black text-white">
-      <AdminSidebar />
-      <div className="flex flex-col">
-        <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b border-zinc-800 bg-black/95 px-6 backdrop-blur">
-          <h1 className="text-xl font-semibold">
-            <span className="text-orange-500">Admin</span> Dashboard
-          </h1>
-        </header>
-        <main className="flex-1 p-6 bg-zinc-950/50">{children}</main>
+    <div className="min-h-screen bg-black text-white overflow-x-hidden">
+      <div className="container mx-auto px-4 py-8">
+        <div className="grid min-h-screen w-full lg:grid-cols-[280px_1fr] bg-black text-white">
+          <AdminSidebar />
+          <div className="flex flex-col">
+            <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b border-zinc-800 bg-black/95 px-6 backdrop-blur">
+              <h1 className="text-xl font-semibold">
+                <span className="text-orange-500">Admin</span> Dashboard
+              </h1>
+            </header>
+            <main className="flex-1 p-6 bg-zinc-950/50">{children}</main>
+          </div>
+          <Toaster />
+        </div>
       </div>
-      <Toaster />
     </div>
   )
 }
