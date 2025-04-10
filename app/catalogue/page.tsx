@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, Suspense } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
@@ -14,7 +14,8 @@ import { cn } from "@/lib/utils"
 
 const DEFAULT_HERO_IMAGE = "/hero-catalogue.jpg"
 
-export default function CataloguePage() {
+// Client component for search params
+function CatalogueContent() {
   const router = useRouter()
   const [searchQuery, setSearchQuery] = useState("")
   const [showMobileFilters, setShowMobileFilters] = useState(false)
@@ -367,5 +368,18 @@ export default function CataloguePage() {
         </div>
       </div>
     </div>
+  )
+}
+
+// Main page component with Suspense
+export default function CataloguePage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div>
+      </div>
+    }>
+      <CatalogueContent />
+    </Suspense>
   )
 } 

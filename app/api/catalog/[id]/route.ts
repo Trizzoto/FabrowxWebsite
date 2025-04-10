@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { products } from "@/app/data"
+import products from "@/app/data/products.json"
 
 export async function GET(
   request: Request,
@@ -14,7 +14,7 @@ export async function GET(
 
     return NextResponse.json(product)
   } catch (error) {
-    console.error("[PRODUCT_GET]", error)
-    return new NextResponse("Internal error", { status: 500 })
+    console.error('Error fetching product:', error)
+    return new NextResponse("Internal Server Error", { status: 500 })
   }
 } 
