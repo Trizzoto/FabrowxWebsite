@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Image from "next/image"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { ArrowLeft, Minus, Plus, ShoppingCart, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
@@ -19,6 +19,7 @@ interface ProductPageProps {
 
 export default function ProductPage({ params }: ProductPageProps) {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [product, setProduct] = useState<Product | null>(null)
   const [loading, setLoading] = useState(true)
   const [selectedImage, setSelectedImage] = useState(0)
@@ -113,7 +114,14 @@ export default function ProductPage({ params }: ProductPageProps) {
         <Button
           variant="outline"
           className="mb-8 border-orange-500/30 hover:bg-orange-500/10"
-          onClick={() => router.push("/catalogue")}
+          onClick={() => {
+            const scrollY = searchParams.get('scrollY')
+            if (scrollY) {
+              router.replace(`/catalogue?scrollY=${scrollY}`)
+            } else {
+              router.replace('/catalogue')
+            }
+          }}
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Catalogue

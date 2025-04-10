@@ -14,42 +14,72 @@
       "description": "Custom metal fabrication for your unique requirements",
       "image": "https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741819492/elite-fabworx/service-1/tbypybcrwyihe5wxezsp.jpg",
       "icon": "Wrench",
-      "slug": "custom-fabrication"
+      "slug": "custom-fabrication",
+      "offerings": [
+        "Custom metal design and fabrication",
+        "Industrial and commercial solutions",
+        "Precision welding and fitting"
+      ]
     },
     {
       "title": "Performance Upgrades",
       "description": "High-performance modifications for your vehicle",
       "image": "https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741818971/elite-fabworx/service-2/lftf9v2h31iynhtg7ygm.jpg",
       "icon": "Car",
-      "slug": "performance-upgrades"
+      "slug": "performance-upgrades",
+      "offerings": [
+        "Engine bay modifications",
+        "Performance exhaust systems",
+        "Turbo and intercooler setups"
+      ]
     },
     {
       "title": "4WD Modifications",
       "description": "Specialized modifications for off-road vehicles",
       "image": "https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741819120/elite-fabworx/service-3/o4foeuvqxofrmcykqz7y.jpg",
       "icon": "Truck",
-      "slug": "4wd-modifications"
+      "slug": "4wd-modifications",
+      "offerings": [
+        "Custom bull bars and rock sliders",
+        "Underbody protection systems",
+        "Roof racks and storage solutions"
+      ]
     },
     {
       "title": "Exhaust Systems",
       "description": "Custom exhaust systems and modifications",
       "image": "https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741784167/elite-fabworx/service-4/gnogoariquz6t2rmahkc.jpg",
       "icon": "Cog",
-      "slug": "exhaust-systems"
+      "slug": "exhaust-systems",
+      "offerings": [
+        "Custom exhaust fabrication",
+        "High-flow catalytic converters",
+        "Performance muffler systems"
+      ]
     },
     {
       "title": "Roll Cages",
       "description": "Safety roll cages and chassis reinforcement",
       "image": "https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741784065/elite-fabworx/service-5/soe5h9ayegtuffwakj3u.jpg",
       "icon": "Shield",
-      "slug": "roll-cages"
+      "slug": "roll-cages",
+      "offerings": [
+        "CAMS/Motorsport spec cages",
+        "Street legal roll cages",
+        "Chassis reinforcement"
+      ]
     },
     {
       "title": "Prototyping",
       "description": "In-house design",
       "image": "https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741784060/elite-fabworx/service-6/dmgofbnih4qztwkzndup.jpg",
       "icon": "Truck",
-      "slug": "prototyping"
+      "slug": "prototyping",
+      "offerings": [
+        "3D design and modeling",
+        "Rapid prototyping",
+        "Product development"
+      ]
     }
   ],
   "theme": {
@@ -120,7 +150,7 @@
       "rating": 4
     }
   ],
-  "footerText": "© 2023 Elite FabWorx - Professional Metal Fabrication Services",
+  "footerText": "© 2025 Elite FabWorx - Professional Metal Fabrication Services",
   "socialLinks": {
     "facebook": "https://www.facebook.com/ELITEFABWORX",
     "instagram": "https://www.instagram.com/elite_fabworx/"

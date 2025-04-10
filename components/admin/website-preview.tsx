@@ -417,16 +417,6 @@ export function WebsitePreview({ settings, onUpdate }: WebsitePreviewProps) {
                 >ELITE</span>
                 <span className="font-light tracking-widest ml-2">FABWORX</span>
               </h1>
-              <div 
-                className={`rounded-full overflow-hidden w-[80px] h-[80px] relative border-2 ${getThemeClass('border', 'primary')}`}
-              >
-                <Image
-                  src="/logo.png"
-                  alt="Elite FabWorx Logo"
-                  fill
-                  className="object-cover"
-                />
-              </div>
             </div>
             
             <div className="mb-10 max-w-2xl mx-auto" onClick={() => !editingSections.heroTagline && toggleEditSection('heroTagline')}>
@@ -1057,14 +1047,6 @@ export function WebsitePreview({ settings, onUpdate }: WebsitePreviewProps) {
           <div className="max-w-5xl mx-auto">
             <div className="flex flex-col items-center gap-4">
               <div className="flex items-center gap-3">
-                <div className={`rounded-full overflow-hidden w-[50px] h-[50px] relative border-2 ${getThemeClass('border', 'primary')}`}>
-                  <Image
-                    src="/logo.png"
-                    alt="Elite FabWorx Logo"
-                    fill
-                    className="object-cover"
-                  />
-                </div>
                 <h3 className="text-xl font-bold tracking-tight text-white">
                   <span 
                     className={`${getThemeClass('text', 'primary')} font-extrabold tracking-wider`}

@@ -2,102 +2,96 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { LayoutDashboard, Package, ShoppingBag, Users, Settings, Wrench } from "lucide-react"
+import { LayoutDashboard, Package, ShoppingBag, Users, Settings, Menu, X } from "lucide-react"
 import Image from "next/image"
+import { useState } from "react"
 
 export default function AdminSidebar() {
   const pathname = usePathname()
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const isActive = (path: string) => {
-    return pathname === path
+    if (path === "/admin") {
+      return pathname === "/admin"
+    }
+    return pathname.startsWith(path)
   }
 
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen)
+  }
+
+  const navItems = [
+    { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/admin/products", label: "Products", icon: Package },
+    { href: "/admin/orders", label: "Orders", icon: ShoppingBag },
+    { href: "/admin/customers", label: "Customers", icon: Users },
+    { href: "/admin/settings", label: "Settings", icon: Settings },
+  ]
+
   return (
-    <div className="flex flex-col h-full bg-black border-r border-zinc-800">
-      <div className="flex h-20 items-center border-b border-zinc-800 px-4">
-        <Link href="/admin" className="flex items-center gap-2 font-semibold">
-          <Image
-            src="/logo.png"
-            alt="Elite FabWorx Logo"
-            width={40}
-            height={40}
-            className="rounded-full"
-          />
-          <div>
-            <span className="text-orange-500 font-extrabold tracking-wider">ELITE</span>
-            <span className="font-light tracking-widest ml-1">FABWORX</span>
-          </div>
-        </Link>
+    <>
+      {/* Mobile Menu Button */}
+      <button
+        onClick={toggleMobileMenu}
+        className="lg:hidden fixed top-4 right-4 z-50 p-2 rounded-lg bg-zinc-800 hover:bg-zinc-700"
+      >
+        {isMobileMenuOpen ? (
+          <X className="h-6 w-6 text-white" />
+        ) : (
+          <Menu className="h-6 w-6 text-white" />
+        )}
+      </button>
+
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div
+          className="lg:hidden fixed inset-0 bg-black/80 z-40"
+          onClick={toggleMobileMenu}
+        />
+      )}
+
+      {/* Sidebar */}
+      <div className={`fixed lg:static inset-y-0 left-0 z-40 w-64 transform ${
+        isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+      } lg:translate-x-0 transition-transform duration-200 ease-in-out flex flex-col h-full bg-black border-r border-zinc-800`}>
+        <div className="flex h-16 sm:h-20 items-center border-b border-zinc-800 px-4">
+          <Link href="/admin" className="flex items-center gap-2 font-semibold">
+            <div className="flex flex-col sm:flex-row sm:items-center">
+              <span className="text-orange-500 font-extrabold tracking-wider">ELITE</span>
+              <span className="font-light tracking-widest sm:ml-1">FABWORX</span>
+            </div>
+          </Link>
+        </div>
+
+        <div className="flex-1 overflow-auto py-4">
+          <nav className="grid items-start px-2 text-sm font-medium gap-1">
+            {navItems.map((item) => {
+              const Icon = item.icon
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`flex items-center gap-3 rounded-lg px-3 py-2.5 transition-all ${
+                    isActive(item.href)
+                      ? "bg-orange-500/20 text-orange-400 border-l-2 border-orange-500"
+                      : "text-zinc-400 hover:text-orange-400 hover:bg-orange-500/10"
+                  }`}
+                >
+                  <Icon className="h-4 w-4" />
+                  {item.label}
+                </Link>
+              )
+            })}
+          </nav>
+        </div>
+
+        <div className="mt-auto p-4 border-t border-zinc-800">
+          <div className="text-xs text-zinc-500 text-center">Elite FabWorx Admin v1.0</div>
+        </div>
       </div>
-
-      <div className="flex-1 overflow-auto py-4">
-        <nav className="grid items-start px-2 text-sm font-medium gap-1">
-          <Link
-            href="/admin"
-            className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
-              isActive("/admin") 
-                ? "bg-orange-500/20 text-orange-400 border-l-2 border-orange-500" 
-                : "text-zinc-400 hover:text-orange-400 hover:bg-orange-500/10"
-            }`}
-          >
-            <LayoutDashboard className="h-4 w-4" />
-            Dashboard
-          </Link>
-
-          <Link
-            href="/admin/products"
-            className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
-              pathname.startsWith("/admin/products")
-                ? "bg-orange-500/20 text-orange-400 border-l-2 border-orange-500"
-                : "text-zinc-400 hover:text-orange-400 hover:bg-orange-500/10"
-            }`}
-          >
-            <Package className="h-4 w-4" />
-            Products
-          </Link>
-
-          <Link
-            href="/admin/orders"
-            className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
-              pathname.startsWith("/admin/orders")
-                ? "bg-orange-500/20 text-orange-400 border-l-2 border-orange-500"
-                : "text-zinc-400 hover:text-orange-400 hover:bg-orange-500/10"
-            }`}
-          >
-            <ShoppingBag className="h-4 w-4" />
-            Orders
-          </Link>
-
-          <Link
-            href="/admin/customers"
-            className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
-              pathname.startsWith("/admin/customers")
-                ? "bg-orange-500/20 text-orange-400 border-l-2 border-orange-500"
-                : "text-zinc-400 hover:text-orange-400 hover:bg-orange-500/10"
-            }`}
-          >
-            <Users className="h-4 w-4" />
-            Customers
-          </Link>
-
-          <Link
-            href="/admin/settings"
-            className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
-              pathname.startsWith("/admin/settings")
-                ? "bg-orange-500/20 text-orange-400 border-l-2 border-orange-500"
-                : "text-zinc-400 hover:text-orange-400 hover:bg-orange-500/10"
-            }`}
-          >
-            <Settings className="h-4 w-4" />
-            Settings
-          </Link>
-        </nav>
-      </div>
-
-      <div className="mt-auto p-4 border-t border-zinc-800">
-        <div className="text-xs text-zinc-500 text-center">Elite FabWorx Admin v1.0</div>
-      </div>
-    </div>
+    </>
   )
 }
 

@@ -27,6 +27,7 @@ interface Service {
   image: string
   icon: string
   slug: string
+  offerings?: string[]
 }
 
 interface ServicesContentProps {
@@ -176,18 +177,12 @@ export function ServicesContent({ services }: ServicesContentProps) {
                     <div className="space-y-4">
                       <h4 className="font-semibold text-lg">What we offer:</h4>
                       <ul className="space-y-2">
-                        <li className="flex items-center text-zinc-400">
-                          <CheckCircle className="h-5 w-5 text-orange-500 mr-2" />
-                          Custom fabrication and design
-                        </li>
-                        <li className="flex items-center text-zinc-400">
-                          <CheckCircle className="h-5 w-5 text-orange-500 mr-2" />
-                          Professional installation
-                        </li>
-                        <li className="flex items-center text-zinc-400">
-                          <CheckCircle className="h-5 w-5 text-orange-500 mr-2" />
-                          Quality materials
-                        </li>
+                        {service.offerings?.map((offering, index) => (
+                          <li key={index} className="flex items-center text-zinc-400">
+                            <CheckCircle className="h-5 w-5 text-orange-500 mr-2" />
+                            {offering}
+                          </li>
+                        ))}
                       </ul>
                     </div>
                     <Button className="w-full mt-6 bg-orange-600 hover:bg-orange-700" asChild>
@@ -200,6 +195,23 @@ export function ServicesContent({ services }: ServicesContentProps) {
                 </Card>
               </motion.div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Additional Services Message */}
+      <section className="py-10 bg-zinc-900">
+        <div className="container px-4 md:px-6">
+          <div className="text-center">
+            <p className="text-xl md:text-2xl text-zinc-300 max-w-3xl mx-auto">
+              <span className="text-orange-500 font-semibold">And more</span> Discuss it with us and see how we can help with your specific project needs.
+            </p>
+            <Button className="mt-6 bg-orange-600 hover:bg-orange-700" asChild>
+              <Link href="/contact">
+                Contact Us
+                <ChevronRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
           </div>
         </div>
       </section>

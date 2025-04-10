@@ -11,6 +11,7 @@ interface CloudinaryUploadProps {
   buttonText?: string;
   buttonVariant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
   buttonSize?: "default" | "sm" | "lg" | "icon";
+  multiple?: boolean;
 }
 
 export function CloudinaryUpload({ 
@@ -19,15 +20,16 @@ export function CloudinaryUpload({
   section = 'hero',
   buttonText = 'Upload Image',
   buttonVariant = 'outline',
-  buttonSize = 'default'
+  buttonSize = 'default',
+  multiple = false
 }: CloudinaryUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
   const { toast } = useToast();
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) {
-      console.log('No file selected');
+    const files = event.target.files;
+    if (!files || files.length === 0) {
+      console.log('No files selected');
       return;
     }
 
@@ -35,24 +37,43 @@ export function CloudinaryUpload({
       console.log(`CloudinaryUpload: Starting upload for section "${section}"`);
       setIsUploading(true);
       
-      const result = await uploadImage(file, section);
-      console.log('CloudinaryUpload: Upload successful', result);
-      
-      if (!result || !result.secure_url) {
-        throw new Error('Upload failed - no URL returned');
+      if (multiple) {
+        // Handle multiple files
+        const uploadPromises = Array.from(files).map(file => uploadImage(file, section));
+        const results = await Promise.all(uploadPromises);
+        
+        results.forEach(result => {
+          if (!result || !result.secure_url) {
+            throw new Error('Upload failed - no URL returned');
+          }
+          onUploadComplete(result.secure_url);
+        });
+        
+        toast({
+          title: "Images Uploaded",
+          description: `Successfully uploaded ${files.length} images for ${section}`,
+        });
+      } else {
+        // Handle single file
+        const result = await uploadImage(files[0], section);
+        console.log('CloudinaryUpload: Upload successful', result);
+        
+        if (!result || !result.secure_url) {
+          throw new Error('Upload failed - no URL returned');
+        }
+        
+        toast({
+          title: "Image Uploaded",
+          description: `Successfully uploaded image for ${section}`,
+        });
+        
+        onUploadComplete(result.secure_url);
       }
-      
-      toast({
-        title: "Image Uploaded",
-        description: `Successfully uploaded image for ${section}`,
-      });
-      
-      onUploadComplete(result.secure_url);
     } catch (error) {
       console.error('CloudinaryUpload: Error uploading image:', error);
       toast({
         title: "Upload Failed",
-        description: "There was a problem uploading your image. Please try again.",
+        description: "There was a problem uploading your image(s). Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -80,6 +101,7 @@ export function CloudinaryUpload({
         accept="image/*"
         onChange={handleFileChange}
         style={{ display: 'none' }}
+        multiple={multiple}
       />
       <Button
         type="button"

@@ -20,6 +20,7 @@ import {
   Youtube,
   Star,
   ArrowRight,
+  Twitter,
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -124,6 +125,37 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
     fetchFeaturedProducts()
   }, [])
 
+  // Add state for Instagram embeds
+  const [instagramLoaded, setInstagramLoaded] = useState(false);
+  
+  // Load Instagram embed script
+  useEffect(() => {
+    // Only run on client side
+    if (typeof window !== 'undefined') {
+      // Check if script already exists
+      if (!document.querySelector('script[src="//www.instagram.com/embed.js"]')) {
+        const script = document.createElement('script');
+        script.src = '//www.instagram.com/embed.js';
+        script.async = true;
+        script.onload = () => {
+          // @ts-ignore - Instagram adds this to window
+          if (window.instgrm) {
+            // @ts-ignore
+            window.instgrm.Embeds.process();
+          }
+          setInstagramLoaded(true);
+        };
+        document.body.appendChild(script);
+      } else {
+        setInstagramLoaded(true);
+      }
+    }
+    
+    return () => {
+      // Cleanup if needed
+    };
+  }, []);
+
   return (
     <div className="bg-black text-white">
       {/* Hero Section */}
@@ -219,7 +251,7 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
                         {service.icon === 'Truck' && <Truck className="h-4 w-4 md:h-5 md:w-5 text-orange-400" />}
                         {service.icon === 'Shield' && <Shield className="h-4 w-4 md:h-5 md:w-5 text-orange-400" />}
                       </div>
-                      <h3 className="text-base md:text-xl font-bold line-clamp-1">{service.title}</h3>
+                      <h3 className="text-sm sm:text-base md:text-xl font-bold">{service.title}</h3>
                     </div>
                     <p className="text-zinc-400 mb-3 md:mb-4 text-sm md:text-base line-clamp-3">{service.description}</p>
                     <Link
@@ -532,89 +564,77 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-zinc-950 border-t border-zinc-800 py-12">
-        <div className="container px-4 md:px-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
-            <div className="col-span-1 md:col-span-2">
-              <h3 className="text-xl font-bold mb-4">
-                <span className="text-orange-500">ELITE</span>
-                <span className="font-light ml-2">FABWORX</span>
-              </h3>
-              <p className="text-zinc-400 mb-6">
-                Precision metal fabrication for performance vehicles and 4WDs. Quality craftsmanship and exceptional service.
+      {/* Instagram Preview Section */}
+      {settings.socialLinks?.instagram && (
+        <section className="py-16 md:py-20 bg-black">
+          <div className="container px-4 md:px-6">
+            <div className="text-center mb-10 md:mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold mb-3 md:mb-4">
+                Follow Us on <span className="text-orange-500">Instagram</span>
+              </h2>
+              <p className="text-zinc-400 max-w-2xl mx-auto text-sm md:text-base">
+                Check out our latest projects and behind-the-scenes content
               </p>
-              <div className="flex space-x-4">
-                {settings.socialLinks?.instagram && (
-                  <Link href={settings.socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-orange-500" aria-label="Follow us on Instagram">
-                    <Instagram className="h-6 w-6" />
-                  </Link>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+              {/* Instagram Post 1 */}
+              <div className="instagram-post-container">
+                {instagramLoaded ? (
+                  <blockquote 
+                    className="instagram-media" 
+                    data-instgrm-permalink="https://www.instagram.com/p/C5XmvX6Ru18/"
+                    data-instgrm-version="13"
+                  ></blockquote>
+                ) : (
+                  <div className="aspect-square bg-zinc-800 rounded-md flex items-center justify-center">
+                    <div className="text-zinc-400">Loading Instagram post...</div>
+                  </div>
                 )}
-                {settings.socialLinks?.facebook && (
-                  <Link href={settings.socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-orange-500" aria-label="Follow us on Facebook">
-                    <Facebook className="h-6 w-6" />
-                  </Link>
+              </div>
+
+              {/* Instagram Post 2 */}
+              <div className="instagram-post-container">
+                {instagramLoaded ? (
+                  <blockquote 
+                    className="instagram-media" 
+                    data-instgrm-permalink="https://www.instagram.com/p/C00fKqJRL8O/"
+                    data-instgrm-version="13"
+                  ></blockquote>
+                ) : (
+                  <div className="aspect-square bg-zinc-800 rounded-md flex items-center justify-center">
+                    <div className="text-zinc-400">Loading Instagram post...</div>
+                  </div>
                 )}
-                {settings.socialLinks?.youtube && (
-                  <Link href={settings.socialLinks.youtube} target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-orange-500" aria-label="Subscribe to our YouTube channel">
-                    <Youtube className="h-6 w-6" />
-                  </Link>
+              </div>
+
+              {/* Instagram Post 3 */}
+              <div className="instagram-post-container">
+                {instagramLoaded ? (
+                  <blockquote 
+                    className="instagram-media" 
+                    data-instgrm-permalink="https://www.instagram.com/p/CpR0E0zPU6O/"
+                    data-instgrm-version="13"
+                  ></blockquote>
+                ) : (
+                  <div className="aspect-square bg-zinc-800 rounded-md flex items-center justify-center">
+                    <div className="text-zinc-400">Loading Instagram post...</div>
+                  </div>
                 )}
               </div>
             </div>
-            <div>
-              <h4 className="font-semibold mb-4">Quick Links</h4>
-              <ul className="space-y-2">
-                <li>
-                  <Link href="/about" className="text-zinc-400 hover:text-orange-500">
-                    About Us
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/services" className="text-zinc-400 hover:text-orange-500">
-                    Services
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/catalogue" className="text-zinc-400 hover:text-orange-500">
-                    Products
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/gallery" className="text-zinc-400 hover:text-orange-500">
-                    Gallery
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/contact" className="text-zinc-400 hover:text-orange-500">
-                    Contact
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Contact Info</h4>
-              <ul className="space-y-2">
-                <li className="text-zinc-400">
-                  <Phone className="h-4 w-4 inline-block mr-2" />
-                  {settings.contactInfo.phone}
-                </li>
-                <li className="text-zinc-400">
-                  <Mail className="h-4 w-4 inline-block mr-2" />
-                  {settings.contactInfo.email}
-                </li>
-                <li className="text-zinc-400">
-                  <MapPin className="h-4 w-4 inline-block mr-2" />
-                  {settings.contactInfo.location}
-                </li>
-              </ul>
+
+            <div className="mt-10 text-center">
+              <Link href="https://www.instagram.com/elite_fabworx/" target="_blank" rel="noopener noreferrer">
+                <Button variant="outline" className="border-orange-600 text-orange-300 hover:bg-orange-950/50 focus-visible:ring-orange-600">
+                  <Instagram className="mr-2 h-4 w-4" />
+                  Follow Us
+                </Button>
+              </Link>
             </div>
           </div>
-          <div className="mt-12 pt-8 border-t border-zinc-800 text-center text-zinc-400">
-            <p>&copy; {new Date().getFullYear()} Elite FabWorx. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
+        </section>
+      )}
     </div>
   )
 }

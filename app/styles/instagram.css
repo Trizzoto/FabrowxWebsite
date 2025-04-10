@@ -1,0 +1,28 @@
+.instagram-post-container {
+  width: 100%;
+  min-height: 300px;
+  background: #000;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.instagram-media {
+  width: 100% !important;
+  min-width: 100% !important;
+  border: none !important;
+  background: transparent !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  max-width: 100% !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .instagram-post-container {
+    min-height: 250px;
+  }
+} 
