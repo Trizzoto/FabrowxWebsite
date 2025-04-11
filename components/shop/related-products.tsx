@@ -47,7 +47,7 @@ export default function RelatedProducts({ products, currentProductId }: RelatedP
           >
             <div className="bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden">
               <div className="h-48 relative">
-                <Link href={`/shop/${product.slug}`}>
+                <Link href={`/shop/${product._id}`}>
                   <Image
                     src={product.images[0] || "/placeholder.svg"}
                     alt={product.name}
@@ -57,7 +57,7 @@ export default function RelatedProducts({ products, currentProductId }: RelatedP
                 </Link>
               </div>
               <div className="p-4">
-                <Link href={`/shop/${product.slug}`}>
+                <Link href={`/shop/${product._id}`}>
                   <h3 className="font-bold mb-1 hover:text-blue-400 transition-colors">{product.name}</h3>
                 </Link>
                 <p className="text-zinc-500 text-sm mb-2">{product.category}</p>

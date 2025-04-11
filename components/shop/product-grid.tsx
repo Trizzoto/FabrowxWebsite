@@ -14,7 +14,7 @@ export default function ProductGrid({ products }: ProductGridProps) {
       {products.map((product) => (
         <Link
           key={product.id}
-          href={`/catalogue/${product.id}`}
+          href={`/shop/${product.id}`}
           className="group transition-transform hover:-translate-y-1 duration-300"
         >
           <Card className="overflow-hidden border-zinc-800 bg-zinc-900 hover:border-orange-500/50 transition-all duration-300 h-full flex flex-col">

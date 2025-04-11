@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { LayoutDashboard, Package, ShoppingBag, Users, Settings, Menu, X } from "lucide-react"
+import { LayoutDashboard, Package, ShoppingBag, Users, Settings, Menu, X, Mail } from "lucide-react"
 import Image from "next/image"
 import { useState } from "react"
 
@@ -26,6 +26,7 @@ export default function AdminSidebar() {
     { href: "/admin/products", label: "Products", icon: Package },
     { href: "/admin/orders", label: "Orders", icon: ShoppingBag },
     { href: "/admin/customers", label: "Customers", icon: Users },
+    { href: "/admin/contact", label: "Contact Submissions", icon: Mail },
     { href: "/admin/settings", label: "Settings", icon: Settings },
   ]
 

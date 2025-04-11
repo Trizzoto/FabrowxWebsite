@@ -18,12 +18,15 @@ interface CartContextType {
   clearCart: () => void
   totalItems: number
   totalPrice: number
+  cartUpdated: boolean
+  setCartUpdated: (updated: boolean) => void
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined)
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [cart, setCart] = useState<CartItem[]>([])
+  const [cartUpdated, setCartUpdated] = useState(false)
 
   // Load cart from localStorage on initial render
   useEffect(() => {
@@ -59,6 +62,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
         ]
       }
     })
+    
+    // Trigger the cart animation
+    setCartUpdated(true)
+    setTimeout(() => setCartUpdated(false), 1000)
   }
 
   const removeFromCart = (productId: string) => {
@@ -92,6 +99,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
         clearCart,
         totalItems,
         totalPrice,
+        cartUpdated,
+        setCartUpdated
       }}
     >
       {children}

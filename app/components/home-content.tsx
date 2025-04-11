@@ -22,6 +22,7 @@ import {
   ArrowRight,
   Twitter,
 } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -133,10 +134,11 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
     // Only run on client side
     if (typeof window !== 'undefined') {
       // Check if script already exists
-      if (!document.querySelector('script[src="//www.instagram.com/embed.js"]')) {
+      if (!document.querySelector('script[src="https://www.instagram.com/embed.js"]')) {
         const script = document.createElement('script');
-        script.src = '//www.instagram.com/embed.js';
+        script.src = 'https://www.instagram.com/embed.js';
         script.async = true;
+        script.crossOrigin = 'anonymous';
         script.onload = () => {
           // @ts-ignore - Instagram adds this to window
           if (window.instgrm) {
@@ -148,6 +150,11 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
         document.body.appendChild(script);
       } else {
         setInstagramLoaded(true);
+        // @ts-ignore
+        if (window.instgrm) {
+          // @ts-ignore
+          window.instgrm.Embeds.process();
+        }
       }
     }
     
@@ -182,7 +189,7 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
             <div className="text-center mb-8">
               <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold tracking-tight text-white mb-4">
                 <span className="text-orange-500 font-extrabold tracking-wider">ELITE</span>
-                <span className="font-light tracking-widest ml-1 md:ml-2">FABWORX</span>
+                <span className="font-bold tracking-widest ml-1 md:ml-2">FABWORX</span>
               </h1>
               <p className="text-xl sm:text-2xl md:text-3xl text-orange-500 font-light tracking-wider mb-6">
                 CUSTOM METAL FABRICATION
@@ -198,8 +205,8 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
                   </Link>
                 </Button>
                 <Button size="lg" variant="outline" className="border-orange-600 text-orange-300 hover:bg-orange-950/50 px-6 py-3 h-auto text-base focus-visible:ring-orange-600">
-                  <Link href="/catalogue" className="flex items-center">
-                    View Catalogue
+                  <Link href="/shop" className="flex items-center">
+                    View Shop
                     <ChevronRight className="ml-2 h-5 w-5" />
                   </Link>
                 </Button>
@@ -304,7 +311,7 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   className="group relative"
                 >
-                  <Link href={`/catalogue/${product.id}`}>
+                  <Link href={`/shop/${product.id}`}>
                     <div className="aspect-square bg-zinc-800 rounded-lg overflow-hidden">
                       {product.images && product.images[0] ? (
                         <img
@@ -374,7 +381,7 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
               viewport={{ once: true }}
             >
               <h2 className="text-3xl md:text-4xl font-bold mb-6">
-                About <span className="text-orange-500">Elite FabWorx</span>
+                About <span className="text-orange-500">ELITE</span> <span className="font-bold">FABWORX</span>
               </h2>
               <p className="text-zinc-400 mb-6">
                 {settings.aboutText}
@@ -558,7 +565,9 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
               </div>
             </motion.div>
             <div className="w-full max-w-2xl mx-auto">
+              <div className="bg-black/40 backdrop-blur-md border border-orange-500/30 rounded-lg p-6 md:p-8 shadow-2xl">
               <ContactForm />
+              </div>
             </div>
           </div>
         </div>
@@ -567,7 +576,7 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
       {/* Instagram Preview Section */}
       {settings.socialLinks?.instagram && (
         <section className="py-16 md:py-20 bg-black">
-          <div className="container px-4 md:px-6">
+        <div className="container px-4 md:px-6">
             <div className="text-center mb-10 md:mb-16">
               <h2 className="text-3xl md:text-4xl font-bold mb-3 md:mb-4">
                 Follow Us on <span className="text-orange-500">Instagram</span>
@@ -577,47 +586,53 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 items-start">
               {/* Instagram Post 1 */}
-              <div className="instagram-post-container">
+              <div className="instagram-post-container min-h-[600px] w-full overflow-hidden">
                 {instagramLoaded ? (
                   <blockquote 
-                    className="instagram-media" 
+                    className="instagram-media w-full !max-w-full !min-w-0 !m-0" 
+                    data-instgrm-captioned
                     data-instgrm-permalink="https://www.instagram.com/p/C5XmvX6Ru18/"
-                    data-instgrm-version="13"
+                    data-instgrm-version="14"
+                    style={{ margin: '0 !important', width: '100% !important' }}
                   ></blockquote>
                 ) : (
-                  <div className="aspect-square bg-zinc-800 rounded-md flex items-center justify-center">
+                  <div className="aspect-square bg-zinc-800 rounded-md flex items-center justify-center w-full h-full">
                     <div className="text-zinc-400">Loading Instagram post...</div>
                   </div>
                 )}
               </div>
 
               {/* Instagram Post 2 */}
-              <div className="instagram-post-container">
+              <div className="instagram-post-container min-h-[600px] w-full overflow-hidden">
                 {instagramLoaded ? (
                   <blockquote 
-                    className="instagram-media" 
+                    className="instagram-media w-full !max-w-full !min-w-0 !m-0" 
+                    data-instgrm-captioned
                     data-instgrm-permalink="https://www.instagram.com/p/C00fKqJRL8O/"
-                    data-instgrm-version="13"
+                    data-instgrm-version="14"
+                    style={{ margin: '0 !important', width: '100% !important' }}
                   ></blockquote>
                 ) : (
-                  <div className="aspect-square bg-zinc-800 rounded-md flex items-center justify-center">
+                  <div className="aspect-square bg-zinc-800 rounded-md flex items-center justify-center w-full h-full">
                     <div className="text-zinc-400">Loading Instagram post...</div>
                   </div>
                 )}
               </div>
 
               {/* Instagram Post 3 */}
-              <div className="instagram-post-container">
+              <div className="instagram-post-container min-h-[600px] w-full overflow-hidden">
                 {instagramLoaded ? (
                   <blockquote 
-                    className="instagram-media" 
+                    className="instagram-media w-full !max-w-full !min-w-0 !m-0" 
+                    data-instgrm-captioned
                     data-instgrm-permalink="https://www.instagram.com/p/CpR0E0zPU6O/"
-                    data-instgrm-version="13"
+                    data-instgrm-version="14"
+                    style={{ margin: '0 !important', width: '100% !important' }}
                   ></blockquote>
                 ) : (
-                  <div className="aspect-square bg-zinc-800 rounded-md flex items-center justify-center">
+                  <div className="aspect-square bg-zinc-800 rounded-md flex items-center justify-center w-full h-full">
                     <div className="text-zinc-400">Loading Instagram post...</div>
                   </div>
                 )}
@@ -630,7 +645,7 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
                   <Instagram className="mr-2 h-4 w-4" />
                   Follow Us
                 </Button>
-              </Link>
+                  </Link>
             </div>
           </div>
         </section>

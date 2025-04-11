@@ -1,0 +1,449 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useCart } from '@/contexts/cart-context';
+import { PaymentProvider } from '@/components/payment/payment-provider';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { toast } from 'sonner';
+import Image from 'next/image';
+import { CheckCircle2, AlertCircle, CreditCard, Truck, User, MapPin } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import { Badge } from '@/components/ui/badge';
+
+export default function CheckoutPage() {
+  const router = useRouter();
+  const { cart, totalPrice, clearCart } = useCart();
+  const [clientSecret, setClientSecret] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [activeStep, setActiveStep] = useState(1);
+  const [customerInfo, setCustomerInfo] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    address: {
+      street: '',
+      city: '',
+      state: '',
+      postcode: '',
+      country: 'Australia'
+    }
+  });
+  const [formErrors, setFormErrors] = useState({
+    name: false,
+    email: false,
+    phone: false,
+    street: false,
+    city: false,
+    state: false,
+    postcode: false
+  });
+
+  useEffect(() => {
+    if (cart.length === 0) {
+      router.push('/cart');
+    }
+  }, [cart, router]);
+
+  const validateStep = (step: number) => {
+    const errors = { ...formErrors };
+    let isValid = true;
+
+    if (step === 1) {
+      if (!customerInfo.name.trim()) {
+        errors.name = true;
+        isValid = false;
+      } else {
+        errors.name = false;
+      }
+      
+      if (!customerInfo.email.trim() || !/^\S+@\S+\.\S+$/.test(customerInfo.email)) {
+        errors.email = true;
+        isValid = false;
+      } else {
+        errors.email = false;
+      }
+      
+      if (!customerInfo.phone.trim()) {
+        errors.phone = true;
+        isValid = false;
+      } else {
+        errors.phone = false;
+      }
+    } else if (step === 2) {
+      if (!customerInfo.address.street.trim()) {
+        errors.street = true;
+        isValid = false;
+      } else {
+        errors.street = false;
+      }
+      
+      if (!customerInfo.address.city.trim()) {
+        errors.city = true;
+        isValid = false;
+      } else {
+        errors.city = false;
+      }
+      
+      if (!customerInfo.address.state.trim()) {
+        errors.state = true;
+        isValid = false;
+      } else {
+        errors.state = false;
+      }
+      
+      if (!customerInfo.address.postcode.trim()) {
+        errors.postcode = true;
+        isValid = false;
+      } else {
+        errors.postcode = false;
+      }
+    }
+
+    setFormErrors(errors);
+    return isValid;
+  };
+
+  const handleNextStep = () => {
+    if (validateStep(activeStep)) {
+      setActiveStep(activeStep + 1);
+    } else {
+      toast.error('Please fill in all required fields correctly');
+    }
+  };
+
+  const handlePrevStep = () => {
+    setActiveStep(activeStep - 1);
+  };
+
+  const handleInitiatePayment = async () => {
+    if (!validateStep(2)) {
+      toast.error('Please fill in all required information');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/stripe/payment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount: totalPrice,
+          customer: customerInfo,
+          items: cart.map(item => ({
+            name: item.name,
+            quantity: item.quantity,
+            price: item.price,
+          })),
+        }),
+      });
+
+      const data = await response.json();
+      
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      setClientSecret(data.clientSecret);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+      console.error('Payment initiation error:', error);
+      toast.error(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handlePaymentSuccess = () => {
+    clearCart();
+    toast.success('Payment successful! Thank you for your purchase.');
+  };
+
+  const handlePaymentError = (error: string) => {
+    toast.error(error);
+  };
+
+  return (
+    <div className="container px-4 md:px-6 py-24 mt-16">
+      <h1 className="text-3xl md:text-4xl font-bold mb-8 text-center">
+        Checkout
+      </h1>
+
+      {/* Progress Steps */}
+      <div className="flex justify-center mb-8">
+        <div className="flex items-center">
+          <div className={`flex items-center justify-center w-10 h-10 rounded-full ${activeStep >= 1 ? 'bg-blue-600 text-white' : 'bg-zinc-800 text-zinc-400'}`}>
+            <User className="h-5 w-5" />
+          </div>
+          <div className={`h-1 w-16 ${activeStep >= 2 ? 'bg-blue-600' : 'bg-zinc-800'}`}></div>
+          <div className={`flex items-center justify-center w-10 h-10 rounded-full ${activeStep >= 2 ? 'bg-blue-600 text-white' : 'bg-zinc-800 text-zinc-400'}`}>
+            <MapPin className="h-5 w-5" />
+          </div>
+          <div className={`h-1 w-16 ${activeStep >= 3 ? 'bg-blue-600' : 'bg-zinc-800'}`}></div>
+          <div className={`flex items-center justify-center w-10 h-10 rounded-full ${activeStep >= 3 ? 'bg-blue-600 text-white' : 'bg-zinc-800 text-zinc-400'}`}>
+            <CreditCard className="h-5 w-5" />
+          </div>
+        </div>
+      </div>
+
+      <div className="grid lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2">
+          {/* Step 1: Customer Information */}
+          {activeStep === 1 && (
+            <Card className="bg-zinc-900 border-zinc-800">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <User className="h-5 w-5 text-blue-500" />
+                  Customer Information
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Name <span className="text-red-500">*</span></label>
+                  <Input
+                    type="text"
+                    value={customerInfo.name}
+                    onChange={(e) => setCustomerInfo(prev => ({ ...prev, name: e.target.value }))}
+                    placeholder="Your name"
+                    className={formErrors.name ? "border-red-500 focus-visible:ring-red-500" : ""}
+                  />
+                  {formErrors.name && <p className="text-sm text-red-500 mt-1">Name is required</p>}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Email <span className="text-red-500">*</span></label>
+                  <Input
+                    type="email"
+                    value={customerInfo.email}
+                    onChange={(e) => setCustomerInfo(prev => ({ ...prev, email: e.target.value }))}
+                    placeholder="your@email.com"
+                    className={formErrors.email ? "border-red-500 focus-visible:ring-red-500" : ""}
+                  />
+                  {formErrors.email && <p className="text-sm text-red-500 mt-1">Valid email is required</p>}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Phone <span className="text-red-500">*</span></label>
+                  <Input
+                    type="tel"
+                    value={customerInfo.phone}
+                    onChange={(e) => setCustomerInfo(prev => ({ ...prev, phone: e.target.value }))}
+                    placeholder="Your phone number"
+                    className={formErrors.phone ? "border-red-500 focus-visible:ring-red-500" : ""}
+                  />
+                  {formErrors.phone && <p className="text-sm text-red-500 mt-1">Phone number is required</p>}
+                </div>
+                <div className="flex justify-end pt-4">
+                  <Button 
+                    onClick={handleNextStep}
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
+                    Continue to Delivery
+                    <Truck className="ml-2 h-4 w-4" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Step 2: Delivery Address */}
+          {activeStep === 2 && (
+            <Card className="bg-zinc-900 border-zinc-800">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <MapPin className="h-5 w-5 text-blue-500" />
+                  Delivery Address
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Street Address <span className="text-red-500">*</span></label>
+                  <Input
+                    type="text"
+                    value={customerInfo.address.street}
+                    onChange={(e) => setCustomerInfo(prev => ({
+                      ...prev,
+                      address: { ...prev.address, street: e.target.value }
+                    }))}
+                    placeholder="Street address"
+                    className={formErrors.street ? "border-red-500 focus-visible:ring-red-500" : ""}
+                  />
+                  {formErrors.street && <p className="text-sm text-red-500 mt-1">Street address is required</p>}
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">City <span className="text-red-500">*</span></label>
+                    <Input
+                      type="text"
+                      value={customerInfo.address.city}
+                      onChange={(e) => setCustomerInfo(prev => ({
+                        ...prev,
+                        address: { ...prev.address, city: e.target.value }
+                      }))}
+                      placeholder="City"
+                      className={formErrors.city ? "border-red-500 focus-visible:ring-red-500" : ""}
+                    />
+                    {formErrors.city && <p className="text-sm text-red-500 mt-1">City is required</p>}
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">State <span className="text-red-500">*</span></label>
+                    <Input
+                      type="text"
+                      value={customerInfo.address.state}
+                      onChange={(e) => setCustomerInfo(prev => ({
+                        ...prev,
+                        address: { ...prev.address, state: e.target.value }
+                      }))}
+                      placeholder="State"
+                      className={formErrors.state ? "border-red-500 focus-visible:ring-red-500" : ""}
+                    />
+                    {formErrors.state && <p className="text-sm text-red-500 mt-1">State is required</p>}
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Postcode <span className="text-red-500">*</span></label>
+                    <Input
+                      type="text"
+                      value={customerInfo.address.postcode}
+                      onChange={(e) => setCustomerInfo(prev => ({
+                        ...prev,
+                        address: { ...prev.address, postcode: e.target.value }
+                      }))}
+                      placeholder="Postcode"
+                      className={formErrors.postcode ? "border-red-500 focus-visible:ring-red-500" : ""}
+                    />
+                    {formErrors.postcode && <p className="text-sm text-red-500 mt-1">Postcode is required</p>}
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Country</label>
+                    <Input
+                      type="text"
+                      value={customerInfo.address.country}
+                      disabled
+                      className="bg-zinc-800"
+                    />
+                  </div>
+                </div>
+                <div className="flex justify-between pt-4">
+                  <Button 
+                    variant="outline"
+                    onClick={handlePrevStep}
+                  >
+                    Back
+                  </Button>
+                  <Button 
+                    onClick={handleNextStep}
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
+                    Continue to Payment
+                    <CreditCard className="ml-2 h-4 w-4" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Step 3: Payment */}
+          {activeStep === 3 && (
+            <Card className="bg-zinc-900 border-zinc-800">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <CreditCard className="h-5 w-5 text-blue-500" />
+                  Payment Information
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex justify-between pt-4">
+                  <Button 
+                    variant="outline"
+                    onClick={handlePrevStep}
+                  >
+                    Back
+                  </Button>
+                  <Button
+                    className="bg-blue-600 hover:bg-blue-700"
+                    size="lg"
+                    onClick={handleInitiatePayment}
+                    disabled={isLoading}
+                  >
+                    {isLoading ? "Processing..." : "Proceed to Payment"}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+
+        <div>
+          <Card className="bg-zinc-900 border-zinc-800 sticky top-24">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <CheckCircle2 className="h-5 w-5 text-blue-500" />
+                Order Summary
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {cart.map((item) => (
+                  <div key={item._id} className="flex items-center gap-4">
+                    <div className="w-12 h-12 relative flex-shrink-0">
+                      <Image
+                        src={item.image || "/placeholder.svg"}
+                        alt={item.name}
+                        fill
+                        className="object-cover rounded-md"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex justify-between">
+                        <span className="font-medium">{item.name}</span>
+                        <span>${(item.price * item.quantity).toFixed(2)}</span>
+                      </div>
+                      <div className="text-sm text-zinc-400">
+                        Quantity: {item.quantity} × ${item.price.toFixed(2)}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                
+                <Separator className="bg-zinc-800" />
+                
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-zinc-400">Subtotal</span>
+                    <span>${totalPrice.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-zinc-400">Shipping</span>
+                    <span>Free</span>
+                  </div>
+                </div>
+                
+                <Separator className="bg-zinc-800" />
+                
+                <div className="flex justify-between font-bold text-lg">
+                  <span>Total</span>
+                  <span>${totalPrice.toFixed(2)}</span>
+                </div>
+                
+                {activeStep === 3 && clientSecret && (
+                  <div className="mt-4">
+                    <PaymentProvider
+                      clientSecret={clientSecret}
+                      amount={totalPrice}
+                      onSuccess={handlePaymentSuccess}
+                      onError={handlePaymentError}
+                    />
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+} 

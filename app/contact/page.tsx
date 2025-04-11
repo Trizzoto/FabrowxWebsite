@@ -1,26 +1,19 @@
-import { ContactForm } from "./contact-form"
+import { Metadata } from 'next';
+import { ContactForm } from './contact-form';
+import { Mail, Phone, MapPin } from 'lucide-react';
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 
+export const metadata: Metadata = {
+  title: 'Contact Us | Elite Fabworx',
+  description: 'Get in touch with Elite Fabworx for all your metal fabrication needs. We\'re here to help with your custom projects.',
+};
+
 export default function ContactPage() {
   return (
     <div className="bg-black min-h-screen">
-      {/* Back Button */}
-      <div className="fixed top-4 left-4 z-50">
-        <Button
-          variant="outline"
-          className="border-orange-500/30 bg-black/20 backdrop-blur-sm hover:bg-black/40 hover:border-orange-500/50 transition-all duration-300"
-          asChild
-        >
-          <Link href="/services">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Services
-          </Link>
-        </Button>
-      </div>
-
       <section className="relative py-20 overflow-hidden">
         {/* Hero Image */}
         <div className="absolute inset-0">
@@ -43,10 +36,12 @@ export default function ContactPage() {
                 Fill out the form below and we'll get back to you as soon as possible.
               </p>
             </div>
-            <ContactForm />
+            <div className="bg-black/40 backdrop-blur-md border border-orange-500/30 rounded-lg p-6 md:p-8 shadow-2xl">
+              <ContactForm />
+            </div>
           </div>
         </div>
       </section>
     </div>
-  )
+  );
 } 

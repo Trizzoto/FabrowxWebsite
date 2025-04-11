@@ -221,7 +221,7 @@ export function ServicesContent({ services }: ServicesContentProps) {
         <div className="container px-4 md:px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Why Choose <span className="text-orange-500">Elite FabWorx</span>
+              Why Choose <span className="text-orange-500">ELITE</span> <span className="font-bold">FABWORX</span>
             </h2>
             <p className="text-zinc-400 max-w-2xl mx-auto">
               We pride ourselves on delivering exceptional service and quality workmanship

@@ -5,6 +5,10 @@ import "./styles/instagram.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { CartProvider } from "@/contexts/cart-context"
 import Footer from "@/components/footer"
+import { CartButton } from "@/components/cart/cart-button"
+import { cn } from "@/lib/utils"
+import Header from "@/components/header"
+import { Toaster } from "@/components/ui/toaster"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -22,19 +26,21 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`min-h-screen bg-black text-white ${inter.className}`}>
+      <body className={cn("min-h-screen bg-black font-sans antialiased", inter.className)}>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
-          enableSystem={false}
-          storageKey="elite-fabworx-theme"
+          enableSystem
           disableTransitionOnChange
         >
           <CartProvider>
+            <Header />
             <main id="main-content">
               {children}
             </main>
+            <CartButton />
             <Footer />
+            <Toaster />
           </CartProvider>
         </ThemeProvider>
       </body>

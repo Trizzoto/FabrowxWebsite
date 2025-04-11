@@ -23,6 +23,7 @@ import {
   Loader2
 } from 'lucide-react'
 import { useToast } from '@/components/ui/use-toast'
+import { useRouter } from 'next/navigation'
 
 // Define the types for the data
 interface Service {
@@ -84,6 +85,7 @@ interface WebsitePreviewProps {
 
 export function WebsitePreview({ settings, onUpdate }: WebsitePreviewProps) {
   const { toast } = useToast()
+  const router = useRouter()
   
   // Debug the incoming settings early
   console.log("WebsitePreview received settings:", JSON.stringify(settings.theme));
@@ -453,13 +455,11 @@ export function WebsitePreview({ settings, onUpdate }: WebsitePreviewProps) {
                 Our Services
                 <ChevronRight className="ml-2 h-4 w-4" />
               </Button>
-              <Button 
-                size="lg" 
-                variant="outline" 
-                className={`${getThemeClass('border', 'primary')} ${getThemeClass('text', 'accent')} px-6`}
+              <Button
+                onClick={() => router.push("/shop")}
+                className="bg-orange-500 hover:bg-orange-600 text-white"
               >
-                View Catalogue
-                <ChevronRight className="ml-2 h-4 w-4" />
+                View Shop
               </Button>
             </div>
           </div>

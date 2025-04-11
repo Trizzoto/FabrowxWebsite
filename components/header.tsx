@@ -15,13 +15,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
+import { useCart } from "@/contexts/cart-context"
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const pathname = usePathname()
-  // Remove session for now
-  const totalItems = 0 // Placeholder until cart context is properly set up
+  const { totalItems } = useCart()
 
   // Handle scroll effect
   useEffect(() => {
@@ -47,7 +47,7 @@ export default function Header() {
       <div className="container px-4 md:px-6 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
           <span className="text-xl md:text-2xl font-bold">
-            <span className="text-blue-500">ELITE</span> FABWORX
+            <span className="text-orange-500">ELITE</span> FABWORX
           </span>
         </Link>
 
@@ -55,48 +55,48 @@ export default function Header() {
         <nav className="hidden md:flex items-center gap-6">
           <Link
             href="/"
-            className={`text-sm font-medium transition-colors hover:text-blue-400 ${
-              pathname === "/" ? "text-blue-500" : "text-zinc-400"
+            className={`text-sm font-medium transition-colors hover:text-orange-400 ${
+              pathname === "/" ? "text-orange-500" : "text-zinc-400"
             }`}
           >
             Home
           </Link>
           <Link
             href="/shop"
-            className={`text-sm font-medium transition-colors hover:text-blue-400 ${
-              pathname.startsWith("/shop") ? "text-blue-500" : "text-zinc-400"
+            className={`text-sm font-medium transition-colors hover:text-orange-400 ${
+              pathname.startsWith("/shop") ? "text-orange-500" : "text-zinc-400"
             }`}
           >
-            Shop
+            Our Shop
           </Link>
           <Link
             href="/services"
-            className={`text-sm font-medium transition-colors hover:text-blue-400 ${
-              pathname.startsWith("/services") ? "text-blue-500" : "text-zinc-400"
+            className={`text-sm font-medium transition-colors hover:text-orange-400 ${
+              pathname.startsWith("/services") ? "text-orange-500" : "text-zinc-400"
             }`}
           >
             Services
           </Link>
           <Link
-            href="/job-booking"
-            className={`text-sm font-medium transition-colors hover:text-blue-400 ${
-              pathname.startsWith("/job-booking") ? "text-blue-500" : "text-zinc-400"
+            href="/contact"
+            className={`text-sm font-medium transition-colors hover:text-orange-400 ${
+              pathname === "/contact" ? "text-orange-500" : "text-zinc-400"
             }`}
           >
             Book a Job
           </Link>
           <Link
             href="/track-order"
-            className={`text-sm font-medium transition-colors hover:text-blue-400 ${
-              pathname.startsWith("/track-order") ? "text-blue-500" : "text-zinc-400"
+            className={`text-sm font-medium transition-colors hover:text-orange-400 ${
+              pathname.startsWith("/track-order") ? "text-orange-500" : "text-zinc-400"
             }`}
           >
             Track Order
           </Link>
           <Link
-            href="/contact"
-            className={`text-sm font-medium transition-colors hover:text-blue-400 ${
-              pathname.startsWith("/contact") ? "text-blue-500" : "text-zinc-400"
+            href="/contact-us"
+            className={`text-sm font-medium transition-colors hover:text-orange-400 ${
+              pathname === "/contact-us" ? "text-orange-500" : "text-zinc-400"
             }`}
           >
             Contact
@@ -106,9 +106,9 @@ export default function Header() {
         <div className="flex items-center gap-4">
           {/* Cart */}
           <Link href="/cart" className="relative">
-            <ShoppingCart className="h-6 w-6 text-zinc-400 hover:text-blue-400 transition-colors" />
+            <ShoppingCart className="h-6 w-6 text-zinc-400 hover:text-orange-400 transition-colors" />
             {totalItems > 0 && (
-              <Badge className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs min-w-[1.25rem] h-5 flex items-center justify-center rounded-full">
+              <Badge className="absolute -top-2 -right-3 bg-orange-600 hover:bg-orange-700 text-white text-xs min-w-[1.25rem] h-5 flex items-center justify-center rounded-full transition-colors">
                 {totalItems}
               </Badge>
             )}
@@ -135,28 +135,28 @@ export default function Header() {
           <nav className="container px-4 py-4 flex flex-col">
             <Link
               href="/"
-              className={`py-2 text-sm font-medium ${pathname === "/" ? "text-blue-500" : "text-zinc-400"}`}
+              className={`py-2 text-sm font-medium ${pathname === "/" ? "text-orange-500" : "text-zinc-400"}`}
             >
               Home
             </Link>
             <Link
               href="/shop"
-              className={`py-2 text-sm font-medium ${pathname.startsWith("/shop") ? "text-blue-500" : "text-zinc-400"}`}
+              className={`py-2 text-sm font-medium ${pathname.startsWith("/shop") ? "text-orange-500" : "text-zinc-400"}`}
             >
-              Shop
+              Our Shop
             </Link>
             <Link
               href="/services"
               className={`py-2 text-sm font-medium ${
-                pathname.startsWith("/services") ? "text-blue-500" : "text-zinc-400"
+                pathname.startsWith("/services") ? "text-orange-500" : "text-zinc-400"
               }`}
             >
               Services
             </Link>
             <Link
-              href="/job-booking"
+              href="/contact"
               className={`py-2 text-sm font-medium ${
-                pathname.startsWith("/job-booking") ? "text-blue-500" : "text-zinc-400"
+                pathname === "/contact" ? "text-orange-500" : "text-zinc-400"
               }`}
             >
               Book a Job
@@ -164,15 +164,15 @@ export default function Header() {
             <Link
               href="/track-order"
               className={`py-2 text-sm font-medium ${
-                pathname.startsWith("/track-order") ? "text-blue-500" : "text-zinc-400"
+                pathname.startsWith("/track-order") ? "text-orange-500" : "text-zinc-400"
               }`}
             >
               Track Order
             </Link>
             <Link
-              href="/contact"
+              href="/contact-us"
               className={`py-2 text-sm font-medium ${
-                pathname.startsWith("/contact") ? "text-blue-500" : "text-zinc-400"
+                pathname === "/contact-us" ? "text-orange-500" : "text-zinc-400"
               }`}
             >
               Contact

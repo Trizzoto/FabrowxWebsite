@@ -48,8 +48,8 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
           <div className="col-span-1 md:col-span-2">
             <h3 className="text-xl font-bold mb-4">
-              <span className="text-orange-500">ELITE</span>
-              <span className="font-light ml-2">FABWORX</span>
+              <span className="text-orange-500 font-extrabold tracking-wider">ELITE</span>
+              <span className="font-bold tracking-widest ml-2">FABWORX</span>
             </h3>
             <p className="text-zinc-400 mb-6">
               Precision metal fabrication for performance vehicles and 4WDs. Quality craftsmanship and exceptional service.
@@ -121,7 +121,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="mt-12 pt-8 border-t border-zinc-800 text-center text-zinc-400">
-          <p>&copy; {new Date().getFullYear()} Elite FabWorx. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} <span className="text-orange-500">ELITE</span> <span className="font-bold">FABWORX</span>. All rights reserved.</p>
         </div>
       </div>
     </footer>
