@@ -1,10 +1,11 @@
 import { XeroClient } from 'xero-node';
 
-// Initialize Xero client with permanent access using client credentials
+// Initialize Xero client with OAuth 2.0
 const xero = new XeroClient({
   clientId: process.env.XERO_CLIENT_ID!,
   clientSecret: process.env.XERO_CLIENT_SECRET!,
   redirectUris: [process.env.XERO_REDIRECT_URI || 'https://fabrowx-website.vercel.app/api/xero/callback'],
+  grantType: 'authorization_code',
   scopes: [
     'offline_access',
     'openid',
@@ -16,58 +17,8 @@ const xero = new XeroClient({
     'accounting.reports.read',
     'accounting.journals.read',
     'accounting.attachments',
-    'accounting.taxcodes',
-    'accounting.taxrates',
-    'accounting.currencies',
-    'accounting.accounts',
-    'accounting.banktransactions',
-    'accounting.banktransfers',
-    'accounting.bills',
-    'accounting.creditnotes',
-    'accounting.invoices',
-    'accounting.items',
-    'accounting.payments',
-    'accounting.purchaseorders',
-    'accounting.quotes',
-    'accounting.receipts',
-    'accounting.reports',
-    'accounting.taxrates',
-    'accounting.trackingcategories',
-    'accounting.users',
-    'accounting.organisation',
-    'accounting.budgets',
-    'accounting.batchpayments',
-    'accounting.overpayments',
-    'accounting.prepayments',
-    'accounting.reports.tenninety',
-    'accounting.reports.cashflow',
-    'accounting.reports.profitandloss',
-    'accounting.reports.balancesheet',
-    'accounting.reports.trialbalance',
-    'accounting.reports.agedpayables',
-    'accounting.reports.agedreceivables',
-    'accounting.reports.bankstatement',
-    'accounting.reports.tax',
-    'accounting.reports.trueup',
-    'accounting.reports.gst',
-    'accounting.reports.payroll',
-    'accounting.reports.financial',
-    'accounting.reports.budget',
-    'accounting.reports.forecast',
-    'accounting.reports.cashflow',
-    'accounting.reports.profitandloss',
-    'accounting.reports.balancesheet',
-    'accounting.reports.trialbalance',
-    'accounting.reports.agedpayables',
-    'accounting.reports.agedreceivables',
-    'accounting.reports.bankstatement',
-    'accounting.reports.tax',
-    'accounting.reports.trueup',
-    'accounting.reports.gst',
-    'accounting.reports.payroll',
-    'accounting.reports.financial',
-    'accounting.reports.budget',
-    'accounting.reports.forecast'
+    'accounting.settings.read',
+    'accounting.contacts.read'
   ]
 });
 
@@ -79,8 +30,15 @@ export async function getValidToken() {
       throw new Error('XERO_TENANT_ID is not set');
     }
 
-    // Get client credentials token
-    const tokenSet = await xero.getClientCredentialsToken();
+    // For OAuth 2.0, we need to handle token refresh
+    let tokenSet;
+    try {
+      // Try to refresh the token
+      tokenSet = await xero.refreshToken();
+    } catch (e) {
+      // If refresh fails, we need to re-authenticate
+      throw new Error('Authentication required. Please visit /api/xero/auth to connect to Xero.');
+    }
     
     return {
       accessToken: tokenSet.access_token,
@@ -92,31 +50,32 @@ export async function getValidToken() {
   }
 }
 
+// Get the authorization URL with explicit scope parameter
+export const getXeroAuthUrl = async () => {
+  const scopes = [
+    'offline_access',
+    'openid',
+    'profile',
+    'email',
+    'accounting.transactions',
+    'accounting.contacts',
+    'accounting.settings',
+    'accounting.reports.read',
+    'accounting.journals.read',
+    'accounting.attachments',
+    'accounting.settings.read',
+    'accounting.contacts.read'
+  ];
+  
+  const baseUrl = await xero.buildConsentUrl();
+  const url = new URL(baseUrl);
+  url.searchParams.set('scope', scopes.join(' '));
+  return url.toString();
+};
+
 export { xero };
 
 // Check required environment variables
 if (!process.env.XERO_CLIENT_ID || !process.env.XERO_CLIENT_SECRET) {
   throw new Error('Missing required Xero credentials in environment variables');
-}
-
-// OAuth2 client for web authentication (if needed)
-export const xeroClient = new XeroClient({
-  clientId: process.env.XERO_CLIENT_ID,
-  clientSecret: process.env.XERO_CLIENT_SECRET,
-  redirectUris: [process.env.XERO_REDIRECT_URI || 'https://fabrowx-website.vercel.app/api/xero/callback'],
-  scopes: [
-    'offline_access',
-    'accounting.transactions',
-    'accounting.contacts',
-    'accounting.settings',
-    'openid',
-    'profile',
-    'email'
-  ],
-  state: 'elite-fabworx',
-  grantType: 'authorization_code'
-});
-
-export const getXeroAuthUrl = () => {
-  return xeroClient.buildConsentUrl();
-}; 
+} 
