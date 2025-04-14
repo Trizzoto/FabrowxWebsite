@@ -4,73 +4,92 @@ import { Invoice } from 'xero-node/dist/gen/model/accounting/invoice';
 import { Contact } from 'xero-node/dist/gen/model/accounting/contact';
 import { LineItem } from 'xero-node/dist/gen/model/accounting/lineItem';
 import { Phone } from 'xero-node/dist/gen/model/accounting/phone';
+import { saveXeroCredentials } from '@/lib/xero-storage';
+import { xero, getValidToken } from './xero-config';
 
 // Initialize Xero client
-export const xero = new XeroClient({
+export const xeroClient = new XeroClient({
   clientId: process.env.XERO_CLIENT_ID!,
   clientSecret: process.env.XERO_CLIENT_SECRET!,
   redirectUris: [process.env.XERO_REDIRECT_URI!],
   scopes: ['accounting.transactions', 'accounting.contacts', 'accounting.settings'],
 });
 
+// Helper function to refresh tokens if needed
+async function ensureValidToken(credentials: { tenantId: string, accessToken: string, refreshToken: string, expiresAt?: number }) {
+  try {
+    // Check if token is expired or will expire in the next 5 minutes
+    const isExpired = !credentials.expiresAt || Date.now() >= (credentials.expiresAt - 5 * 60 * 1000);
+    
+    if (isExpired) {
+      console.log('Token expired or expiring soon, refreshing...');
+      
+      // Set the current token set
+      await xeroClient.setTokenSet({
+        access_token: credentials.accessToken,
+        refresh_token: credentials.refreshToken,
+        expires_in: credentials.expiresAt ? Math.floor((credentials.expiresAt - Date.now()) / 1000) : 1800
+      });
+      
+      // Refresh the token
+      const newTokenSet = await xeroClient.refreshToken();
+      
+      if (!newTokenSet.access_token || !newTokenSet.refresh_token || !newTokenSet.expires_in) {
+        throw new Error('Invalid token set received from Xero');
+      }
+      
+      // Calculate new expiry
+      const expiresAt = Date.now() + (newTokenSet.expires_in * 1000);
+      
+      // Save the new credentials
+      await saveXeroCredentials({
+        tenantId: credentials.tenantId,
+        accessToken: newTokenSet.access_token,
+        refreshToken: newTokenSet.refresh_token,
+        expiresAt
+      });
+      
+      // Update the credentials object
+      credentials.accessToken = newTokenSet.access_token;
+      credentials.refreshToken = newTokenSet.refresh_token;
+      credentials.expiresAt = expiresAt;
+      
+      console.log('Token refreshed successfully');
+    }
+    
+    return credentials;
+  } catch (error) {
+    console.error('Error refreshing Xero token:', error);
+    throw error;
+  }
+}
+
 // Helper function to create a Xero invoice
-export const createXeroInvoice = async (order: any, type: 'online' | 'workshop' = 'online', credentials?: { tenantId: string, accessToken: string, refreshToken: string }) => {
+export const createXeroInvoice = async (order: any, type: 'online' | 'workshop' = 'online') => {
   try {
     console.log('Starting Xero invoice creation:', {
       orderId: order.id,
       type,
-      hasCredentials: !!credentials,
       customerEmail: order.customer.email,
       itemCount: order.items.length
     });
 
-    let tenantId: string | undefined;
-    let accessToken: string | undefined;
-    let refreshToken: string | undefined;
-
-    if (credentials) {
-      // Use provided credentials (for webhook)
-      tenantId = credentials.tenantId;
-      accessToken = credentials.accessToken;
-      refreshToken = credentials.refreshToken;
-      console.log('Using provided credentials:', {
-        hasTenantId: !!tenantId,
-        hasAccessToken: !!accessToken,
-        hasRefreshToken: !!refreshToken
-      });
-    } else {
-      // Get Xero credentials from cookies (for browser requests)
-      const cookieStore = cookies();
-      tenantId = cookieStore.get('xero_tenant_id')?.value;
-      accessToken = cookieStore.get('xero_access_token')?.value;
-      refreshToken = cookieStore.get('xero_refresh_token')?.value;
-      console.log('Using cookie credentials:', {
-        hasTenantId: !!tenantId,
-        hasAccessToken: !!accessToken,
-        hasRefreshToken: !!refreshToken
-      });
-    }
-
-    if (!tenantId || !accessToken || !refreshToken) {
-      console.error('Missing Xero credentials:', {
-        hasTenantId: !!tenantId,
-        hasAccessToken: !!accessToken,
-        hasRefreshToken: !!refreshToken
-      });
-      throw new Error('Missing Xero credentials');
+    // Get valid token and tenant ID
+    const { accessToken, tenantId } = await getValidToken();
+    if (!tenantId) {
+      throw new Error('Missing Xero tenant ID');
     }
 
     // Set the access token
-    console.log('Setting Xero token set...');
-    await xero.setTokenSet({
+    console.log('Setting Xero token...');
+    await xeroClient.setTokenSet({
       access_token: accessToken,
-      refresh_token: refreshToken,
       expires_in: 1800
     });
 
     // First check if contact exists
     console.log('Checking for existing contact...');
-    const existingContacts = await xero.accountingApi.getContacts(tenantId, undefined, `EmailAddress="${order.customer.email}"`);
+    const existingContacts = await xeroClient.accountingApi.getContacts(tenantId, undefined, `EmailAddress="${order.customer.email}"`);
     console.log('Contact search results:', {
       found: existingContacts.body.contacts && existingContacts.body.contacts.length > 0,
       contactCount: existingContacts.body.contacts?.length || 0
@@ -133,7 +152,7 @@ export const createXeroInvoice = async (order: any, type: 'online' | 'workshop' 
     };
 
     console.log('Sending invoice to Xero API...');
-    const response = await xero.accountingApi.createInvoices(tenantId, {
+    const response = await xeroClient.accountingApi.createInvoices(tenantId, {
       invoices: [invoice]
     });
     console.log('Invoice created successfully:', {
@@ -148,33 +167,17 @@ export const createXeroInvoice = async (order: any, type: 'online' | 'workshop' 
 };
 
 // Helper function to sync payment with Xero
-export const syncPaymentToXero = async (payment: any, invoiceId: string, credentials?: { tenantId: string, accessToken: string, refreshToken: string }) => {
+export const syncPaymentToXero = async (payment: any, invoiceId: string) => {
   try {
-    let tenantId: string | undefined;
-    let accessToken: string | undefined;
-    let refreshToken: string | undefined;
-
-    if (credentials) {
-      // Use provided credentials (for webhook)
-      tenantId = credentials.tenantId;
-      accessToken = credentials.accessToken;
-      refreshToken = credentials.refreshToken;
-    } else {
-      // Get Xero credentials from cookies (for browser requests)
-      const cookieStore = cookies();
-      tenantId = cookieStore.get('xero_tenant_id')?.value;
-      accessToken = cookieStore.get('xero_access_token')?.value;
-      refreshToken = cookieStore.get('xero_refresh_token')?.value;
-    }
-
-    if (!tenantId || !accessToken || !refreshToken) {
-      throw new Error('Missing Xero credentials');
+    // Get valid token and tenant ID
+    const { accessToken, tenantId } = await getValidToken();
+    if (!tenantId) {
+      throw new Error('Missing Xero tenant ID');
     }
 
     // Set the access token
-    await xero.setTokenSet({
+    await xeroClient.setTokenSet({
       access_token: accessToken,
-      refresh_token: refreshToken,
       expires_in: 1800
     });
 
@@ -186,7 +189,7 @@ export const syncPaymentToXero = async (payment: any, invoiceId: string, credent
       reference: payment.id,
     };
 
-    const response = await xero.accountingApi.createPayment(tenantId, xeroPayment);
+    const response = await xeroClient.accountingApi.createPayment(tenantId, xeroPayment);
     return response.body;
   } catch (error) {
     console.error('Error syncing payment to Xero:', error);

@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { xero, getValidToken } from '@/lib/xero-config';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET() {
   try {
     // Get valid token and tenant ID
@@ -28,7 +31,8 @@ export async function GET() {
     console.error('Error testing Xero connection:', error);
     return NextResponse.json({
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined
     }, { status: 500 });
   }
 } 

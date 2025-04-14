@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 import { stripe } from '@/lib/stripe';
-import { createXeroInvoice, syncPaymentToXero } from '@/lib/xero';
-import { xero } from '@/lib/xero';
-import { getXeroCredentials } from '@/lib/xero-storage';
+import { createXeroInvoice } from '@/lib/xero';
 
 // Disable Next.js cache for this route
 export const dynamic = 'force-dynamic';
@@ -27,7 +25,7 @@ export async function POST(request: Request) {
       headers: Object.fromEntries(request.headers.entries())
     });
     
-    const body = await request.text();
+  const body = await request.text();
     
     // Log only the first part of the body to avoid sensitive data
     console.log('Webhook body preview:', body.substring(0, 100) + '...');
@@ -47,7 +45,7 @@ export async function POST(request: Request) {
       });
     }
 
-    console.log('Webhook signature:', {
+  console.log('Webhook signature:', {
       signatureLength: signature.length,
       signaturePreview: signature.substring(0, 20) + '...'
     });
@@ -72,8 +70,8 @@ export async function POST(request: Request) {
     let event;
     try {
       event = stripe.webhooks.constructEvent(
-        body,
-        signature,
+      body,
+      signature,
         webhookSecret
       );
     } catch (err) {
@@ -106,45 +104,6 @@ export async function POST(request: Request) {
       });
       
       try {
-        // Get Xero credentials from storage
-        console.log('Getting Xero credentials from storage...');
-        const credentials = getXeroCredentials();
-        
-        if (!credentials) {
-          console.error('Missing Xero credentials in storage');
-          return new NextResponse(JSON.stringify({ 
-            received: true,
-            warning: 'Xero integration skipped - missing credentials'
-          }), {
-            headers: {
-              'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
-              'Pragma': 'no-cache',
-              'Expires': '0',
-            }
-          });
-        }
-
-        if (Date.now() > credentials.expiresAt) {
-          console.error('Xero credentials have expired');
-          return new NextResponse(JSON.stringify({ 
-            received: true,
-            warning: 'Xero integration skipped - expired credentials'
-          }), {
-            headers: {
-              'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
-              'Pragma': 'no-cache',
-              'Expires': '0',
-            }
-          });
-        }
-
-        // Set the access token
-        await xero.setTokenSet({
-          access_token: credentials.accessToken,
-          refresh_token: credentials.refreshToken,
-          expires_in: Math.floor((credentials.expiresAt - Date.now()) / 1000)
-        });
-
         // Create order object from payment metadata
         const order = {
           id: paymentIntent.id,
@@ -157,25 +116,13 @@ export async function POST(request: Request) {
         };
 
         // Create Xero invoice
-        const xeroInvoice = await createXeroInvoice(order, 'online', credentials);
+        const xeroInvoice = await createXeroInvoice(order, 'online');
         
-        // Sync payment to Xero
-        if (xeroInvoice.invoices?.[0]?.invoiceID) {
-          await syncPaymentToXero(
-            {
-              id: paymentIntent.id,
-              amount: paymentIntent.amount / 100,
-            },
-            xeroInvoice.invoices[0].invoiceID,
-            credentials
-          );
-        }
-
         return new NextResponse(JSON.stringify({
           received: true,
           xero: {
-            invoiceId: xeroInvoice.invoices?.[0]?.invoiceID,
-            invoiceNumber: xeroInvoice.invoices?.[0]?.invoiceNumber
+          invoiceId: xeroInvoice.invoices?.[0]?.invoiceID,
+          invoiceNumber: xeroInvoice.invoices?.[0]?.invoiceNumber
           }
         }), {
           headers: {
