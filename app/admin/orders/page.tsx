@@ -41,20 +41,54 @@ export default function OrdersPage() {
   const fetchOrders = async () => {
     try {
       setIsLoading(true)
-      const response = await fetch('/api/xero/data')
-      const data = await response.json()
       
-      if (data.orders) {
-        setOrders(data.orders)
-        setFilteredOrders(data.orders)
-      } else {
-        throw new Error('Failed to fetch orders')
+      // Try to fetch Xero orders
+      let xeroOrders: Order[] = []
+      try {
+        const xeroResponse = await fetch('/api/xero/data')
+        const xeroData = await xeroResponse.json()
+        if (xeroData.orders) {
+          xeroOrders = xeroData.orders
+        }
+      } catch (error) {
+        console.warn('Could not fetch Xero orders:', error)
       }
+
+      // Try to fetch Stripe orders
+      let stripeOrders: Order[] = []
+      try {
+        const stripeResponse = await fetch('/api/stripe/orders')
+        const stripeData = await stripeResponse.json()
+        if (stripeData.orders) {
+          stripeOrders = stripeData.orders.map(order => ({
+            id: order.id,
+            reference: order.id.slice(0, 8).toUpperCase(),
+            customer: order.customer.name,
+            email: order.customer.email,
+            date: new Date().toISOString(),
+            dueDate: new Date().toISOString(),
+            status: order.status,
+            type: 'online',
+            total: order.amount / 100,
+            items: order.items
+          }))
+        }
+      } catch (error) {
+        console.warn('Could not fetch Stripe orders:', error)
+      }
+
+      // Combine and sort all orders by date
+      const allOrders = [...xeroOrders, ...stripeOrders].sort((a, b) => 
+        new Date(b.date).getTime() - new Date(a.date).getTime()
+      )
+      
+      setOrders(allOrders)
+      setFilteredOrders(allOrders)
     } catch (error) {
       console.error('Error fetching orders:', error)
       toast({
         title: "Error",
-        description: "Failed to fetch orders from Xero",
+        description: "Failed to fetch orders",
         variant: "destructive"
       })
     } finally {
