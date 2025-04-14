@@ -588,51 +588,51 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 items-start">
               {/* Instagram Post 1 */}
-              <div className="instagram-post-container min-h-[600px] w-full overflow-hidden">
+              <div className="instagram-post-container w-full overflow-hidden">
                 {instagramLoaded ? (
                   <blockquote 
-                    className="instagram-media w-full !max-w-full !min-w-0 !m-0" 
+                    className="instagram-media w-full h-full !max-w-full !min-w-0 !m-0" 
                     data-instgrm-captioned
                     data-instgrm-permalink="https://www.instagram.com/p/C5XmvX6Ru18/"
                     data-instgrm-version="14"
-                    style={{ margin: '0 !important', width: '100% !important' }}
+                    style={{ margin: '0 !important', width: '100% !important', height: '100% !important' }}
                   ></blockquote>
                 ) : (
-                  <div className="aspect-square bg-zinc-800 rounded-md flex items-center justify-center w-full h-full">
+                  <div className="bg-zinc-800 rounded-md flex items-center justify-center w-full h-full">
                     <div className="text-zinc-400">Loading Instagram post...</div>
                   </div>
                 )}
               </div>
 
               {/* Instagram Post 2 */}
-              <div className="instagram-post-container min-h-[600px] w-full overflow-hidden">
+              <div className="instagram-post-container w-full overflow-hidden">
                 {instagramLoaded ? (
                   <blockquote 
-                    className="instagram-media w-full !max-w-full !min-w-0 !m-0" 
+                    className="instagram-media w-full h-full !max-w-full !min-w-0 !m-0" 
                     data-instgrm-captioned
                     data-instgrm-permalink="https://www.instagram.com/p/C00fKqJRL8O/"
                     data-instgrm-version="14"
-                    style={{ margin: '0 !important', width: '100% !important' }}
+                    style={{ margin: '0 !important', width: '100% !important', height: '100% !important' }}
                   ></blockquote>
                 ) : (
-                  <div className="aspect-square bg-zinc-800 rounded-md flex items-center justify-center w-full h-full">
+                  <div className="bg-zinc-800 rounded-md flex items-center justify-center w-full h-full">
                     <div className="text-zinc-400">Loading Instagram post...</div>
                   </div>
                 )}
               </div>
 
               {/* Instagram Post 3 */}
-              <div className="instagram-post-container min-h-[600px] w-full overflow-hidden">
+              <div className="instagram-post-container w-full overflow-hidden">
                 {instagramLoaded ? (
                   <blockquote 
-                    className="instagram-media w-full !max-w-full !min-w-0 !m-0" 
+                    className="instagram-media w-full h-full !max-w-full !min-w-0 !m-0" 
                     data-instgrm-captioned
                     data-instgrm-permalink="https://www.instagram.com/p/CpR0E0zPU6O/"
                     data-instgrm-version="14"
-                    style={{ margin: '0 !important', width: '100% !important' }}
+                    style={{ margin: '0 !important', width: '100% !important', height: '100% !important' }}
                   ></blockquote>
                 ) : (
-                  <div className="aspect-square bg-zinc-800 rounded-md flex items-center justify-center w-full h-full">
+                  <div className="bg-zinc-800 rounded-md flex items-center justify-center w-full h-full">
                     <div className="text-zinc-400">Loading Instagram post...</div>
                   </div>
                 )}

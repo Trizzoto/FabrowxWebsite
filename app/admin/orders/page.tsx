@@ -1,208 +1,186 @@
 "use client"
 
-import { useState } from "react"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { Search, MoreHorizontal, Eye, FileText, ChevronDown, ChevronUp } from "lucide-react"
-import { mockOrders } from "@/lib/mock-data"
+import { useState, useEffect } from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { Search, FileText, Calendar, User, DollarSign, Tag, RefreshCw } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
+import { useToast } from '@/components/ui/use-toast'
+
+interface OrderItem {
+  name: string;
+  quantity: number;
+  price: number;
+}
+
+interface Order {
+  id: string;
+  reference: string;
+  customer: string;
+  email: string;
+  date: string;
+  dueDate: string;
+  status: string;
+  type: 'online' | 'workshop' | 'other';
+  total: number;
+  items: OrderItem[];
+}
 
 export default function OrdersPage() {
+  const [orders, setOrders] = useState<Order[]>([])
+  const [filteredOrders, setFilteredOrders] = useState<Order[]>([])
   const [searchQuery, setSearchQuery] = useState("")
-  const [orders] = useState(mockOrders)
-  const [expandedOrder, setExpandedOrder] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const { toast } = useToast()
 
-  // Filter orders based on search query
-  const filteredOrders = orders.filter(
-    (order) =>
-      order.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      order.customer.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      order.email.toLowerCase().includes(searchQuery.toLowerCase()),
-  )
+  useEffect(() => {
+    fetchOrders()
+  }, [])
 
-  // Get status badge color
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "completed":
-        return <Badge className="bg-green-600">Completed</Badge>
-      case "processing":
-        return <Badge className="bg-blue-600">Processing</Badge>
-      case "shipped":
-        return <Badge className="bg-purple-600">Shipped</Badge>
-      case "pending":
-        return <Badge className="bg-yellow-600">Pending</Badge>
-      case "cancelled":
-        return <Badge className="bg-red-600">Cancelled</Badge>
-      default:
-        return <Badge variant="outline">{status}</Badge>
+  const fetchOrders = async () => {
+    try {
+      setIsLoading(true)
+      const response = await fetch('/api/xero/data')
+      const data = await response.json()
+      
+      if (data.orders) {
+        setOrders(data.orders)
+        setFilteredOrders(data.orders)
+      } else {
+        throw new Error('Failed to fetch orders')
+      }
+    } catch (error) {
+      console.error('Error fetching orders:', error)
+      toast({
+        title: "Error",
+        description: "Failed to fetch orders from Xero",
+        variant: "destructive"
+      })
+    } finally {
+      setIsLoading(false)
     }
   }
 
-  const toggleOrderExpansion = (orderId: string) => {
-    setExpandedOrder(expandedOrder === orderId ? null : orderId)
+  useEffect(() => {
+    if (searchQuery) {
+      const filtered = orders.filter(order => 
+        order.reference.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        order.customer.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        order.email.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+      setFilteredOrders(filtered)
+    } else {
+      setFilteredOrders(orders)
+    }
+  }, [searchQuery, orders])
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'PAID':
+        return <Badge className="bg-green-500/10 text-green-500 hover:bg-green-500/20">Paid</Badge>
+      case 'AUTHORISED':
+        return <Badge className="bg-blue-500/10 text-blue-500 hover:bg-blue-500/20">Authorised</Badge>
+      case 'DRAFT':
+        return <Badge className="bg-yellow-500/10 text-yellow-500 hover:bg-yellow-500/20">Draft</Badge>
+      case 'VOIDED':
+        return <Badge className="bg-red-500/10 text-red-500 hover:bg-red-500/20">Voided</Badge>
+      default:
+        return <Badge className="bg-zinc-500/10 text-zinc-500 hover:bg-zinc-500/20">{status}</Badge>
+    }
+  }
+
+  const getTypeBadge = (type: string) => {
+    switch (type) {
+      case 'online':
+        return <Badge className="bg-purple-500/10 text-purple-500 hover:bg-purple-500/20">Online Store</Badge>
+      case 'workshop':
+        return <Badge className="bg-orange-500/10 text-orange-500 hover:bg-orange-500/20">Workshop</Badge>
+      default:
+        return <Badge className="bg-zinc-500/10 text-zinc-500 hover:bg-zinc-500/20">Other</Badge>
+    }
   }
 
   return (
-    <div className="space-y-4 sm:space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Orders</h2>
-      </div>
-
-      <div className="flex items-center gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
-          <Input
-            placeholder="Search orders..."
-            className="pl-10 bg-zinc-900 border-zinc-800"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
-      </div>
-
-      {/* Mobile View */}
-      <div className="lg:hidden space-y-4">
-        {filteredOrders.length === 0 ? (
-          <div className="text-center py-8 text-zinc-500">
-            No orders found. Try adjusting your search.
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle>Orders</CardTitle>
+            <Button onClick={fetchOrders} variant="outline" size="sm">
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Refresh
+            </Button>
           </div>
-        ) : (
-          filteredOrders.map((order) => (
-            <div
-              key={order.id}
-              className="rounded-lg border border-zinc-800 bg-zinc-900 overflow-hidden"
-            >
-              <div
-                className="p-4 cursor-pointer"
-                onClick={() => toggleOrderExpansion(order.id)}
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <div className="font-medium text-sm">{order.id}</div>
-                  {getStatusBadge(order.status)}
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="font-medium">{order.customer}</div>
-                    <div className="text-xs text-zinc-500 truncate max-w-[200px]">
-                      {order.email}
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="font-medium">${order.total.toFixed(2)}</div>
-                    {expandedOrder === order.id ? (
-                      <ChevronUp className="h-4 w-4 text-zinc-500" />
-                    ) : (
-                      <ChevronDown className="h-4 w-4 text-zinc-500" />
-                    )}
-                  </div>
-                </div>
-              </div>
+        </CardHeader>
+        <CardContent>
+          <div className="relative mb-6">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-zinc-500" />
+            <Input
+              placeholder="Search orders..."
+              className="pl-10"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
 
-              {expandedOrder === order.id && (
-                <div className="px-4 pb-4 border-t border-zinc-800 pt-4 space-y-3">
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <div className="text-zinc-500">Date</div>
-                      <div>{new Date(order.date).toLocaleDateString('en-GB')}</div>
-                    </div>
-                    <div>
-                      <div className="text-zinc-500">Items</div>
-                      <div>{order.items}</div>
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button variant="outline" size="sm" className="w-full">
-                      <Eye className="h-4 w-4 mr-2" />
-                      View Details
-                    </Button>
-                    <Button variant="outline" size="sm" className="w-full">
-                      <FileText className="h-4 w-4 mr-2" />
-                      Invoice
-                    </Button>
-                  </div>
-                </div>
-              )}
+          {isLoading ? (
+            <div className="flex justify-center py-8">
+              <RefreshCw className="h-8 w-8 animate-spin text-orange-500" />
             </div>
-          ))
-        )}
-      </div>
-
-      {/* Desktop View */}
-      <div className="hidden lg:block rounded-md border border-zinc-800 bg-zinc-900 overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow className="hover:bg-zinc-800/50">
-              <TableHead className="w-[100px]">Order ID</TableHead>
-              <TableHead className="min-w-[200px]">Customer</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Items</TableHead>
-              <TableHead>Total</TableHead>
-              <TableHead className="w-[60px] text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredOrders.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={7} className="text-center py-8 text-zinc-500">
-                  No orders found. Try adjusting your search.
-                </TableCell>
-              </TableRow>
-            ) : (
-              filteredOrders.map((order) => (
-                <TableRow key={order.id} className="hover:bg-zinc-800/50">
-                  <TableCell className="font-medium">{order.id}</TableCell>
-                  <TableCell>
-                    <div>
-                      <div className="font-medium">{order.customer}</div>
-                      <div className="text-xs text-zinc-500 truncate max-w-[200px]">{order.email}</div>
+          ) : filteredOrders.length === 0 ? (
+            <div className="text-center py-8 text-zinc-500">
+              {searchQuery ? "No orders found matching your search" : "No orders found"}
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {filteredOrders.map((order) => (
+                <Card key={order.id} className="bg-zinc-900 border-zinc-800">
+                  <CardContent className="p-4">
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <FileText className="h-4 w-4 text-orange-500" />
+                          <span className="font-medium">Invoice #{order.reference}</span>
+                          {getStatusBadge(order.status)}
+                          {getTypeBadge(order.type)}
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-zinc-400">
+                          <User className="h-3 w-3" />
+                          <span>{order.customer}</span>
+                          {order.email && <span className="text-zinc-500">({order.email})</span>}
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-zinc-400">
+                          <Calendar className="h-3 w-3" />
+                          <span>Date: {new Date(order.date).toLocaleDateString()}</span>
+                          <span className="text-zinc-500">|</span>
+                          <span>Due: {new Date(order.dueDate).toLocaleDateString()}</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-zinc-400">
+                          <DollarSign className="h-3 w-3" />
+                          <span>Total: ${order.total.toFixed(2)}</span>
+                        </div>
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {order.items.map((item, index) => (
+                            <Badge key={index} variant="outline" className="bg-zinc-800/50">
+                              <Tag className="h-3 w-3 mr-1" />
+                              {item.quantity}x {item.name}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button variant="outline" size="sm">View Details</Button>
+                        <Button variant="outline" size="sm">Download PDF</Button>
+                      </div>
                     </div>
-                  </TableCell>
-                  <TableCell>{new Date(order.date).toLocaleDateString('en-GB', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric'
-                  })}</TableCell>
-                  <TableCell>{getStatusBadge(order.status)}</TableCell>
-                  <TableCell>{order.items}</TableCell>
-                  <TableCell>${order.total.toFixed(2)}</TableCell>
-                  <TableCell className="text-right p-2">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <MoreHorizontal className="h-4 w-4" />
-                          <span className="sr-only">Actions</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="bg-zinc-900 border-zinc-800">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuSeparator className="bg-zinc-800" />
-                        <DropdownMenuItem className="cursor-pointer">
-                          <Eye className="mr-2 h-4 w-4" />
-                          View Details
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="cursor-pointer">
-                          <FileText className="mr-2 h-4 w-4" />
-                          Generate Invoice
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   )
 }

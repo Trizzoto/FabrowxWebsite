@@ -63,7 +63,7 @@ export default function AddToCartButton({ product }: AddToCartButtonProps) {
       </div>
 
       <Button
-        className="bg-blue-600 hover:bg-blue-700 w-full"
+        className="bg-orange-600 hover:bg-orange-700 w-full"
         size="lg"
         onClick={handleAddToCart}
         disabled={product.stockCount === 0}

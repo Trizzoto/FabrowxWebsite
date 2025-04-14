@@ -176,15 +176,15 @@ export default function CheckoutPage() {
       {/* Progress Steps */}
       <div className="flex justify-center mb-8">
         <div className="flex items-center">
-          <div className={`flex items-center justify-center w-10 h-10 rounded-full ${activeStep >= 1 ? 'bg-blue-600 text-white' : 'bg-zinc-800 text-zinc-400'}`}>
+          <div className={`flex items-center justify-center w-10 h-10 rounded-full ${activeStep >= 1 ? 'bg-orange-600 text-white' : 'bg-zinc-800 text-zinc-400'}`}>
             <User className="h-5 w-5" />
           </div>
-          <div className={`h-1 w-16 ${activeStep >= 2 ? 'bg-blue-600' : 'bg-zinc-800'}`}></div>
-          <div className={`flex items-center justify-center w-10 h-10 rounded-full ${activeStep >= 2 ? 'bg-blue-600 text-white' : 'bg-zinc-800 text-zinc-400'}`}>
+          <div className={`h-1 w-16 ${activeStep >= 2 ? 'bg-orange-600' : 'bg-zinc-800'}`}></div>
+          <div className={`flex items-center justify-center w-10 h-10 rounded-full ${activeStep >= 2 ? 'bg-orange-600 text-white' : 'bg-zinc-800 text-zinc-400'}`}>
             <MapPin className="h-5 w-5" />
           </div>
-          <div className={`h-1 w-16 ${activeStep >= 3 ? 'bg-blue-600' : 'bg-zinc-800'}`}></div>
-          <div className={`flex items-center justify-center w-10 h-10 rounded-full ${activeStep >= 3 ? 'bg-blue-600 text-white' : 'bg-zinc-800 text-zinc-400'}`}>
+          <div className={`h-1 w-16 ${activeStep >= 3 ? 'bg-orange-600' : 'bg-zinc-800'}`}></div>
+          <div className={`flex items-center justify-center w-10 h-10 rounded-full ${activeStep >= 3 ? 'bg-orange-600 text-white' : 'bg-zinc-800 text-zinc-400'}`}>
             <CreditCard className="h-5 w-5" />
           </div>
         </div>
@@ -197,7 +197,7 @@ export default function CheckoutPage() {
             <Card className="bg-zinc-900 border-zinc-800">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <User className="h-5 w-5 text-blue-500" />
+                  <User className="h-5 w-5 text-orange-500" />
                   Customer Information
                 </CardTitle>
               </CardHeader>
@@ -235,12 +235,19 @@ export default function CheckoutPage() {
                   />
                   {formErrors.phone && <p className="text-sm text-red-500 mt-1">Phone number is required</p>}
                 </div>
-                <div className="flex justify-end pt-4">
+                <div className="flex justify-between pt-4">
+                  <Button 
+                    variant="outline"
+                    onClick={handlePrevStep}
+                    className="border-orange-500/30 hover:bg-orange-500/10"
+                  >
+                    Back
+                  </Button>
                   <Button 
                     onClick={handleNextStep}
-                    className="bg-blue-600 hover:bg-blue-700"
+                    className="bg-orange-600 hover:bg-orange-700"
                   >
-                    Continue to Delivery
+                    Continue to Shipping
                     <Truck className="ml-2 h-4 w-4" />
                   </Button>
                 </div>
@@ -248,13 +255,13 @@ export default function CheckoutPage() {
             </Card>
           )}
 
-          {/* Step 2: Delivery Address */}
+          {/* Step 2: Shipping Information */}
           {activeStep === 2 && (
             <Card className="bg-zinc-900 border-zinc-800">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <MapPin className="h-5 w-5 text-blue-500" />
-                  Delivery Address
+                  <MapPin className="h-5 w-5 text-orange-500" />
+                  Shipping Information
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -331,12 +338,13 @@ export default function CheckoutPage() {
                   <Button 
                     variant="outline"
                     onClick={handlePrevStep}
+                    className="border-orange-500/30 hover:bg-orange-500/10"
                   >
                     Back
                   </Button>
                   <Button 
                     onClick={handleNextStep}
-                    className="bg-blue-600 hover:bg-blue-700"
+                    className="bg-orange-600 hover:bg-orange-700"
                   >
                     Continue to Payment
                     <CreditCard className="ml-2 h-4 w-4" />
@@ -347,11 +355,11 @@ export default function CheckoutPage() {
           )}
 
           {/* Step 3: Payment */}
-          {activeStep === 3 && (
+          {activeStep === 3 && !clientSecret && (
             <Card className="bg-zinc-900 border-zinc-800">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <CreditCard className="h-5 w-5 text-blue-500" />
+                  <CreditCard className="h-5 w-5 text-orange-500" />
                   Payment Information
                 </CardTitle>
               </CardHeader>
@@ -360,11 +368,12 @@ export default function CheckoutPage() {
                   <Button 
                     variant="outline"
                     onClick={handlePrevStep}
+                    className="border-orange-500/30 hover:bg-orange-500/10"
                   >
                     Back
                   </Button>
                   <Button
-                    className="bg-blue-600 hover:bg-blue-700"
+                    className="bg-orange-600 hover:bg-orange-700"
                     size="lg"
                     onClick={handleInitiatePayment}
                     disabled={isLoading}
@@ -381,7 +390,7 @@ export default function CheckoutPage() {
           <Card className="bg-zinc-900 border-zinc-800 sticky top-24">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <CheckCircle2 className="h-5 w-5 text-blue-500" />
+                <CheckCircle2 className="h-5 w-5 text-orange-500" />
                 Order Summary
               </CardTitle>
             </CardHeader>

@@ -1,35 +1,33 @@
 import { NextResponse } from 'next/server';
-import { stripe, formatStripePrice } from '@/lib/stripe';
+import { stripe, createPaymentIntent, getBaseUrl } from '@/lib/stripe';
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { amount, customer, items } = body;
+    const { amount, items, customer } = body;
 
-    // Create a payment intent with Stripe
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: formatStripePrice(amount),
-      currency: 'aud',
-      payment_method_types: ['card'],
-      metadata: {
-        customer_name: customer.name,
-        customer_email: customer.email,
-        customer_phone: customer.phone,
-        items: JSON.stringify(items.map((item: any) => ({
-          name: item.name,
-          quantity: item.quantity,
-          price: item.price,
-        }))),
-      },
-    });
+    // Convert amount to cents for Stripe
+    const amountInCents = Math.round(amount * 100);
+
+    // Create metadata for the payment intent
+    const metadata = {
+      customer_name: customer.name,
+      customer_email: customer.email,
+      customer_phone: customer.phone,
+      items: JSON.stringify(items)
+    };
+
+    // Create payment intent with amount in cents
+    const paymentIntent = await createPaymentIntent(amountInCents, metadata);
 
     return NextResponse.json({
       clientSecret: paymentIntent.client_secret,
+      successUrl: `${getBaseUrl()}/payment/success`
     });
   } catch (error) {
-    console.error('Error processing payment:', error);
+    console.error('Error creating payment intent:', error);
     return NextResponse.json(
-      { error: 'Failed to process payment' },
+      { error: 'Failed to create payment' },
       { status: 500 }
     );
   }

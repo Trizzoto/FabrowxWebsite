@@ -58,15 +58,15 @@ export default function RelatedProducts({ products, currentProductId }: RelatedP
               </div>
               <div className="p-4">
                 <Link href={`/shop/${product._id}`}>
-                  <h3 className="font-bold mb-1 hover:text-blue-400 transition-colors">{product.name}</h3>
+                  <h3 className="font-bold mb-1 hover:text-orange-400 transition-colors">{product.name}</h3>
                 </Link>
                 <p className="text-zinc-500 text-sm mb-2">{product.category}</p>
                 <div className="flex justify-between items-center">
-                  <span className="text-blue-400 font-semibold">${product.price.toFixed(2)}</span>
+                  <span className="text-orange-400 font-semibold">${product.price.toFixed(2)}</span>
                   <Button
                     size="sm"
                     variant="ghost"
-                    className="text-zinc-400 hover:text-white hover:bg-blue-600"
+                    className="text-zinc-400 hover:text-white hover:bg-orange-600"
                     onClick={() => handleAddToCart(product)}
                     disabled={product.stockCount === 0}
                   >

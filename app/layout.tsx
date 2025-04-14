@@ -4,11 +4,8 @@ import "@/app/globals.css"
 import "./styles/instagram.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { CartProvider } from "@/contexts/cart-context"
-import Footer from "@/components/footer"
-import { CartButton } from "@/components/cart/cart-button"
-import { cn } from "@/lib/utils"
-import Header from "@/components/header"
 import { Toaster } from "@/components/ui/toaster"
+import ClientLayout from "@/components/client-layout"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -26,7 +23,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn("min-h-screen bg-black font-sans antialiased", inter.className)}>
+      <body
+        className={`min-h-screen bg-black font-sans antialiased ${inter.className}`}
+      >
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
@@ -34,15 +33,10 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <CartProvider>
-            <Header />
-            <main id="main-content">
-              {children}
-            </main>
-            <CartButton />
-            <Footer />
-            <Toaster />
+            <ClientLayout>{children}</ClientLayout>
           </CartProvider>
         </ThemeProvider>
+        <Toaster />
       </body>
     </html>
   )

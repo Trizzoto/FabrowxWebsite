@@ -1,208 +1,172 @@
 "use client"
 
-import { useState } from "react"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { Search, MoreHorizontal, User, Mail, ShoppingBag, ChevronDown, ChevronUp } from "lucide-react"
-import { mockCustomers } from "@/lib/mock-data"
+import { useState, useEffect } from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { Search, Mail, Phone, MapPin, User, Calendar } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { useToast } from '@/components/ui/use-toast'
+import { RefreshCw } from 'lucide-react'
+
+interface Customer {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  address: string;
+  city: string;
+  state: string;
+  postcode: string;
+  country: string;
+  status: string;
+  lastUpdated: string;
+}
 
 export default function CustomersPage() {
+  const [customers, setCustomers] = useState<Customer[]>([])
+  const [filteredCustomers, setFilteredCustomers] = useState<Customer[]>([])
   const [searchQuery, setSearchQuery] = useState("")
-  const [customers] = useState(mockCustomers)
-  const [expandedCustomer, setExpandedCustomer] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const { toast } = useToast()
 
-  // Filter customers based on search query
-  const filteredCustomers = customers.filter(
-    (customer) =>
-      customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      customer.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      customer.id.toLowerCase().includes(searchQuery.toLowerCase()),
-  )
+  useEffect(() => {
+    fetchCustomers()
+  }, [])
 
-  const toggleCustomerExpansion = (customerId: string) => {
-    setExpandedCustomer(expandedCustomer === customerId ? null : customerId)
+  const fetchCustomers = async () => {
+    try {
+      setIsLoading(true)
+      const response = await fetch('/api/xero/data')
+      const data = await response.json()
+      
+      if (data.customers) {
+        setCustomers(data.customers)
+        setFilteredCustomers(data.customers)
+      } else {
+        throw new Error('Failed to fetch customers')
+      }
+    } catch (error) {
+      console.error('Error fetching customers:', error)
+      toast({
+        title: "Error",
+        description: "Failed to fetch customers from Xero",
+        variant: "destructive"
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    if (searchQuery) {
+      const filtered = customers.filter(customer => 
+        customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        customer.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        customer.phone.includes(searchQuery)
+      )
+      setFilteredCustomers(filtered)
+    } else {
+      setFilteredCustomers(customers)
+    }
+  }, [searchQuery, customers])
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'ACTIVE':
+        return <Badge className="bg-green-500/10 text-green-500 hover:bg-green-500/20">Active</Badge>
+      case 'ARCHIVED':
+        return <Badge className="bg-zinc-500/10 text-zinc-500 hover:bg-zinc-500/20">Archived</Badge>
+      default:
+        return <Badge className="bg-yellow-500/10 text-yellow-500 hover:bg-yellow-500/20">{status}</Badge>
+    }
   }
 
   return (
-    <div className="space-y-4 sm:space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Customers</h2>
-      </div>
-
-      <div className="flex items-center gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
-          <Input
-            placeholder="Search customers..."
-            className="pl-10 bg-zinc-900 border-zinc-800"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
-      </div>
-
-      {/* Mobile View */}
-      <div className="lg:hidden space-y-4">
-        {filteredCustomers.length === 0 ? (
-          <div className="text-center py-8 text-zinc-500">
-            No customers found. Try adjusting your search.
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle>Customers</CardTitle>
+            <Button onClick={fetchCustomers} variant="outline" size="sm">
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Refresh
+            </Button>
           </div>
-        ) : (
-          filteredCustomers.map((customer) => (
-            <div
-              key={customer.id}
-              className="rounded-lg border border-zinc-800 bg-zinc-900 overflow-hidden"
-            >
-              <div
-                className="p-4 cursor-pointer"
-                onClick={() => toggleCustomerExpansion(customer.id)}
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <div className="font-medium text-sm">{customer.id}</div>
-                  {customer.status === "active" ? (
-                    <Badge className="bg-green-600">Active</Badge>
-                  ) : (
-                    <Badge variant="outline">Inactive</Badge>
-                  )}
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="font-medium">{customer.name}</div>
-                    <div className="text-xs text-zinc-500 truncate max-w-[200px]">
-                      {customer.email}
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="font-medium text-sm">{customer.orders} orders</div>
-                    {expandedCustomer === customer.id ? (
-                      <ChevronUp className="h-4 w-4 text-zinc-500" />
-                    ) : (
-                      <ChevronDown className="h-4 w-4 text-zinc-500" />
-                    )}
-                  </div>
-                </div>
-              </div>
+        </CardHeader>
+        <CardContent>
+          <div className="relative mb-6">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-zinc-500" />
+            <Input
+              placeholder="Search customers..."
+              className="pl-10"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
 
-              {expandedCustomer === customer.id && (
-                <div className="px-4 pb-4 border-t border-zinc-800 pt-4 space-y-3">
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <div className="text-zinc-500">Join Date</div>
-                      <div>{new Date(customer.joinDate).toLocaleDateString('en-GB')}</div>
-                    </div>
-                    <div>
-                      <div className="text-zinc-500">Total Spent</div>
-                      <div>${customer.totalSpent.toFixed(2)}</div>
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button variant="outline" size="sm" className="w-full">
-                      <User className="h-4 w-4 mr-2" />
-                      Profile
-                    </Button>
-                    <Button variant="outline" size="sm" className="w-full">
-                      <Mail className="h-4 w-4 mr-2" />
-                      Email
-                    </Button>
-                    <Button variant="outline" size="sm" className="w-full">
-                      <ShoppingBag className="h-4 w-4 mr-2" />
-                      Orders
-                    </Button>
-                  </div>
-                </div>
-              )}
+          {isLoading ? (
+            <div className="flex justify-center py-8">
+              <RefreshCw className="h-8 w-8 animate-spin text-orange-500" />
             </div>
-          ))
-        )}
-      </div>
-
-      {/* Desktop View */}
-      <div className="hidden lg:block rounded-md border border-zinc-800 bg-zinc-900 overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow className="hover:bg-zinc-800/50">
-              <TableHead className="w-[100px]">ID</TableHead>
-              <TableHead className="min-w-[200px]">Name</TableHead>
-              <TableHead>Join Date</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Orders</TableHead>
-              <TableHead>Total Spent</TableHead>
-              <TableHead className="w-[60px] text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredCustomers.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={7} className="text-center py-8 text-zinc-500">
-                  No customers found. Try adjusting your search.
-                </TableCell>
-              </TableRow>
-            ) : (
-              filteredCustomers.map((customer) => (
-                <TableRow key={customer.id} className="hover:bg-zinc-800/50">
-                  <TableCell className="font-medium">{customer.id}</TableCell>
-                  <TableCell>
-                    <div>
-                      <div className="font-medium">{customer.name}</div>
-                      <div className="text-xs text-zinc-500 truncate max-w-[200px]">{customer.email}</div>
+          ) : filteredCustomers.length === 0 ? (
+            <div className="text-center py-8 text-zinc-500">
+              {searchQuery ? "No customers found matching your search" : "No customers found"}
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {filteredCustomers.map((customer) => (
+                <Card key={customer.id} className="bg-zinc-900 border-zinc-800">
+                  <CardContent className="p-4">
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <User className="h-4 w-4 text-orange-500" />
+                          <span className="font-medium">{customer.name}</span>
+                          {getStatusBadge(customer.status)}
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-zinc-400">
+                          <Mail className="h-3 w-3" />
+                          <span>{customer.email}</span>
+                        </div>
+                        {customer.phone && (
+                          <div className="flex items-center gap-2 text-sm text-zinc-400">
+                            <Phone className="h-3 w-3" />
+                            <span>{customer.phone}</span>
+                          </div>
+                        )}
+                        {(customer.address || customer.city || customer.state || customer.postcode) && (
+                          <div className="flex items-center gap-2 text-sm text-zinc-400">
+                            <MapPin className="h-3 w-3" />
+                            <span>
+                              {[
+                                customer.address,
+                                customer.city,
+                                customer.state,
+                                customer.postcode,
+                                customer.country
+                              ].filter(Boolean).join(', ')}
+                            </span>
+                          </div>
+                        )}
+                        <div className="flex items-center gap-2 text-xs text-zinc-500">
+                          <Calendar className="h-3 w-3" />
+                          <span>Last updated: {new Date(customer.lastUpdated).toLocaleDateString()}</span>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button variant="outline" size="sm">View Details</Button>
+                        <Button variant="outline" size="sm">Edit</Button>
+                      </div>
                     </div>
-                  </TableCell>
-                  <TableCell>{new Date(customer.joinDate).toLocaleDateString('en-GB', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric'
-                  })}</TableCell>
-                  <TableCell>
-                    {customer.status === "active" ? (
-                      <Badge className="bg-green-600">Active</Badge>
-                    ) : (
-                      <Badge variant="outline">Inactive</Badge>
-                    )}
-                  </TableCell>
-                  <TableCell>{customer.orders}</TableCell>
-                  <TableCell>${customer.totalSpent.toFixed(2)}</TableCell>
-                  <TableCell className="text-right p-2">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <MoreHorizontal className="h-4 w-4" />
-                          <span className="sr-only">Actions</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="bg-zinc-900 border-zinc-800">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuSeparator className="bg-zinc-800" />
-                        <DropdownMenuItem className="cursor-pointer">
-                          <User className="mr-2 h-4 w-4" />
-                          View Profile
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="cursor-pointer">
-                          <Mail className="mr-2 h-4 w-4" />
-                          Send Email
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="cursor-pointer">
-                          <ShoppingBag className="mr-2 h-4 w-4" />
-                          View Orders
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   )
 }

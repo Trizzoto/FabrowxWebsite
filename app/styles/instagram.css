@@ -1,6 +1,6 @@
 .instagram-post-container {
   width: 100%;
-  min-height: 300px;
+  aspect-ratio: 4/5;
   background: #000;
   border-radius: 8px;
   overflow: hidden;
@@ -12,6 +12,7 @@
 
 .instagram-media {
   width: 100% !important;
+  height: 100% !important;
   min-width: 100% !important;
   border: none !important;
   background: transparent !important;
@@ -23,6 +24,6 @@
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .instagram-post-container {
-    min-height: 250px;
+    aspect-ratio: 4/5;
   }
 } 
