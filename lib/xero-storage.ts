@@ -41,21 +41,38 @@ export function saveXeroCredentials(credentials: XeroCredentials) {
 
 export function getXeroCredentials(): XeroCredentials | null {
   try {
+    // First try to get from cookies
     const cookieStore = cookies();
     const tenantId = cookieStore.get('xero_tenant_id')?.value;
     const accessToken = cookieStore.get('xero_access_token')?.value;
     const refreshToken = cookieStore.get('xero_refresh_token')?.value;
     const expiresAt = cookieStore.get('xero_expires_at')?.value;
     
-    if (!tenantId || !accessToken || !refreshToken || !expiresAt) {
+    // If cookies are available, use them
+    if (tenantId && accessToken && refreshToken && expiresAt) {
+      return {
+        tenantId,
+        accessToken,
+        refreshToken,
+        expiresAt: parseInt(expiresAt, 10)
+      };
+    }
+    
+    // Fallback to environment variables (for webhook context)
+    const envTenantId = process.env.XERO_TENANT_ID;
+    const envAccessToken = process.env.XERO_ACCESS_TOKEN;
+    const envRefreshToken = process.env.XERO_REFRESH_TOKEN;
+    const envExpiresAt = process.env.XERO_EXPIRES_AT;
+    
+    if (!envTenantId || !envAccessToken || !envRefreshToken || !envExpiresAt) {
       return null;
     }
     
     return {
-      tenantId,
-      accessToken,
-      refreshToken,
-      expiresAt: parseInt(expiresAt, 10)
+      tenantId: envTenantId,
+      accessToken: envAccessToken,
+      refreshToken: envRefreshToken,
+      expiresAt: parseInt(envExpiresAt, 10)
     };
   } catch (error) {
     console.error('Error reading Xero credentials:', error);
