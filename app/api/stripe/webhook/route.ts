@@ -25,10 +25,10 @@ export async function POST(request: Request) {
     const signature = headers().get('stripe-signature');
     if (!signature) {
       console.error('No stripe-signature header found');
-      return NextResponse.json(
-        { error: 'No signature header' },
-        { status: 400 }
-      );
+      return NextResponse.json({ 
+        received: true,
+        error: 'No signature header'
+      });
     }
 
     console.log('Webhook signature:', {
@@ -39,10 +39,10 @@ export async function POST(request: Request) {
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
     if (!webhookSecret) {
       console.error('STRIPE_WEBHOOK_SECRET is not configured');
-      return NextResponse.json(
-        { error: 'Webhook secret not configured' },
-        { status: 500 }
-      );
+      return NextResponse.json({ 
+        received: true,
+        error: 'Webhook secret not configured'
+      });
     }
 
     console.log('Verifying webhook signature with secret:', webhookSecret.substring(0, 10) + '...');
@@ -56,10 +56,10 @@ export async function POST(request: Request) {
       );
     } catch (err) {
       console.error('Webhook signature verification failed:', err);
-      return NextResponse.json(
-        { error: 'Webhook signature verification failed' },
-        { status: 400 }
-      );
+      return NextResponse.json({ 
+        received: true,
+        error: 'Webhook signature verification failed'
+      });
     }
 
     console.log('Webhook event:', {
@@ -84,7 +84,6 @@ export async function POST(request: Request) {
         
         if (!credentials) {
           console.error('Missing Xero credentials in storage');
-          // Still return 200 as the webhook was processed
           return NextResponse.json({ 
             received: true,
             warning: 'Xero integration skipped - missing credentials'
@@ -141,7 +140,6 @@ export async function POST(request: Request) {
         });
       } catch (error) {
         console.error('Error processing Xero integration:', error);
-        // Return 200 as we still processed the webhook
         return NextResponse.json({
           received: true,
           warning: 'Xero integration failed but webhook was processed'
@@ -151,11 +149,13 @@ export async function POST(request: Request) {
 
     // For other event types
     return NextResponse.json({ received: true });
-  } catch (error) {
-    console.error('Webhook handler failed:', error);
-    return NextResponse.json(
-      { error: 'Webhook handler failed', details: error.message },
-      { status: 500 }
-    );
+  } catch (err) {
+    console.error('Webhook handler failed:', err);
+    const error = err as Error;
+    return NextResponse.json({ 
+      received: true,
+      error: 'Webhook handler failed',
+      details: error?.message || 'Unknown error'
+    });
   }
 } 

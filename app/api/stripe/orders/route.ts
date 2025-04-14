@@ -3,10 +3,14 @@ import { stripe } from '@/lib/stripe';
 
 export async function GET() {
   try {
-    // Fetch payment intents
+    // Fetch payment intents with expanded customer data and most recent first
     const paymentIntents = await stripe.paymentIntents.list({
       limit: 100,
-      expand: ['data.customer']
+      expand: ['data.customer'],
+      created: {
+        // Get orders from the last 30 days
+        gte: Math.floor(Date.now() / 1000) - (30 * 24 * 60 * 60)
+      }
     });
 
     // Transform payment intents into orders
@@ -23,14 +27,14 @@ export async function GET() {
         },
         items: JSON.parse(pi.metadata.items || '[]'),
         created: new Date(pi.created * 1000).toISOString(),
-      }));
+      }))
+      // Sort by creation date, newest first
+      .sort((a, b) => new Date(b.created).getTime() - new Date(a.created).getTime());
 
     return NextResponse.json({ orders });
   } catch (error) {
     console.error('Error fetching Stripe orders:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch orders' },
-      { status: 500 }
-    );
+    // Still return an empty array rather than an error
+    return NextResponse.json({ orders: [] });
   }
 } 
