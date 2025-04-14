@@ -14,15 +14,26 @@ interface OrderItem {
   price: number;
 }
 
+interface StripeOrder {
+  id: string;
+  status: string;
+  amount: number;
+  customer: {
+    name: string;
+    email: string;
+    phone: string;
+  };
+  items: OrderItem[];
+  created: string;
+}
+
 interface Order {
   id: string;
   reference: string;
   customer: string;
   email: string;
   date: string;
-  dueDate: string;
   status: string;
-  type: 'online' | 'workshop' | 'other';
   total: number;
   items: OrderItem[];
 }
@@ -42,48 +53,29 @@ export default function OrdersPage() {
     try {
       setIsLoading(true)
       
-      // Try to fetch Xero orders
-      let xeroOrders: Order[] = []
-      try {
-        const xeroResponse = await fetch('/api/xero/data')
-        const xeroData = await xeroResponse.json()
-        if (xeroData.orders) {
-          xeroOrders = xeroData.orders
-        }
-      } catch (error) {
-        console.warn('Could not fetch Xero orders:', error)
-      }
-
-      // Try to fetch Stripe orders
-      let stripeOrders: Order[] = []
-      try {
-        const stripeResponse = await fetch('/api/stripe/orders')
-        const stripeData = await stripeResponse.json()
-        if (stripeData.orders) {
-          stripeOrders = stripeData.orders.map(order => ({
-            id: order.id,
-            reference: order.id.slice(0, 8).toUpperCase(),
-            customer: order.customer.name,
-            email: order.customer.email,
-            date: new Date().toISOString(),
-            dueDate: new Date().toISOString(),
-            status: order.status,
-            type: 'online',
-            total: order.amount / 100,
-            items: order.items
-          }))
-        }
-      } catch (error) {
-        console.warn('Could not fetch Stripe orders:', error)
-      }
-
-      // Combine and sort all orders by date
-      const allOrders = [...xeroOrders, ...stripeOrders].sort((a, b) => 
-        new Date(b.date).getTime() - new Date(a.date).getTime()
-      )
+      const response = await fetch('/api/stripe/orders')
+      const data = await response.json()
       
-      setOrders(allOrders)
-      setFilteredOrders(allOrders)
+      if (data.orders) {
+        const formattedOrders: Order[] = data.orders.map((order: StripeOrder) => ({
+          id: order.id,
+          reference: `WEB-${order.id.slice(0, 8).toUpperCase()}`,
+          customer: order.customer.name,
+          email: order.customer.email,
+          date: order.created,
+          status: order.status.toUpperCase(),
+          total: order.amount / 100,
+          items: order.items
+        }))
+
+        // Sort orders by date, newest first
+        const sortedOrders = formattedOrders.sort((a, b) => 
+          new Date(b.date).getTime() - new Date(a.date).getTime()
+        )
+        
+        setOrders(sortedOrders)
+        setFilteredOrders(sortedOrders)
+      }
     } catch (error) {
       console.error('Error fetching orders:', error)
       toast({
@@ -111,27 +103,16 @@ export default function OrdersPage() {
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'PAID':
+      case 'SUCCEEDED':
         return <Badge className="bg-green-500/10 text-green-500 hover:bg-green-500/20">Paid</Badge>
-      case 'AUTHORISED':
-        return <Badge className="bg-blue-500/10 text-blue-500 hover:bg-blue-500/20">Authorised</Badge>
-      case 'DRAFT':
-        return <Badge className="bg-yellow-500/10 text-yellow-500 hover:bg-yellow-500/20">Draft</Badge>
-      case 'VOIDED':
-        return <Badge className="bg-red-500/10 text-red-500 hover:bg-red-500/20">Voided</Badge>
+      case 'PROCESSING':
+        return <Badge className="bg-blue-500/10 text-blue-500 hover:bg-blue-500/20">Processing</Badge>
+      case 'REQUIRES_PAYMENT_METHOD':
+        return <Badge className="bg-yellow-500/10 text-yellow-500 hover:bg-yellow-500/20">Payment Required</Badge>
+      case 'CANCELED':
+        return <Badge className="bg-red-500/10 text-red-500 hover:bg-red-500/20">Canceled</Badge>
       default:
         return <Badge className="bg-zinc-500/10 text-zinc-500 hover:bg-zinc-500/20">{status}</Badge>
-    }
-  }
-
-  const getTypeBadge = (type: string) => {
-    switch (type) {
-      case 'online':
-        return <Badge className="bg-purple-500/10 text-purple-500 hover:bg-purple-500/20">Online Store</Badge>
-      case 'workshop':
-        return <Badge className="bg-orange-500/10 text-orange-500 hover:bg-orange-500/20">Workshop</Badge>
-      default:
-        return <Badge className="bg-zinc-500/10 text-zinc-500 hover:bg-zinc-500/20">Other</Badge>
     }
   }
 
@@ -140,7 +121,7 @@ export default function OrdersPage() {
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle>Orders</CardTitle>
+            <CardTitle>Website Orders</CardTitle>
             <Button onClick={fetchOrders} variant="outline" size="sm">
               <RefreshCw className="h-4 w-4 mr-2" />
               Refresh
@@ -175,9 +156,8 @@ export default function OrdersPage() {
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
                           <FileText className="h-4 w-4 text-orange-500" />
-                          <span className="font-medium">Invoice #{order.reference}</span>
+                          <span className="font-medium">Order #{order.reference}</span>
                           {getStatusBadge(order.status)}
-                          {getTypeBadge(order.type)}
                         </div>
                         <div className="flex items-center gap-2 text-sm text-zinc-400">
                           <User className="h-3 w-3" />
@@ -187,8 +167,6 @@ export default function OrdersPage() {
                         <div className="flex items-center gap-2 text-sm text-zinc-400">
                           <Calendar className="h-3 w-3" />
                           <span>Date: {new Date(order.date).toLocaleDateString()}</span>
-                          <span className="text-zinc-500">|</span>
-                          <span>Due: {new Date(order.dueDate).toLocaleDateString()}</span>
                         </div>
                         <div className="flex items-center gap-2 text-sm text-zinc-400">
                           <DollarSign className="h-3 w-3" />
@@ -205,7 +183,6 @@ export default function OrdersPage() {
                       </div>
                       <div className="flex gap-2">
                         <Button variant="outline" size="sm">View Details</Button>
-                        <Button variant="outline" size="sm">Download PDF</Button>
                       </div>
                     </div>
                   </CardContent>
