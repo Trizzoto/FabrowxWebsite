@@ -10,18 +10,25 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  console.log('Webhook received');
+  console.log('Webhook received:', {
+    method: request.method,
+    url: request.url,
+    headers: Object.fromEntries(request.headers.entries())
+  });
+  
   const body = await request.text();
+  console.log('Webhook body:', body);
+  
   const signature = headers().get('stripe-signature')!;
-
   console.log('Webhook signature:', {
     hasSignature: !!signature,
-    signatureLength: signature?.length
+    signatureLength: signature?.length,
+    signatureValue: signature
   });
 
   try {
     // Verify webhook signature
-    console.log('Verifying webhook signature...');
+    console.log('Verifying webhook signature with secret:', process.env.STRIPE_WEBHOOK_SECRET?.slice(0, 10) + '...');
     const event = stripe.webhooks.constructEvent(
       body,
       signature,

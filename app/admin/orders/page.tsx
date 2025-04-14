@@ -47,6 +47,12 @@ export default function OrdersPage() {
 
   useEffect(() => {
     fetchOrders()
+    
+    // Set up automatic refresh
+    const refreshInterval = setInterval(fetchOrders, 30000)
+    
+    // Cleanup on unmount
+    return () => clearInterval(refreshInterval)
   }, [])
 
   const fetchOrders = async () => {
