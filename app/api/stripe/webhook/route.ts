@@ -5,8 +5,18 @@ import { createXeroInvoice, syncPaymentToXero } from '@/lib/xero';
 import { xero } from '@/lib/xero';
 import { getXeroCredentials } from '@/lib/xero-storage';
 
+// Disable Next.js cache for this route
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET() {
-  return NextResponse.json({ status: 'Webhook endpoint is reachable' });
+  return new NextResponse(JSON.stringify({ status: 'Webhook endpoint is reachable' }), {
+    headers: {
+      'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+    }
+  });
 }
 
 export async function POST(request: Request) {
@@ -25,9 +35,15 @@ export async function POST(request: Request) {
     const signature = headers().get('stripe-signature');
     if (!signature) {
       console.error('No stripe-signature header found');
-      return NextResponse.json({ 
+      return new NextResponse(JSON.stringify({ 
         received: true,
         error: 'No signature header'
+      }), {
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+        }
       });
     }
 
@@ -39,9 +55,15 @@ export async function POST(request: Request) {
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
     if (!webhookSecret) {
       console.error('STRIPE_WEBHOOK_SECRET is not configured');
-      return NextResponse.json({ 
+      return new NextResponse(JSON.stringify({ 
         received: true,
         error: 'Webhook secret not configured'
+      }), {
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+        }
       });
     }
 
@@ -56,9 +78,15 @@ export async function POST(request: Request) {
       );
     } catch (err) {
       console.error('Webhook signature verification failed:', err);
-      return NextResponse.json({ 
+      return new NextResponse(JSON.stringify({ 
         received: true,
         error: 'Webhook signature verification failed'
+      }), {
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+        }
       });
     }
 
@@ -84,17 +112,29 @@ export async function POST(request: Request) {
         
         if (!credentials) {
           console.error('Missing Xero credentials in storage');
-          return NextResponse.json({ 
+          return new NextResponse(JSON.stringify({ 
             received: true,
             warning: 'Xero integration skipped - missing credentials'
+          }), {
+            headers: {
+              'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+              'Pragma': 'no-cache',
+              'Expires': '0',
+            }
           });
         }
 
         if (Date.now() > credentials.expiresAt) {
           console.error('Xero credentials have expired');
-          return NextResponse.json({ 
+          return new NextResponse(JSON.stringify({ 
             received: true,
             warning: 'Xero integration skipped - expired credentials'
+          }), {
+            headers: {
+              'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+              'Pragma': 'no-cache',
+              'Expires': '0',
+            }
           });
         }
 
@@ -131,31 +171,55 @@ export async function POST(request: Request) {
           );
         }
 
-        return NextResponse.json({
+        return new NextResponse(JSON.stringify({
           received: true,
           xero: {
             invoiceId: xeroInvoice.invoices?.[0]?.invoiceID,
             invoiceNumber: xeroInvoice.invoices?.[0]?.invoiceNumber
           }
+        }), {
+          headers: {
+            'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0',
+          }
         });
       } catch (error) {
         console.error('Error processing Xero integration:', error);
-        return NextResponse.json({
+        return new NextResponse(JSON.stringify({
           received: true,
           warning: 'Xero integration failed but webhook was processed'
+        }), {
+          headers: {
+            'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0',
+          }
         });
       }
     }
 
     // For other event types
-    return NextResponse.json({ received: true });
+    return new NextResponse(JSON.stringify({ received: true }), {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
+      }
+    });
   } catch (err) {
     console.error('Webhook handler failed:', err);
     const error = err as Error;
-    return NextResponse.json({ 
+    return new NextResponse(JSON.stringify({ 
       received: true,
       error: 'Webhook handler failed',
       details: error?.message || 'Unknown error'
+    }), {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
+      }
     });
   }
 } 

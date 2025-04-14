@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
 
+// Disable Next.js cache for this route
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET() {
   try {
     // Fetch payment intents with expanded customer data and most recent first
@@ -31,10 +35,23 @@ export async function GET() {
       // Sort by creation date, newest first
       .sort((a, b) => new Date(b.created).getTime() - new Date(a.created).getTime());
 
-    return NextResponse.json({ orders });
+    // Add cache control headers
+    return new NextResponse(JSON.stringify({ orders }), {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
+      }
+    });
   } catch (error) {
     console.error('Error fetching Stripe orders:', error);
     // Still return an empty array rather than an error
-    return NextResponse.json({ orders: [] });
+    return new NextResponse(JSON.stringify({ orders: [] }), {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
+      }
+    });
   }
 } 
