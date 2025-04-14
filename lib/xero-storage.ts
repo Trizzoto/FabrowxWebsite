@@ -1,7 +1,4 @@
-import fs from 'fs';
-import path from 'path';
-
-const CREDENTIALS_FILE = path.join(process.cwd(), 'xero-credentials.json');
+import { cookies } from 'next/headers';
 
 interface XeroCredentials {
   tenantId: string;
@@ -11,26 +8,68 @@ interface XeroCredentials {
 }
 
 export function saveXeroCredentials(credentials: XeroCredentials) {
-  fs.writeFileSync(CREDENTIALS_FILE, JSON.stringify(credentials, null, 2));
+  const cookieStore = cookies();
+  
+  cookieStore.set('xero_tenant_id', credentials.tenantId, {
+    secure: true,
+    httpOnly: true,
+    sameSite: 'lax',
+    maxAge: 60 * 60 * 24 * 30 // 30 days
+  });
+  
+  cookieStore.set('xero_access_token', credentials.accessToken, {
+    secure: true,
+    httpOnly: true,
+    sameSite: 'lax',
+    maxAge: 60 * 30 // 30 minutes
+  });
+  
+  cookieStore.set('xero_refresh_token', credentials.refreshToken, {
+    secure: true,
+    httpOnly: true,
+    sameSite: 'lax',
+    maxAge: 60 * 60 * 24 * 30 // 30 days
+  });
+  
+  cookieStore.set('xero_expires_at', credentials.expiresAt.toString(), {
+    secure: true,
+    httpOnly: true,
+    sameSite: 'lax',
+    maxAge: 60 * 60 * 24 * 30 // 30 days
+  });
 }
 
 export function getXeroCredentials(): XeroCredentials | null {
   try {
-    if (fs.existsSync(CREDENTIALS_FILE)) {
-      const data = fs.readFileSync(CREDENTIALS_FILE, 'utf8');
-      return JSON.parse(data);
+    const cookieStore = cookies();
+    const tenantId = cookieStore.get('xero_tenant_id')?.value;
+    const accessToken = cookieStore.get('xero_access_token')?.value;
+    const refreshToken = cookieStore.get('xero_refresh_token')?.value;
+    const expiresAt = cookieStore.get('xero_expires_at')?.value;
+    
+    if (!tenantId || !accessToken || !refreshToken || !expiresAt) {
+      return null;
     }
+    
+    return {
+      tenantId,
+      accessToken,
+      refreshToken,
+      expiresAt: parseInt(expiresAt, 10)
+    };
   } catch (error) {
     console.error('Error reading Xero credentials:', error);
+    return null;
   }
-  return null;
 }
 
 export function clearXeroCredentials() {
   try {
-    if (fs.existsSync(CREDENTIALS_FILE)) {
-      fs.unlinkSync(CREDENTIALS_FILE);
-    }
+    const cookieStore = cookies();
+    cookieStore.delete('xero_tenant_id');
+    cookieStore.delete('xero_access_token');
+    cookieStore.delete('xero_refresh_token');
+    cookieStore.delete('xero_expires_at');
   } catch (error) {
     console.error('Error clearing Xero credentials:', error);
   }
