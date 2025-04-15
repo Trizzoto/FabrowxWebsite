@@ -4,6 +4,7 @@ import { Invoice } from 'xero-node/dist/gen/model/accounting/invoice';
 import { Contact } from 'xero-node/dist/gen/model/accounting/contact';
 import { LineItem } from 'xero-node/dist/gen/model/accounting/lineItem';
 import { Phone } from 'xero-node/dist/gen/model/accounting/phone';
+import { Account } from 'xero-node/dist/gen/model/accounting/account';
 import { saveXeroCredentials } from '@/lib/xero-storage';
 import { xero, getValidToken } from './xero-config';
 
@@ -181,14 +182,43 @@ export const syncPaymentToXero = async (payment: any, invoiceId: string) => {
       expires_in: 1800
     });
 
+    // Log available bank accounts to debug
+    console.log('Fetching Xero accounts to find valid bank account...');
+    const accountsResponse = await xeroClient.accountingApi.getAccounts(tenantId);
+    
+    // Log all accounts to help identify the right one
+    console.log('All Xero accounts:', accountsResponse.body.accounts?.map(acc => ({ 
+      name: acc.name, 
+      code: acc.code,
+      type: acc.type,
+      status: acc.status
+    })));
+    
+    // Look for bank accounts (will manually check logs to find right account)
+    const bankAccounts = accountsResponse.body.accounts?.filter(acc => 
+      acc.type && acc.type.toString().includes('BANK') && 
+      acc.status && acc.status.toString().includes('ACTIVE')
+    );
+    
+    console.log('Possible bank accounts:', bankAccounts?.map(acc => ({ 
+      name: acc.name, 
+      code: acc.code,
+      type: acc.type
+    })));
+
+    // Use the first bank account if available, otherwise fall back to default code
+    const bankAccountCode = bankAccounts?.[0]?.code || '1000';
+    console.log(`Using bank account code: ${bankAccountCode}`);
+
     const xeroPayment = {
       invoice: { invoiceID: invoiceId },
-      account: { code: '090' }, // Bank account code
-      amount: payment.amount,
+      account: { code: bankAccountCode }, // Use detected bank account
+      amount: payment.amount / 100, // Convert cents to dollars (Stripe uses cents)
       date: new Date().toISOString(),
       reference: payment.id,
     };
 
+    console.log('Creating Xero payment with data:', JSON.stringify(xeroPayment));
     const response = await xeroClient.accountingApi.createPayment(tenantId, xeroPayment);
     return response.body;
   } catch (error) {

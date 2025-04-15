@@ -115,12 +115,18 @@ export async function POST(request: Request) {
           items: JSON.parse(paymentIntent.metadata.items || '[]'),
         };
 
+        console.log('Creating Xero invoice with data:', JSON.stringify(order));
+
         // Create Xero invoice
         const xeroInvoice = await createXeroInvoice(order, 'online');
         
+        console.log('Xero invoice creation response:', JSON.stringify(xeroInvoice));
+        
         if (xeroInvoice.invoices?.[0]?.invoiceID) {
           // Record the payment in Xero
+          console.log('Recording payment in Xero for invoice:', xeroInvoice.invoices[0].invoiceID);
           const xeroPayment = await syncPaymentToXero(paymentIntent, xeroInvoice.invoices[0].invoiceID);
+          console.log('Xero payment response:', JSON.stringify(xeroPayment));
           
           return new NextResponse(JSON.stringify({
             received: true,
@@ -141,6 +147,7 @@ export async function POST(request: Request) {
         }
       } catch (error) {
         console.error('Error processing Xero integration:', error);
+        console.error('Error details:', error instanceof Error ? error.stack : 'No stack trace available');
         return new NextResponse(JSON.stringify({
           received: true,
           warning: 'Xero integration failed but webhook was processed',
