@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { clearXeroCredentials } from '@/lib/xero-storage';
 
-export async function POST() {
+export async function GET() {
   try {
     const cookieStore = cookies();
     
@@ -25,4 +25,7 @@ export async function POST() {
       { status: 500 }
     );
   }
-} 
+}
+
+// Keep the POST method for backward compatibility
+export { GET as POST }; 
