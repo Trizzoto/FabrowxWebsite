@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { xero, getValidToken } from '@/lib/xero-config';
+import jwt from 'jsonwebtoken';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -17,11 +18,21 @@ export async function GET() {
     // Get valid token and tenant ID
     console.log('Getting valid token...');
     const { accessToken, tenantId } = await getValidToken();
+    
+    // Decode the JWT token to check scopes
+    const decodedToken = jwt.decode(accessToken);
+    console.log('Token scopes:', decodedToken?.scope);
+    
+    if (!decodedToken?.scope?.includes('accounting.contacts')) {
+      throw new Error('Token missing required accounting.contacts scope. Please update app scopes in Xero developer portal.');
+    }
+
     console.log('Got token response:', {
       hasAccessToken: !!accessToken,
       hasTenantId: !!tenantId,
       accessTokenPreview: accessToken?.substring(0, 20),
-      tenantId
+      tenantId,
+      tokenScopes: decodedToken?.scope
     });
 
     if (!tenantId) {
@@ -49,6 +60,7 @@ export async function GET() {
       contactCount: contacts.body.contacts?.length || 0,
       tenantId,
       hasAccessToken: !!accessToken,
+      tokenScopes: decodedToken?.scope,
       envCheck: {
         hasClientId: !!process.env.XERO_CLIENT_ID,
         hasClientSecret: !!process.env.XERO_CLIENT_SECRET,
