@@ -21,10 +21,17 @@ export async function GET() {
     
     // Decode the JWT token to check scopes
     const decodedToken = jwt.decode(accessToken);
-    console.log('Token scopes:', decodedToken?.scope);
+    console.log('Token details:', {
+      decodedToken,
+      scope: decodedToken?.scope,
+      hasAccountingContacts: decodedToken?.scope?.includes('accounting.contacts'),
+      tokenPreview: accessToken?.substring(0, 20) + '...',
+      tokenLength: accessToken?.length
+    });
     
     if (!decodedToken?.scope?.includes('accounting.contacts')) {
-      throw new Error('Token missing required accounting.contacts scope. Please update app scopes in Xero developer portal.');
+      console.error('Token missing required accounting.contacts scope');
+      throw new Error('Token missing required accounting.contacts scope. Please reconnect to Xero with the correct scopes.');
     }
 
     console.log('Got token response:', {

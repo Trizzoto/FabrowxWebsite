@@ -31,6 +31,14 @@ export const xeroClient = new XeroClient({
 // Helper function to refresh tokens if needed
 async function ensureValidToken(credentials: { tenantId: string, accessToken: string, refreshToken: string, expiresAt?: number }) {
   try {
+    console.log('Checking token validity:', {
+      hasAccessToken: !!credentials.accessToken,
+      hasRefreshToken: !!credentials.refreshToken,
+      expiresAt: credentials.expiresAt,
+      currentTime: Date.now(),
+      isExpired: !credentials.expiresAt || Date.now() >= (credentials.expiresAt - 5 * 60 * 1000)
+    });
+    
     // Check if token is expired or will expire in the next 5 minutes
     const isExpired = !credentials.expiresAt || Date.now() >= (credentials.expiresAt - 5 * 60 * 1000);
     
@@ -46,6 +54,14 @@ async function ensureValidToken(credentials: { tenantId: string, accessToken: st
       
       // Refresh the token
       const newTokenSet = await xeroClient.refreshToken();
+      
+      console.log('Token refresh response:', {
+        hasAccessToken: !!newTokenSet.access_token,
+        hasRefreshToken: !!newTokenSet.refresh_token,
+        expiresIn: newTokenSet.expires_in,
+        tokenType: newTokenSet.token_type,
+        scope: newTokenSet.scope
+      });
       
       if (!newTokenSet.access_token || !newTokenSet.refresh_token || !newTokenSet.expires_in) {
         throw new Error('Invalid token set received from Xero');
