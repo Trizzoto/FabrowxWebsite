@@ -45,6 +45,7 @@ export async function GET(request: NextRequest) {
     console.log('Getting token set from Xero...');
     let tokenSet;
     try {
+      // Exchange the authorization code for tokens
       tokenSet = await xero.apiCallback(code);
       console.log('Token set received:', {
         hasAccessToken: !!tokenSet.access_token,
@@ -73,6 +74,23 @@ export async function GET(request: NextRequest) {
         scope: tokenSet.scope
       });
       throw new Error('Invalid token set received from Xero');
+    }
+
+    // Set the token set in the Xero client
+    try {
+      await xero.setTokenSet({
+        access_token: tokenSet.access_token,
+        refresh_token: tokenSet.refresh_token,
+        expires_in: tokenSet.expires_in
+      });
+      console.log('Successfully set token set in Xero client');
+    } catch (e: any) {
+      console.error('Failed to set token set in Xero client:', {
+        error: e.message,
+        stack: e.stack,
+        name: e.name
+      });
+      throw new Error(`Failed to set token set in Xero client: ${e.message}`);
     }
 
     console.log('Getting tenants...');
@@ -152,24 +170,6 @@ export async function GET(request: NextRequest) {
         name: e.name
       });
       throw new Error(`Failed to set cookies: ${e.message}`);
-    }
-
-    // Get tenant ID
-    console.log('Setting token set in Xero client...');
-    try {
-      await xero.setTokenSet({
-        access_token: tokenSet.access_token,
-        refresh_token: tokenSet.refresh_token,
-        expires_in: tokenSet.expires_in
-      });
-      console.log('Token set successfully set in Xero client');
-    } catch (e: any) {
-      console.error('Failed to set token set in Xero client:', {
-        error: e.message,
-        stack: e.stack,
-        name: e.name
-      });
-      throw new Error(`Failed to set token set in Xero client: ${e.message}`);
     }
 
     // Save credentials to storage
