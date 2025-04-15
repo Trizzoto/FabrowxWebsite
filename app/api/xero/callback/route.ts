@@ -66,6 +66,7 @@ export async function GET(request: Request) {
         secure: true,
         httpOnly: true,
         sameSite: 'lax',
+        path: '/',
         maxAge: 60 * 30 // 30 minutes
       });
       
@@ -73,6 +74,7 @@ export async function GET(request: Request) {
         secure: true,
         httpOnly: true,
         sameSite: 'lax',
+        path: '/',
         maxAge: 60 * 60 * 24 * 30 // 30 days
       });
 
@@ -93,6 +95,7 @@ export async function GET(request: Request) {
         secure: true,
         httpOnly: true,
         sameSite: 'lax',
+        path: '/',
         maxAge: 60 * 60 * 24 * 30 // 30 days
       });
 
