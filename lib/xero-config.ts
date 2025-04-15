@@ -34,12 +34,24 @@ export async function getValidToken() {
     let tokenSet;
     try {
       // Try to refresh the token
+      console.log('Attempting to refresh token...');
       tokenSet = await xero.refreshToken();
+      console.log('Token refresh successful:', {
+        hasAccessToken: !!tokenSet.access_token,
+        hasRefreshToken: !!tokenSet.refresh_token,
+        expiresIn: tokenSet.expires_in,
+        scope: tokenSet.scope
+      });
     } catch (e) {
+      console.error('Token refresh failed:', e);
       // If refresh fails, we need to re-authenticate
       throw new Error('Authentication required. Please visit /api/xero/auth to connect to Xero.');
     }
     
+    if (!tokenSet.access_token) {
+      throw new Error('No access token received from Xero');
+    }
+
     return {
       accessToken: tokenSet.access_token,
       tenantId: process.env.XERO_TENANT_ID
