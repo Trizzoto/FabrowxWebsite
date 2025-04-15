@@ -7,7 +7,7 @@ import { Phone } from 'xero-node/dist/gen/model/accounting/phone';
 import { saveXeroCredentials } from '@/lib/xero-storage';
 import { xero, getValidToken } from './xero-config';
 
-// Initialize Xero client
+// Initialize Xero client with all required scopes for accounting operations
 export const xeroClient = new XeroClient({
   clientId: process.env.XERO_CLIENT_ID!,
   clientSecret: process.env.XERO_CLIENT_SECRET!,
