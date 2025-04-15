@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { xero, getValidToken } from '@/lib/xero-config';
-import { xeroClient } from '@/lib/xero';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -54,7 +53,7 @@ export async function GET() {
     
     // Set the access token
     try {
-      await xeroClient.setTokenSet({
+      await xero.setTokenSet({
         access_token: validToken.accessToken,
         expires_in: 1800
       });
@@ -72,7 +71,7 @@ export async function GET() {
     let contactCount = 0;
     try {
       console.log('Testing contact retrieval with tenant ID:', validToken.tenantId);
-      const contacts = await xeroClient.accountingApi.getContacts(validToken.tenantId);
+      const contacts = await xero.accountingApi.getContacts(validToken.tenantId);
       contactCount = contacts.body.contacts?.length || 0;
       console.log(`Successfully retrieved ${contactCount} contacts from Xero`);
     } catch (error) {

@@ -1,45 +1,33 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { xeroClient } from '@/lib/xero-config';
+import { xero, getValidToken } from '@/lib/xero-config';
 
 export async function POST() {
   try {
-    const cookieStore = cookies();
-    const accessToken = cookieStore.get('xero_access_token')?.value;
-    const refreshToken = cookieStore.get('xero_refresh_token')?.value;
-
-    if (!accessToken || !refreshToken) {
+    // Get valid token instead of using cookies directly
+    const { accessToken, refreshToken, tenantId } = await getValidToken();
+    
+    if (!accessToken || !refreshToken || !tenantId) {
       return NextResponse.json(
         { error: 'Not authenticated with Xero' },
         { status: 401 }
       );
     }
 
-    // Set the access token
-    await xeroClient.setTokenSet({
+    // Use xero instead of xeroClient
+    await xero.setTokenSet({
       access_token: accessToken,
       refresh_token: refreshToken,
       expires_in: 1800
     });
 
-    // Get the connected tenants
-    const tenants = await xeroClient.updateTenants(false);
+    // No need to get tenants, we already have tenantId from getValidToken
     
-    if (!tenants || tenants.length === 0) {
-      return NextResponse.json(
-        { error: 'No Xero organizations found' },
-        { status: 400 }
-      );
-    }
-
-    // Use the first tenant
-    const tenantId = tenants[0].tenantId;
-
     // Get all contacts
-    const contacts = await xeroClient.accountingApi.getContacts(tenantId);
+    const contacts = await xero.accountingApi.getContacts(tenantId);
 
     // Get recent invoices
-    const invoices = await xeroClient.accountingApi.getInvoices(tenantId);
+    const invoices = await xero.accountingApi.getInvoices(tenantId);
 
     // You can add more sync operations here
 

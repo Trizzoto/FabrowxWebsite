@@ -8,14 +8,6 @@ import { Account } from 'xero-node/dist/gen/model/accounting/account';
 import { saveXeroCredentials } from '@/lib/xero-storage';
 import { xero, getValidToken } from './xero-config';
 
-// Initialize Xero client
-export const xeroClient = new XeroClient({
-  clientId: process.env.XERO_CLIENT_ID!,
-  clientSecret: process.env.XERO_CLIENT_SECRET!,
-  redirectUris: [process.env.XERO_REDIRECT_URI!],
-  scopes: ['accounting.transactions', 'accounting.contacts', 'accounting.settings'],
-});
-
 // Helper function to refresh tokens if needed
 async function ensureValidToken(credentials: { tenantId: string, accessToken: string, refreshToken: string, expiresAt?: number }) {
   try {
@@ -26,14 +18,14 @@ async function ensureValidToken(credentials: { tenantId: string, accessToken: st
       console.log('Token expired or expiring soon, refreshing...');
       
       // Set the current token set
-      await xeroClient.setTokenSet({
+      await xero.setTokenSet({
         access_token: credentials.accessToken,
         refresh_token: credentials.refreshToken,
         expires_in: credentials.expiresAt ? Math.floor((credentials.expiresAt - Date.now()) / 1000) : 1800
       });
       
       // Refresh the token
-      const newTokenSet = await xeroClient.refreshToken();
+      const newTokenSet = await xero.refreshToken();
       
       if (!newTokenSet.access_token || !newTokenSet.refresh_token || !newTokenSet.expires_in) {
         throw new Error('Invalid token set received from Xero');
@@ -81,16 +73,16 @@ export const createXeroInvoice = async (order: any, type: 'online' | 'workshop' 
       throw new Error('Missing Xero tenant ID');
     }
 
-    // Set the access token
+    // Set the access token on the xero client from xero-config
     console.log('Setting Xero token...');
-    await xeroClient.setTokenSet({
+    await xero.setTokenSet({
       access_token: accessToken,
       expires_in: 1800
     });
 
     // First check if contact exists
     console.log('Checking for existing contact...');
-    const existingContacts = await xeroClient.accountingApi.getContacts(tenantId, undefined, `EmailAddress="${order.customer.email}"`);
+    const existingContacts = await xero.accountingApi.getContacts(tenantId, undefined, `EmailAddress="${order.customer.email}"`);
     console.log('Contact search results:', {
       found: existingContacts.body.contacts && existingContacts.body.contacts.length > 0,
       contactCount: existingContacts.body.contacts?.length || 0
@@ -153,7 +145,7 @@ export const createXeroInvoice = async (order: any, type: 'online' | 'workshop' 
     };
 
     console.log('Sending invoice to Xero API...');
-    const response = await xeroClient.accountingApi.createInvoices(tenantId, {
+    const response = await xero.accountingApi.createInvoices(tenantId, {
       invoices: [invoice]
     });
     console.log('Invoice created successfully:', {
@@ -176,15 +168,15 @@ export const syncPaymentToXero = async (payment: any, invoiceId: string) => {
       throw new Error('Missing Xero tenant ID');
     }
 
-    // Set the access token
-    await xeroClient.setTokenSet({
+    // Set the access token on the xero client from xero-config
+    await xero.setTokenSet({
       access_token: accessToken,
       expires_in: 1800
     });
 
     // Log available bank accounts to debug
     console.log('Fetching Xero accounts to find valid bank account...');
-    const accountsResponse = await xeroClient.accountingApi.getAccounts(tenantId);
+    const accountsResponse = await xero.accountingApi.getAccounts(tenantId);
     
     // Log all accounts to help identify the right one
     console.log('All Xero accounts:', accountsResponse.body.accounts?.map(acc => ({ 
@@ -219,7 +211,7 @@ export const syncPaymentToXero = async (payment: any, invoiceId: string) => {
     };
 
     console.log('Creating Xero payment with data:', JSON.stringify(xeroPayment));
-    const response = await xeroClient.accountingApi.createPayment(tenantId, xeroPayment);
+    const response = await xero.accountingApi.createPayment(tenantId, xeroPayment);
     return response.body;
   } catch (error) {
     console.error('Error syncing payment to Xero:', error);
