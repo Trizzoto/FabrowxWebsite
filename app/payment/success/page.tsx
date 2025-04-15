@@ -1,14 +1,16 @@
 'use client';
 
-import { useEffect, Suspense } from 'react';
+import { useEffect, Suspense, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { CheckCircle } from 'lucide-react';
+import { CheckCircle, FileDown } from 'lucide-react';
 import Link from 'next/link';
+import { toast } from 'sonner';
 
 function PaymentSuccessContent() {
   const searchParams = useSearchParams();
   const paymentIntentId = searchParams.get('payment_intent');
+  const [isDownloading, setIsDownloading] = useState(false);
 
   useEffect(() => {
     if (paymentIntentId) {
@@ -16,6 +18,50 @@ function PaymentSuccessContent() {
       console.log('Payment Intent ID:', paymentIntentId);
     }
   }, [paymentIntentId]);
+
+  const handleDownloadInvoice = async () => {
+    if (!paymentIntentId) {
+      toast.error('Payment information not found');
+      return;
+    }
+
+    setIsDownloading(true);
+    try {
+      const response = await fetch('/api/generate-invoice', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          orderNumber: `INV-${paymentIntentId.slice(-6)}`,
+          date: new Date().toISOString(),
+          customerInfo: JSON.parse(localStorage.getItem('checkoutInfo') || '{}'),
+          items: JSON.parse(localStorage.getItem('cartItems') || '[]'),
+          total: parseFloat(localStorage.getItem('cartTotal') || '0'),
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate invoice');
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `invoice-${paymentIntentId.slice(-6)}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      toast.success('Invoice downloaded successfully');
+    } catch (error) {
+      console.error('Error downloading invoice:', error);
+      toast.error('Failed to download invoice. Please try again.');
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-black text-white flex items-center justify-center">
@@ -28,6 +74,14 @@ function PaymentSuccessContent() {
           Thank you for your payment. Your transaction has been completed successfully.
         </p>
         <div className="space-y-4">
+          <Button
+            onClick={handleDownloadInvoice}
+            className="w-full bg-zinc-800 hover:bg-zinc-700 text-white"
+            disabled={isDownloading}
+          >
+            <FileDown className="mr-2 h-4 w-4" />
+            {isDownloading ? 'Downloading...' : 'Download Invoice'}
+          </Button>
           <Button asChild className="w-full bg-orange-600 hover:bg-orange-700">
             <Link href="/">Return to Home</Link>
           </Button>
