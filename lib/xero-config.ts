@@ -99,9 +99,16 @@ export const getXeroAuthUrl = async () => {
   
   const baseUrl = await xero.buildConsentUrl();
   const url = new URL(baseUrl);
-  url.searchParams.set('scope', scopes.join(' '));
+  
+  // Properly encode the scopes
+  const encodedScopes = scopes.join(' ');
+  url.searchParams.set('scope', encodedScopes);
   url.searchParams.set('response_type', 'code');
-  url.searchParams.set('state', 'random-state');
+  url.searchParams.set('state', Date.now().toString());
+  
+  // Ensure the redirect URI is properly encoded
+  url.searchParams.set('redirect_uri', process.env.XERO_REDIRECT_URI || 'https://fabrowx-website.vercel.app/api/xero/callback');
+  
   return url.toString();
 };
 
