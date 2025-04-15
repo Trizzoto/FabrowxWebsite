@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import Image from 'next/image';
-import { CheckCircle2, AlertCircle, CreditCard, Truck, User, MapPin, FileDown } from 'lucide-react';
+import { CheckCircle2, AlertCircle, CreditCard, Truck, User, MapPin } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
@@ -40,8 +40,6 @@ export default function CheckoutPage() {
     state: false,
     postcode: false
   });
-  const [paymentSuccess, setPaymentSuccess] = useState(false);
-  const [orderNumber, setOrderNumber] = useState<string>('');
 
   useEffect(() => {
     if (cart.length === 0) {
@@ -162,11 +160,6 @@ export default function CheckoutPage() {
 
     setIsLoading(true);
     try {
-      // Save checkout information to localStorage
-      localStorage.setItem('checkoutInfo', JSON.stringify(customerInfo));
-      localStorage.setItem('cartItems', JSON.stringify(cart));
-      localStorage.setItem('cartTotal', totalPrice.toString());
-
       const response = await fetch('/api/stripe/payment', {
         method: 'POST',
         headers: {
@@ -201,50 +194,11 @@ export default function CheckoutPage() {
 
   const handlePaymentSuccess = () => {
     clearCart();
-    setPaymentSuccess(true);
-    // Generate a unique order number (you might want to get this from your backend)
-    const uniqueOrderNumber = `INV-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    setOrderNumber(uniqueOrderNumber);
     toast.success('Payment successful! Thank you for your purchase.');
   };
 
   const handlePaymentError = (error: string) => {
     toast.error(error);
-  };
-
-  const handleDownloadInvoice = async () => {
-    try {
-      const response = await fetch('/api/generate-invoice', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          orderNumber,
-          customerInfo,
-          items: cart,
-          total: totalPrice,
-          date: new Date().toISOString(),
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to generate invoice');
-      }
-
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `invoice-${orderNumber}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-    } catch (error) {
-      console.error('Error downloading invoice:', error);
-      toast.error('Failed to download invoice. Please try again.');
-    }
   };
 
   return (
@@ -495,23 +449,13 @@ export default function CheckoutPage() {
                 </div>
                 
                 {clientSecret && (
-                  <div className="mt-6 space-y-4">
+                  <div className="mt-6">
                     <PaymentProvider
                       clientSecret={clientSecret}
                       amount={totalPrice}
                       onSuccess={handlePaymentSuccess}
                       onError={handlePaymentError}
                     />
-                    {paymentSuccess && (
-                      <Button
-                        onClick={handleDownloadInvoice}
-                        className="w-full bg-zinc-800 hover:bg-zinc-700 text-white"
-                        variant="outline"
-                      >
-                        <FileDown className="mr-2 h-4 w-4" />
-                        Download Invoice
-                      </Button>
-                    )}
                   </div>
                 )}
               </div>
