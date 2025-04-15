@@ -74,6 +74,9 @@ export async function POST(request: Request) {
         signature,
         webhookSecret
       );
+      
+      // Log verification success
+      console.log('✅ Webhook signature verified successfully');
     } catch (err) {
       console.error('Webhook signature verification failed:', err);
       return new NextResponse(JSON.stringify({ 
@@ -93,6 +96,9 @@ export async function POST(request: Request) {
       id: event.id,
       object: event.data.object.object
     });
+    
+    // Log event type check
+    console.log(`Event type check: '${event.type}' === 'payment_intent.succeeded' is ${event.type === 'payment_intent.succeeded'}`);
 
     // Handle successful payments
     if (event.type === 'payment_intent.succeeded') {
@@ -101,6 +107,14 @@ export async function POST(request: Request) {
         id: paymentIntent.id,
         amount: paymentIntent.amount,
         metadata: paymentIntent.metadata,
+      });
+      
+      // Log Xero environment variables
+      console.log('Xero environment check:', {
+        hasClientId: !!process.env.XERO_CLIENT_ID,
+        hasClientSecret: !!process.env.XERO_CLIENT_SECRET,
+        hasRedirectUri: !!process.env.XERO_REDIRECT_URI,
+        hasTenantId: !!process.env.XERO_TENANT_ID
       });
       
       try {
