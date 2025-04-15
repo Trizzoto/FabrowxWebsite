@@ -14,7 +14,6 @@ export function saveXeroCredentials(credentials: XeroCredentials) {
     secure: true,
     httpOnly: true,
     sameSite: 'lax',
-    path: '/',
     maxAge: 60 * 60 * 24 * 30 // 30 days
   });
   
@@ -22,7 +21,6 @@ export function saveXeroCredentials(credentials: XeroCredentials) {
     secure: true,
     httpOnly: true,
     sameSite: 'lax',
-    path: '/',
     maxAge: 60 * 30 // 30 minutes
   });
   
@@ -30,7 +28,6 @@ export function saveXeroCredentials(credentials: XeroCredentials) {
     secure: true,
     httpOnly: true,
     sameSite: 'lax',
-    path: '/',
     maxAge: 60 * 60 * 24 * 30 // 30 days
   });
   
@@ -38,7 +35,6 @@ export function saveXeroCredentials(credentials: XeroCredentials) {
     secure: true,
     httpOnly: true,
     sameSite: 'lax',
-    path: '/',
     maxAge: 60 * 60 * 24 * 30 // 30 days
   });
 }
@@ -87,7 +83,6 @@ export function getXeroCredentials(): XeroCredentials | null {
 export function clearXeroCredentials() {
   try {
     const cookieStore = cookies();
-    const options = { path: '/' };
     cookieStore.delete('xero_tenant_id');
     cookieStore.delete('xero_access_token');
     cookieStore.delete('xero_refresh_token');

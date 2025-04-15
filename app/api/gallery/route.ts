@@ -11,8 +11,6 @@ interface GalleryImage {
   category: string
 }
 
-const defaultGalleryImages: GalleryImage[] = []
-
 // Helper function to generate a unique ID
 function generateId(): string {
   return `img_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`
@@ -21,22 +19,18 @@ function generateId(): string {
 // Helper function to read gallery data
 async function readGalleryData(): Promise<GalleryImage[]> {
   try {
-    const fileContents = await fs.readFile(dataFilePath, 'utf-8')
-    return JSON.parse(fileContents)
+    const data = await fs.readFile(dataFilePath, 'utf-8')
+    return JSON.parse(data)
   } catch (error) {
-    console.error('Error reading gallery data:', error)
-    return defaultGalleryImages
+    // If file doesn't exist, create it with empty array
+    await fs.writeFile(dataFilePath, '[]')
+    return []
   }
 }
 
 // Helper function to write gallery data
-async function writeGalleryData(data: GalleryImage[]): Promise<void> {
-  try {
-    await fs.writeFile(dataFilePath, JSON.stringify(data, null, 2))
-  } catch (error) {
-    console.error('Error writing gallery data:', error)
-    throw error
-  }
+async function writeGalleryData(data: GalleryImage[]) {
+  await fs.writeFile(dataFilePath, JSON.stringify(data, null, 2))
 }
 
 // GET /api/gallery - Get all gallery images
@@ -46,34 +40,34 @@ export async function GET() {
     return NextResponse.json(images)
   } catch (error) {
     console.error('Error reading gallery data:', error)
-    return NextResponse.json(defaultGalleryImages)
+    return NextResponse.json({ error: 'Failed to fetch gallery images' }, { status: 500 })
   }
 }
 
 // POST /api/gallery - Add new gallery images
 export async function POST(request: Request) {
   try {
-    const { images } = await request.json()
-    const currentImages = await readGalleryData()
-    
-    // Add new images to the existing ones
-    const updatedImages = [...currentImages, ...images]
-    await writeGalleryData(updatedImages)
-    
-    return NextResponse.json(images)
-  } catch (error) {
-    console.error('Error saving gallery data:', error)
-    return NextResponse.json({ error: 'Failed to save gallery images' }, { status: 500 })
-  }
-}
+    const body = await request.json()
+    const { images } = body
 
-// DELETE /api/gallery - Delete all gallery images
-export async function DELETE() {
-  try {
-    await writeGalleryData([])
-    return NextResponse.json({ message: 'All gallery images deleted successfully' })
+    if (!Array.isArray(images)) {
+      return NextResponse.json({ error: 'Invalid request format. Expected array of images.' }, { status: 400 })
+    }
+
+    const existingImages = await readGalleryData()
+    const newImages: GalleryImage[] = images.map(img => ({
+      id: generateId(),
+      url: img.url,
+      caption: img.caption || '',
+      category: img.category || 'general'
+    }))
+
+    const updatedImages = [...existingImages, ...newImages]
+    await writeGalleryData(updatedImages)
+
+    return NextResponse.json(newImages)
   } catch (error) {
-    console.error('Error deleting gallery data:', error)
-    return NextResponse.json({ error: 'Failed to delete gallery images' }, { status: 500 })
+    console.error('Error adding gallery images:', error)
+    return NextResponse.json({ error: 'Failed to add gallery images' }, { status: 500 })
   }
 } 

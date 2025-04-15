@@ -7,38 +7,17 @@ import { Phone } from 'xero-node/dist/gen/model/accounting/phone';
 import { saveXeroCredentials } from '@/lib/xero-storage';
 import { xero, getValidToken } from './xero-config';
 
-// Initialize Xero client with all required scopes for accounting operations
+// Initialize Xero client
 export const xeroClient = new XeroClient({
   clientId: process.env.XERO_CLIENT_ID!,
   clientSecret: process.env.XERO_CLIENT_SECRET!,
   redirectUris: [process.env.XERO_REDIRECT_URI!],
-  scopes: [
-    'offline_access',
-    'openid',
-    'profile',
-    'email',
-    'accounting.transactions',
-    'accounting.contacts',
-    'accounting.settings',
-    'accounting.reports.read',
-    'accounting.journals.read',
-    'accounting.attachments',
-    'accounting.settings.read',
-    'accounting.contacts.read'
-  ],
+  scopes: ['accounting.transactions', 'accounting.contacts', 'accounting.settings'],
 });
 
 // Helper function to refresh tokens if needed
 async function ensureValidToken(credentials: { tenantId: string, accessToken: string, refreshToken: string, expiresAt?: number }) {
   try {
-    console.log('Checking token validity:', {
-      hasAccessToken: !!credentials.accessToken,
-      hasRefreshToken: !!credentials.refreshToken,
-      expiresAt: credentials.expiresAt,
-      currentTime: Date.now(),
-      isExpired: !credentials.expiresAt || Date.now() >= (credentials.expiresAt - 5 * 60 * 1000)
-    });
-    
     // Check if token is expired or will expire in the next 5 minutes
     const isExpired = !credentials.expiresAt || Date.now() >= (credentials.expiresAt - 5 * 60 * 1000);
     
@@ -54,14 +33,6 @@ async function ensureValidToken(credentials: { tenantId: string, accessToken: st
       
       // Refresh the token
       const newTokenSet = await xeroClient.refreshToken();
-      
-      console.log('Token refresh response:', {
-        hasAccessToken: !!newTokenSet.access_token,
-        hasRefreshToken: !!newTokenSet.refresh_token,
-        expiresIn: newTokenSet.expires_in,
-        tokenType: newTokenSet.token_type,
-        scope: newTokenSet.scope
-      });
       
       if (!newTokenSet.access_token || !newTokenSet.refresh_token || !newTokenSet.expires_in) {
         throw new Error('Invalid token set received from Xero');
