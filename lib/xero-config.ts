@@ -27,6 +27,7 @@ const xero = new XeroClient({
 
 // Function to get a valid token
 // This function handles token validation, refresh, and cookie management
+// Last updated: 2024-03-19
 export async function getValidToken(): Promise<{ accessToken?: string; tenantId?: string }> {
   try {
     console.log('Starting getValidToken...');
