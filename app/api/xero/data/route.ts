@@ -1,88 +1,28 @@
 import { NextResponse } from 'next/server';
-import { xero } from '@/lib/xero';
+import { xero } from '@/lib/xero-config';
 import { cookies } from 'next/headers';
+import { getValidToken } from '@/lib/xero-config';
 
 export async function GET(request: Request) {
   try {
     console.log('Starting Xero data fetch...');
-    const cookieStore = cookies();
-    let accessToken = cookieStore.get('xero_access_token')?.value;
-    const refreshToken = cookieStore.get('xero_refresh_token')?.value;
-    const tenantId = cookieStore.get('xero_tenant_id')?.value;
-
-    console.log('Checking Xero credentials:', {
-      hasAccessToken: !!accessToken,
-      hasRefreshToken: !!refreshToken,
-      hasTenantId: !!tenantId
-    });
-
-    if (!refreshToken || !tenantId) {
-      console.error('Missing required Xero credentials');
+    
+    // Get valid token and tenant ID
+    const { accessToken, tenantId } = await getValidToken();
+    if (!tenantId) {
+      console.error('Missing Xero tenant ID');
       return NextResponse.json(
         { error: 'Not authenticated with Xero' },
         { status: 401 }
       );
     }
 
-    // If we don't have an access token but have a refresh token, try to refresh
-    if (!accessToken && refreshToken) {
-      console.log('Access token missing, attempting to refresh...');
-      try {
-        const response = await fetch('https://identity.xero.com/connect/token', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': `Basic ${Buffer.from(`${process.env.XERO_CLIENT_ID}:${process.env.XERO_CLIENT_SECRET}`).toString('base64')}`
-          },
-          body: new URLSearchParams({
-            grant_type: 'refresh_token',
-            refresh_token: refreshToken
-          })
-        });
-
-        if (!response.ok) {
-          throw new Error(`Token refresh failed: ${response.status} ${response.statusText}`);
-        }
-
-        const tokenSet = await response.json();
-        accessToken = tokenSet.access_token;
-
-        // Update the access token cookie
-        cookieStore.set('xero_access_token', tokenSet.access_token, {
-          secure: true,
-          httpOnly: true,
-          sameSite: 'lax',
-          maxAge: 60 * 30 // 30 minutes
-        });
-
-        console.log('Successfully refreshed access token');
-      } catch (error) {
-        console.error('Error refreshing token:', error);
-        return NextResponse.json(
-          { error: 'Failed to refresh Xero authentication' },
-          { status: 401 }
-        );
-      }
-    }
-
     // Set the access token
     console.log('Setting Xero token set...');
     await xero.setTokenSet({
       access_token: accessToken,
-      refresh_token: refreshToken,
       expires_in: 1800
     });
-
-    // Get the connected tenants
-    console.log('Getting connected tenants...');
-    const tenants = await xero.updateTenants(false);
-    if (!tenants || tenants.length === 0) {
-      console.error('No Xero tenants found');
-      return NextResponse.json(
-        { error: 'No Xero tenants found' },
-        { status: 401 }
-      );
-    }
 
     // Fetch contacts (customers)
     console.log('Fetching contacts...');
