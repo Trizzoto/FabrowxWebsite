@@ -12,7 +12,20 @@ export const xeroClient = new XeroClient({
   clientId: process.env.XERO_CLIENT_ID!,
   clientSecret: process.env.XERO_CLIENT_SECRET!,
   redirectUris: [process.env.XERO_REDIRECT_URI!],
-  scopes: ['accounting.transactions', 'accounting.contacts', 'accounting.settings'],
+  scopes: [
+    'offline_access',
+    'openid',
+    'profile',
+    'email',
+    'accounting.transactions',
+    'accounting.contacts',
+    'accounting.settings',
+    'accounting.reports.read',
+    'accounting.journals.read',
+    'accounting.attachments',
+    'accounting.settings.read',
+    'accounting.contacts.read'
+  ],
 });
 
 // Helper function to refresh tokens if needed
