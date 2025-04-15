@@ -70,6 +70,8 @@ export const getXeroAuthUrl = async () => {
   const baseUrl = await xero.buildConsentUrl();
   const url = new URL(baseUrl);
   url.searchParams.set('scope', scopes.join(' '));
+  url.searchParams.set('response_type', 'code');
+  url.searchParams.set('state', 'random-state');
   return url.toString();
 };
 
