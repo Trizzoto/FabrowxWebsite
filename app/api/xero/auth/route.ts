@@ -7,8 +7,8 @@ export async function GET(request: Request) {
     const url = new URL(request.url);
     const returnUrl = url.searchParams.get('returnUrl') || '/admin/customers';
     
-    // Get the auth URL (this is not a Promise)
-    const authUrl = getXeroAuthUrl();
+    // Get the auth URL - must await the Promise
+    const authUrl = await getXeroAuthUrl();
     
     // Create a response with cookies and redirect
     const response = NextResponse.redirect(authUrl);

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 import { stripe } from '@/lib/stripe';
-import { createXeroInvoice } from '@/lib/xero';
+import { createXeroInvoice, syncPaymentToXero } from '@/lib/xero';
 
 // Disable Next.js cache for this route
 export const dynamic = 'force-dynamic';
@@ -25,7 +25,7 @@ export async function POST(request: Request) {
       headers: Object.fromEntries(request.headers.entries())
     });
     
-  const body = await request.text();
+    const body = await request.text();
     
     // Log only the first part of the body to avoid sensitive data
     console.log('Webhook body preview:', body.substring(0, 100) + '...');
@@ -45,7 +45,7 @@ export async function POST(request: Request) {
       });
     }
 
-  console.log('Webhook signature:', {
+    console.log('Webhook signature:', {
       signatureLength: signature.length,
       signaturePreview: signature.substring(0, 20) + '...'
     });
@@ -70,8 +70,8 @@ export async function POST(request: Request) {
     let event;
     try {
       event = stripe.webhooks.constructEvent(
-      body,
-      signature,
+        body,
+        signature,
         webhookSecret
       );
     } catch (err) {
@@ -118,24 +118,33 @@ export async function POST(request: Request) {
         // Create Xero invoice
         const xeroInvoice = await createXeroInvoice(order, 'online');
         
-        return new NextResponse(JSON.stringify({
-          received: true,
-          xero: {
-          invoiceId: xeroInvoice.invoices?.[0]?.invoiceID,
-          invoiceNumber: xeroInvoice.invoices?.[0]?.invoiceNumber
-          }
-        }), {
-          headers: {
-            'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0',
-          }
-        });
+        if (xeroInvoice.invoices?.[0]?.invoiceID) {
+          // Record the payment in Xero
+          const xeroPayment = await syncPaymentToXero(paymentIntent, xeroInvoice.invoices[0].invoiceID);
+          
+          return new NextResponse(JSON.stringify({
+            received: true,
+            xero: {
+              invoiceId: xeroInvoice.invoices[0].invoiceID,
+              invoiceNumber: xeroInvoice.invoices[0].invoiceNumber,
+              paymentId: xeroPayment.payments?.[0]?.paymentID
+            }
+          }), {
+            headers: {
+              'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+              'Pragma': 'no-cache',
+              'Expires': '0',
+            }
+          });
+        } else {
+          throw new Error('Failed to create Xero invoice: No invoice ID returned');
+        }
       } catch (error) {
         console.error('Error processing Xero integration:', error);
         return new NextResponse(JSON.stringify({
           received: true,
-          warning: 'Xero integration failed but webhook was processed'
+          warning: 'Xero integration failed but webhook was processed',
+          error: error instanceof Error ? error.message : 'Unknown error'
         }), {
           headers: {
             'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
