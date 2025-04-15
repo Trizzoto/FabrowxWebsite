@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { xero } from '@/lib/xero-config';
+import { XeroClient } from 'xero-node';
 import { cookies } from 'next/headers';
 import { saveXeroCredentials } from '@/lib/xero-storage';
 
@@ -41,6 +41,28 @@ export async function GET(request: NextRequest) {
       });
       throw new Error('No authorization code received');
     }
+
+    // Initialize Xero client with credentials
+    const xero = new XeroClient({
+      clientId: process.env.XERO_CLIENT_ID!,
+      clientSecret: process.env.XERO_CLIENT_SECRET!,
+      redirectUris: [process.env.XERO_REDIRECT_URI || 'https://fabrowx-website.vercel.app/api/xero/callback'],
+      grantType: 'authorization_code',
+      scopes: [
+        'offline_access',
+        'openid',
+        'profile',
+        'email',
+        'accounting.transactions',
+        'accounting.contacts',
+        'accounting.settings',
+        'accounting.reports.read',
+        'accounting.journals.read',
+        'accounting.attachments',
+        'accounting.settings.read',
+        'accounting.contacts.read'
+      ]
+    });
 
     console.log('Getting token set from Xero...');
     let tokenSet;
