@@ -47,6 +47,17 @@ export default function CheckoutPage() {
     }
   }, [cart, router]);
 
+  useEffect(() => {
+    // Try to get email from localStorage
+    const savedEmail = localStorage.getItem('userEmail');
+    if (savedEmail) {
+      setCustomerInfo(prev => ({
+        ...prev,
+        email: savedEmail
+      }));
+    }
+  }, []);
+
   const validateStep = (step: number) => {
     const errors = { ...formErrors };
     let isValid = true;
@@ -108,7 +119,17 @@ export default function CheckoutPage() {
 
   const handleNextStep = () => {
     if (validateStep(activeStep)) {
-      setActiveStep(activeStep + 1);
+      if (activeStep === 1) {
+        // Save email to localStorage when moving past step 1
+        localStorage.setItem('userEmail', customerInfo.email);
+      }
+      
+      // If moving from step 2 (shipping) to step 3, automatically initiate payment
+      if (activeStep === 2) {
+        handleInitiatePayment();
+      } else {
+        setActiveStep(activeStep + 1);
+      }
     } else {
       toast.error('Please fill in all required fields correctly');
     }
@@ -173,7 +194,7 @@ export default function CheckoutPage() {
         Checkout
       </h1>
 
-      {/* Progress Steps */}
+      {/* Progress Steps - only show two steps */}
       <div className="flex justify-center mb-8">
         <div className="flex items-center">
           <div className={`flex items-center justify-center w-10 h-10 rounded-full ${activeStep >= 1 ? 'bg-orange-600 text-white' : 'bg-zinc-800 text-zinc-400'}`}>
@@ -183,15 +204,13 @@ export default function CheckoutPage() {
           <div className={`flex items-center justify-center w-10 h-10 rounded-full ${activeStep >= 2 ? 'bg-orange-600 text-white' : 'bg-zinc-800 text-zinc-400'}`}>
             <MapPin className="h-5 w-5" />
           </div>
-          <div className={`h-1 w-16 ${activeStep >= 3 ? 'bg-orange-600' : 'bg-zinc-800'}`}></div>
-          <div className={`flex items-center justify-center w-10 h-10 rounded-full ${activeStep >= 3 ? 'bg-orange-600 text-white' : 'bg-zinc-800 text-zinc-400'}`}>
-            <CreditCard className="h-5 w-5" />
-          </div>
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2">
+      {/* Mobile: Stack vertically, Desktop: 2 columns with order on right */}
+      <div className="grid md:grid-cols-1 lg:grid-cols-12 gap-8">
+        {/* Form column - takes 7/12 of space on desktop */}
+        <div className="lg:col-span-7">
           {/* Step 1: Customer Information */}
           {activeStep === 1 && (
             <Card className="bg-zinc-900 border-zinc-800">
@@ -238,10 +257,10 @@ export default function CheckoutPage() {
                 <div className="flex justify-between pt-4">
                   <Button 
                     variant="outline"
-                    onClick={handlePrevStep}
+                    onClick={() => router.push('/cart')}
                     className="border-orange-500/30 hover:bg-orange-500/10"
                   >
-                    Back
+                    Back to Cart
                   </Button>
                   <Button 
                     onClick={handleNextStep}
@@ -345,40 +364,10 @@ export default function CheckoutPage() {
                   <Button 
                     onClick={handleNextStep}
                     className="bg-orange-600 hover:bg-orange-700"
-                  >
-                    Continue to Payment
-                    <CreditCard className="ml-2 h-4 w-4" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Step 3: Payment */}
-          {activeStep === 3 && !clientSecret && (
-            <Card className="bg-zinc-900 border-zinc-800">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <CreditCard className="h-5 w-5 text-orange-500" />
-                  Payment Information
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex justify-between pt-4">
-                  <Button 
-                    variant="outline"
-                    onClick={handlePrevStep}
-                    className="border-orange-500/30 hover:bg-orange-500/10"
-                  >
-                    Back
-                  </Button>
-                  <Button
-                    className="bg-orange-600 hover:bg-orange-700"
-                    size="lg"
-                    onClick={handleInitiatePayment}
                     disabled={isLoading}
                   >
                     {isLoading ? "Processing..." : "Proceed to Payment"}
+                    <CreditCard className="ml-2 h-4 w-4" />
                   </Button>
                 </div>
               </CardContent>
@@ -386,11 +375,12 @@ export default function CheckoutPage() {
           )}
         </div>
 
-        <div>
+        {/* Order summary column - takes 5/12 of space on desktop */}
+        <div className="lg:col-span-5">
           <Card className="bg-zinc-900 border-zinc-800 sticky top-24">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <CheckCircle2 className="h-5 w-5 text-orange-500" />
+              <CardTitle className="flex items-center gap-2 text-xl">
+                <CheckCircle2 className="h-6 w-6 text-orange-500" />
                 Order Summary
               </CardTitle>
             </CardHeader>
@@ -433,13 +423,13 @@ export default function CheckoutPage() {
                 
                 <Separator className="bg-zinc-800" />
                 
-                <div className="flex justify-between font-bold text-lg">
+                <div className="flex justify-between font-bold text-xl">
                   <span>Total</span>
                   <span>${totalPrice.toFixed(2)}</span>
                 </div>
                 
-                {activeStep === 3 && clientSecret && (
-                  <div className="mt-4">
+                {clientSecret && (
+                  <div className="mt-6">
                     <PaymentProvider
                       clientSecret={clientSecret}
                       amount={totalPrice}

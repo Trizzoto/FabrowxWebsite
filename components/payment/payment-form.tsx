@@ -54,7 +54,8 @@ export function PaymentForm({ amount, onSuccess, onError }: PaymentFormProps) {
       <Button
         type="submit"
         disabled={!stripe || isProcessing}
-        className="w-full"
+        className="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 text-lg"
+        size="lg"
       >
         {isProcessing ? 'Processing...' : `Pay $${amount.toFixed(2)}`}
       </Button>
