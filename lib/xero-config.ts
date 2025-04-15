@@ -5,7 +5,6 @@ const xero = new XeroClient({
   clientId: process.env.XERO_CLIENT_ID!,
   clientSecret: process.env.XERO_CLIENT_SECRET!,
   redirectUris: [process.env.XERO_REDIRECT_URI || 'https://fabrowx-website.vercel.app/api/xero/callback'],
-  grantType: 'authorization_code',
   scopes: [
     'offline_access',
     'openid',
@@ -13,13 +12,9 @@ const xero = new XeroClient({
     'email',
     'accounting.transactions',
     'accounting.contacts',
-    'accounting.settings',
-    'accounting.reports.read',
-    'accounting.journals.read',
-    'accounting.attachments',
-    'accounting.settings.read',
-    'accounting.contacts.read'
-  ]
+    'accounting.settings'
+  ],
+  state: 'elite-fabworx'
 });
 
 // Function to get a valid token
@@ -50,32 +45,14 @@ export async function getValidToken() {
   }
 }
 
-// Get the authorization URL with explicit scope parameter
-export const getXeroAuthUrl = async () => {
-  const scopes = [
-    'offline_access',
-    'openid',
-    'profile',
-    'email',
-    'accounting.transactions',
-    'accounting.contacts',
-    'accounting.settings',
-    'accounting.reports.read',
-    'accounting.journals.read',
-    'accounting.attachments',
-    'accounting.settings.read',
-    'accounting.contacts.read'
-  ];
-  
-  const baseUrl = await xero.buildConsentUrl();
-  const url = new URL(baseUrl);
-  url.searchParams.set('scope', scopes.join(' '));
-  return url.toString();
-};
-
 export { xero };
 
 // Check required environment variables
 if (!process.env.XERO_CLIENT_ID || !process.env.XERO_CLIENT_SECRET) {
   throw new Error('Missing required Xero credentials in environment variables');
-} 
+}
+
+// Get the authorization URL
+export const getXeroAuthUrl = () => {
+  return xero.buildConsentUrl();
+}; 
