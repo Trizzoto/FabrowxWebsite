@@ -19,6 +19,10 @@ export async function GET() {
     console.log('Getting valid token...');
     const { accessToken, tenantId } = await getValidToken();
     
+    if (!accessToken) {
+      throw new Error('Failed to get access token from Xero');
+    }
+    
     // Decode the JWT token to check scopes
     const decodedToken = jwt.decode(accessToken);
     console.log('Token details:', {
