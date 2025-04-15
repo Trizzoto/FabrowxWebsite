@@ -39,6 +39,31 @@ export default function CustomersPage() {
     try {
       setIsLoading(true)
       const response = await fetch('/api/xero/data')
+      
+      if (!response.ok) {
+        const errorData = await response.json()
+        
+        if (response.status === 401) {
+          toast({
+            title: "Authentication Required",
+            description: (
+              <div className="flex flex-col gap-2">
+                <p>Xero authentication is required.</p>
+                <Button asChild variant="outline" size="sm">
+                  <a href="/api/xero/auth" target="_blank" rel="noopener noreferrer">
+                    Connect to Xero
+                  </a>
+                </Button>
+              </div>
+            ),
+            duration: 10000,
+          })
+        } else {
+          throw new Error(errorData.error || 'Failed to fetch customers')
+        }
+        return;
+      }
+      
       const data = await response.json()
       
       if (data.customers) {
