@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { xeroClient } from '@/lib/xero-config';
+import { xero } from '@/lib/xero-config';
 import { cookies } from 'next/headers';
 import { saveXeroCredentials } from '@/lib/xero-storage';
 
@@ -39,7 +39,7 @@ export async function GET(request: Request) {
         body: new URLSearchParams({
           grant_type: 'authorization_code',
           code: code,
-          redirect_uri: process.env.XERO_REDIRECT_URI || ''
+          redirect_uri: process.env.XERO_REDIRECT_URI || 'https://fabrowx-website.vercel.app/api/xero/callback'
         })
       });
 
@@ -56,7 +56,8 @@ export async function GET(request: Request) {
         hasRefreshToken: !!tokenSet.refresh_token,
         expiresIn: tokenSet.expires_in,
         tokenType: tokenSet.token_type,
-        idToken: !!tokenSet.id_token
+        idToken: !!tokenSet.id_token,
+        scope: tokenSet.scope
       });
 
       // Set the tokens in cookies
@@ -76,13 +77,13 @@ export async function GET(request: Request) {
       });
 
       // Get tenant ID
-      await xeroClient.setTokenSet({
+      await xero.setTokenSet({
         access_token: tokenSet.access_token,
         refresh_token: tokenSet.refresh_token,
         expires_in: tokenSet.expires_in
       });
 
-      const tenants = await xeroClient.updateTenants(false);
+      const tenants = await xero.updateTenants(false);
       if (!tenants || tenants.length === 0) {
         throw new Error('No Xero tenants found');
       }
