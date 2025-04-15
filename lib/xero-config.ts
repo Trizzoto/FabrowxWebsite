@@ -1,4 +1,5 @@
 import { XeroClient } from 'xero-node';
+import { getXeroCredentials } from './xero-storage';
 
 // Initialize Xero client with OAuth 2.0
 const xero = new XeroClient({
@@ -25,10 +26,28 @@ const xero = new XeroClient({
 // Function to get a valid token
 export async function getValidToken() {
   try {
-    // Check if we have a tenant ID
-    if (!process.env.XERO_TENANT_ID) {
-      throw new Error('XERO_TENANT_ID is not set');
+    console.log('Getting stored credentials...');
+    const credentials = getXeroCredentials();
+    
+    if (!credentials) {
+      console.log('No stored credentials found');
+      throw new Error('Authentication required. Please visit /api/xero/auth to connect to Xero.');
     }
+
+    console.log('Credentials found:', {
+      hasTenantId: !!credentials.tenantId,
+      hasAccessToken: !!credentials.accessToken,
+      hasRefreshToken: !!credentials.refreshToken,
+      expiresAt: credentials.expiresAt,
+      currentTime: Date.now()
+    });
+
+    // Set the current token set
+    await xero.setTokenSet({
+      access_token: credentials.accessToken,
+      refresh_token: credentials.refreshToken,
+      expires_in: Math.floor((credentials.expiresAt - Date.now()) / 1000)
+    });
 
     // For OAuth 2.0, we need to handle token refresh
     let tokenSet;
@@ -44,7 +63,6 @@ export async function getValidToken() {
       });
     } catch (e) {
       console.error('Token refresh failed:', e);
-      // If refresh fails, we need to re-authenticate
       throw new Error('Authentication required. Please visit /api/xero/auth to connect to Xero.');
     }
     
@@ -54,7 +72,7 @@ export async function getValidToken() {
 
     return {
       accessToken: tokenSet.access_token,
-      tenantId: process.env.XERO_TENANT_ID
+      tenantId: credentials.tenantId
     };
   } catch (error) {
     console.error('Error getting Xero token:', error);
