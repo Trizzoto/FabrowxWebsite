@@ -113,8 +113,8 @@ export async function getValidToken() {
 }
 
 // Get the Xero authorization URL
-export const getXeroAuthUrl = () => {
-  return xero.buildConsentUrl();
+export const getXeroAuthUrl = async () => {
+  return await xero.buildConsentUrl();
 };
 
 // Check required environment variables
