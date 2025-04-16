@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { LayoutDashboard, Package, ShoppingBag, Users, Settings, Menu, X, Mail, Receipt } from "lucide-react"
+import { LayoutDashboard, Package, ShoppingBag, Users, Settings, Menu, X, Mail, Receipt, CreditCard } from "lucide-react"
 import Image from "next/image"
 import { useState } from "react"
 
@@ -27,6 +27,7 @@ export default function AdminSidebar() {
     { href: "/admin/orders", label: "Orders", icon: ShoppingBag },
     { href: "/admin/customers", label: "Customers", icon: Users },
     { href: "/admin/contact", label: "Contact Submissions", icon: Mail },
+    { href: "/admin/stripe-keys", label: "Stripe Integration", icon: CreditCard },
     { href: "/admin/xero", label: "Xero Integration", icon: Receipt },
     { href: "/admin/settings", label: "Settings", icon: Settings },
   ]

@@ -1,10 +1,30 @@
 import Stripe from 'stripe';
 import { getStripeCredentials, saveStripeCredentials } from './stripe-storage';
+import { cookies } from 'next/headers';
 
-// Initialize Stripe client
-const stripeSecretKey = process.env.STRIPE_SECRET_KEY || '';
+// Get the secret key with fallbacks
+function getSecretKey(): string {
+  let secretKey = process.env.STRIPE_SECRET_KEY || '';
+  
+  try {
+    // This will only work in a server component or API route
+    const cookieStore = cookies();
+    const devSecretKey = cookieStore.get('dev_stripe_secret_key')?.value;
+    
+    if (devSecretKey) {
+      secretKey = devSecretKey;
+    }
+  } catch (e) {
+    // If cookies() fails (client component), just use the env var
+  }
+  
+  return secretKey;
+}
+
+// Initialize Stripe client with direct API key first, falling back to OAuth credentials
+const stripeSecretKey = getSecretKey();
 export const stripe = new Stripe(stripeSecretKey, {
-  apiVersion: '2023-10-16', // Use latest API version
+  apiVersion: '2025-03-31.basil', // Match version used in other files
 });
 
 // Get a valid token or throw an error if not available
@@ -12,7 +32,19 @@ export async function getValidToken() {
   console.log('Getting valid Stripe token...');
   
   try {
-    // First try to get credentials from storage
+    // First, check if we have a direct API key configured
+    const secretKey = getSecretKey();
+    const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+    
+    if (secretKey) {
+      console.log('Using direct API keys for Stripe');
+      return {
+        accountId: process.env.STRIPE_ACCOUNT_ID || 'direct_integration',
+        accessToken: secretKey,
+      };
+    }
+    
+    // Fall back to OAuth credentials from storage
     const storedCredentials = getStripeCredentials();
     
     if (storedCredentials) {
@@ -21,6 +53,7 @@ export async function getValidToken() {
       
       if (storedCredentials.expiresAt > now) {
         // Return existing credentials
+        console.log('Using stored OAuth credentials for Stripe');
         return {
           accountId: storedCredentials.accountId,
           accessToken: storedCredentials.accessToken,
@@ -34,18 +67,10 @@ export async function getValidToken() {
       }
     }
     
-    // Fallback to env variable if no stored credentials
-    if (process.env.STRIPE_SECRET_KEY && process.env.STRIPE_ACCOUNT_ID) {
-      return {
-        accountId: process.env.STRIPE_ACCOUNT_ID,
-        accessToken: process.env.STRIPE_SECRET_KEY,
-      };
-    }
-    
-    throw new Error('Authentication required. Please connect your Stripe account.');
+    throw new Error('Stripe is not configured. Please set up API keys or connect your Stripe account.');
   } catch (error) {
     console.error('Error getting valid Stripe token:', error);
-    throw new Error('Authentication required. Please connect your Stripe account.');
+    throw new Error('Stripe is not configured. Please set up API keys or connect your Stripe account.');
   }
 }
 
@@ -67,10 +92,26 @@ export function getStripeConnectUrl() {
 // Check if Stripe is connected
 export async function isStripeConnected() {
   try {
+    // Check for direct API keys first
+    const secretKey = getSecretKey();
+    
+    if (secretKey) {
+      return {
+        connected: true,
+        method: 'direct',
+        accountId: process.env.STRIPE_ACCOUNT_ID || 'direct_integration',
+      };
+    }
+    
+    // Fall back to OAuth connection check
     const credentials = getStripeCredentials();
-    return !!credentials?.accountId && !!credentials?.accessToken;
+    return { 
+      connected: !!credentials,
+      method: credentials ? 'oauth' : 'none',
+      accountId: credentials?.accountId,
+    };
   } catch (error) {
     console.error('Error checking Stripe connection:', error);
-    return false;
+    return { connected: false, method: 'none' };
   }
 } 

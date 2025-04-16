@@ -1,7 +1,7 @@
 import Stripe from 'stripe';
-import { getStripeCredentials } from './stripe-storage';
+import { cookies } from 'next/headers';
 
-// Initialize Stripe with credentials that will be dynamically loaded
+// Initialize Stripe with direct API key
 let stripeClient: Stripe | null = null;
 
 // Get base URL for the application
@@ -24,9 +24,20 @@ function getOrCreateStripeClient(): Stripe {
     return stripeClient;
   }
   
-  // Try to get credentials from storage or env variables
-  const credentials = getStripeCredentials();
-  const secretKey = credentials?.accessToken || process.env.STRIPE_SECRET_KEY || '';
+  // Check for dev cookies first (server-side)
+  let secretKey = process.env.STRIPE_SECRET_KEY || '';
+  
+  try {
+    // This will only work in a server component or API route
+    const cookieStore = cookies();
+    const devSecretKey = cookieStore.get('dev_stripe_secret_key')?.value;
+    
+    if (devSecretKey) {
+      secretKey = devSecretKey;
+    }
+  } catch (e) {
+    // If cookies() fails (client component), just use the env var
+  }
   
   if (!secretKey) {
     console.warn('Stripe secret key not found. Payment functions will fail.');
@@ -42,14 +53,6 @@ function getOrCreateStripeClient(): Stripe {
 // Helper function to create a payment intent
 export async function createPaymentIntent(amount: number, metadata: any = {}) {
   try {
-    // Ensure we're using the latest credentials
-    const credentials = getStripeCredentials();
-    if (credentials?.accessToken) {
-      stripeClient = new Stripe(credentials.accessToken, {
-        apiVersion: '2025-03-31.basil',
-      });
-    }
-    
     return stripe.paymentIntents.create({
       amount,
       currency: 'aud',
