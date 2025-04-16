@@ -13,6 +13,7 @@ export async function GET() {
     return NextResponse.json({
       connected,
       accountId: accountId?.value ? accountId.value.slice(0, 5) + '...' : null,
+      development: process.env.NODE_ENV !== 'production',
     });
   } catch (error) {
     console.error('Error checking Stripe connection status:', error);
@@ -20,6 +21,12 @@ export async function GET() {
     return NextResponse.json({
       connected: false,
       error: 'Failed to check connection status',
+      development: process.env.NODE_ENV !== 'production',
+      setup_tips: [
+        "Ensure STRIPE_CLIENT_ID is set in your environment variables",
+        "For testing/development, use the 'Development Mode' button",
+        "Visit the Stripe Connect dashboard to get your client_id"
+      ]
     }, { status: 500 });
   }
 } 

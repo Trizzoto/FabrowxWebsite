@@ -73,6 +73,46 @@ export default function StripeIntegrationPage() {
     window.location.href = `${baseUrl}/api/stripe/auth?returnUrl=${encodeURIComponent(`${baseUrl}/admin/stripe`)}`
   }
 
+  // Development helper to bypass Stripe OAuth for testing
+  const handleDevModeConnect = async () => {
+    try {
+      setIsLoading(true);
+      
+      // Store a mock publishable key in localStorage for client-side
+      localStorage.setItem('stripe_publishable_key', 'pk_test_mock_key_for_development');
+      
+      // Call the mock connect API to set server-side cookies
+      const response = await fetch(`${baseUrl}/api/stripe/mock-connect`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok && data.success) {
+        setIsConnected(true);
+        setAccountId('dev_mode');
+        toast({
+          title: "Development Mode",
+          description: "Successfully connected in development mode (mock Stripe)"
+        });
+      } else {
+        throw new Error(data.error || 'Failed to create mock connection');
+      }
+    } catch (error) {
+      console.error('Error in dev mode connection:', error);
+      toast({
+        title: "Error",
+        description: "Failed to setup development mode",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   return (
     <div className="space-y-6">
       <Card>
@@ -142,6 +182,21 @@ export default function StripeIntegrationPage() {
                   <LinkIcon className="mr-2 h-4 w-4" />
                   Connect to Stripe
                 </Button>
+                
+                {process.env.NODE_ENV !== 'production' && (
+                  <div className="mt-2">
+                    <Button 
+                      onClick={handleDevModeConnect} 
+                      variant="outline" 
+                      className="w-full text-amber-500 border-amber-500/20 hover:bg-amber-500/10"
+                    >
+                      <span className="flex items-center">
+                        <code className="mr-2">DEV</code>
+                        Development Mode (No Stripe OAuth)
+                      </span>
+                    </Button>
+                  </div>
+                )}
               </div>
             )}
           </div>
