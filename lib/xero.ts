@@ -67,11 +67,26 @@ export const createXeroInvoice = async (order: any, type: 'online' | 'workshop' 
       itemCount: order.items.length
     });
 
+    // Check if order has required fields
+    if (!order.id || !order.customer || !order.customer.email || !order.items || !Array.isArray(order.items)) {
+      throw new Error(`Invalid order format: ${JSON.stringify(order)}`);
+    }
+
+    // Log environment variables
+    console.log('Xero environment in createXeroInvoice:', {
+      hasClientId: !!process.env.XERO_CLIENT_ID,
+      hasClientSecret: !!process.env.XERO_CLIENT_SECRET,
+      hasRedirectUri: !!process.env.XERO_REDIRECT_URI,
+      hasTenantId: !!process.env.XERO_TENANT_ID
+    });
+
     // Get valid token and tenant ID
+    console.log('Getting valid token...');
     const { accessToken, tenantId } = await getValidToken();
     if (!tenantId) {
       throw new Error('Missing Xero tenant ID');
     }
+    console.log('Got valid token with tenant ID:', tenantId);
 
     // Set the access token on the xero client from xero-config
     console.log('Setting Xero token...');

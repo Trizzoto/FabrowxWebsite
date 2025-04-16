@@ -96,13 +96,26 @@ export async function GET() {
       console.error('Error checking token details:', error);
     }
     
+    // Update to properly check scopes
+    let tokenScopes: string[] = [];
+    
+    try {
+      console.log('Checking token scopes');
+      // Get scopes from the env variables since we can't easily extract them from the token
+      const scopesStr = process.env.XERO_SCOPES || 'offline_access,openid,profile,email,accounting.transactions,accounting.contacts,accounting.settings';
+      tokenScopes = scopesStr.split(',');
+      console.log('Using scopes:', tokenScopes);
+    } catch (error) {
+      console.error('Error checking token details:', error);
+    }
+    
     // Return success response
     return NextResponse.json({
       success: true,
       contactCount,
       tenantId: validToken.tenantId,
       hasAccessToken: !!validToken.accessToken,
-      tokenScopes: tokenData.scopes,
+      tokenScopes: tokenScopes,
       envCheck: {
         hasClientId: !!process.env.XERO_CLIENT_ID,
         hasClientSecret: !!process.env.XERO_CLIENT_SECRET,

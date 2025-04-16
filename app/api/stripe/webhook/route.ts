@@ -109,15 +109,34 @@ export async function POST(request: Request) {
         metadata: paymentIntent.metadata,
       });
       
-      // Log Xero environment variables
+      // Log Xero environment variables with more detail
       console.log('Xero environment check:', {
         hasClientId: !!process.env.XERO_CLIENT_ID,
         hasClientSecret: !!process.env.XERO_CLIENT_SECRET,
         hasRedirectUri: !!process.env.XERO_REDIRECT_URI,
-        hasTenantId: !!process.env.XERO_TENANT_ID
+        hasTenantId: !!process.env.XERO_TENANT_ID,
+        hasAccessToken: !!process.env.XERO_ACCESS_TOKEN,
+        hasRefreshToken: !!process.env.XERO_REFRESH_TOKEN,
+        hasScopes: !!process.env.XERO_SCOPES,
+        redirectUri: process.env.XERO_REDIRECT_URI
       });
       
+      // Add check for token before trying to create invoice
       try {
+        // First check if we can get a valid token
+        console.log('Checking for valid Xero token before creating invoice');
+        const { getValidToken } = await import('@/lib/xero-config');
+        try {
+          const tokenCheck = await getValidToken();
+          console.log('Valid Xero token available:', {
+            hasToken: !!tokenCheck.accessToken,
+            expiresIn: tokenCheck.expiresAt ? Math.floor((tokenCheck.expiresAt - Date.now()) / 1000) : 0
+          });
+        } catch (tokenError) {
+          console.error('Error getting valid Xero token:', tokenError);
+          // Continue anyway to see detailed errors
+        }
+
         // Create order object from payment metadata
         const order = {
           id: paymentIntent.id,
@@ -131,12 +150,33 @@ export async function POST(request: Request) {
 
         console.log('Creating Xero invoice with data:', JSON.stringify(order));
 
-        // Create Xero invoice
-        const xeroInvoice = await createXeroInvoice(order, 'online');
+        // Add retry logic for Xero invoice creation
+        let xeroInvoice: any = null;
+        let retryCount = 0;
+        const maxRetries = 3;
         
-        console.log('Xero invoice creation response:', JSON.stringify(xeroInvoice));
+        while (retryCount < maxRetries) {
+          try {
+            // Create Xero invoice with retry
+            console.log(`Xero invoice creation attempt ${retryCount + 1}/${maxRetries}`);
+            xeroInvoice = await createXeroInvoice(order, 'online');
+            console.log('Xero invoice creation response:', JSON.stringify(xeroInvoice));
+            break; // Success, exit the loop
+          } catch (invoiceError) {
+            retryCount++;
+            console.error(`Xero invoice creation attempt ${retryCount} failed:`, invoiceError);
+            
+            if (retryCount >= maxRetries) {
+              console.error('All Xero invoice creation attempts failed');
+              throw invoiceError; // Re-throw the error after all retries fail
+            }
+            
+            // Wait before retrying (exponential backoff)
+            await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, retryCount)));
+          }
+        }
         
-        if (xeroInvoice.invoices?.[0]?.invoiceID) {
+        if (xeroInvoice && xeroInvoice.invoices?.[0]?.invoiceID) {
           // Record the payment in Xero
           console.log('Recording payment in Xero for invoice:', xeroInvoice.invoices[0].invoiceID);
           const xeroPayment = await syncPaymentToXero(paymentIntent, xeroInvoice.invoices[0].invoiceID);
