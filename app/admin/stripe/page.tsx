@@ -19,6 +19,7 @@ export default function StripeIntegrationPage() {
   const [isConnected, setIsConnected] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [accountId, setAccountId] = useState<string | null>(null)
+  const [connectionMethod, setConnectionMethod] = useState<string | null>(null)
   const { toast } = useToast()
   const baseUrl = getBaseUrl()
 
@@ -32,6 +33,7 @@ export default function StripeIntegrationPage() {
       const data = await response.json()
       setIsConnected(data.connected)
       setAccountId(data.accountId)
+      setConnectionMethod(data.method)
     } catch (error) {
       console.error('Error checking Stripe connection:', error)
     } finally {
@@ -132,7 +134,9 @@ export default function StripeIntegrationPage() {
               <div className="space-y-6">
                 <div className="flex items-center space-x-2 text-green-500">
                   <div className="h-3 w-3 rounded-full bg-green-500"></div>
-                  <span>Connected to Stripe {accountId && `(Account: ${accountId})`}</span>
+                  <span>
+                    Connected to Stripe {connectionMethod === 'direct' ? '(Direct API Keys)' : accountId && `(OAuth Account: ${accountId})`}
+                  </span>
                 </div>
                 
                 <div className="space-y-2">
@@ -150,10 +154,17 @@ export default function StripeIntegrationPage() {
                     <div className="ml-3">
                       <h3 className="text-sm font-medium text-amber-800">Note</h3>
                       <div className="mt-2 text-sm text-amber-700">
-                        <p>
-                          Your Stripe connection is secure and will persist until you disconnect.
-                          No secret keys need to be managed or updated.
-                        </p>
+                        {connectionMethod === 'direct' ? (
+                          <p>
+                            You are using direct API keys for Stripe integration. 
+                            To update your keys, visit the <Link href="/admin/stripe-keys" className="underline">API Keys page</Link>.
+                          </p>
+                        ) : (
+                          <p>
+                            Your Stripe connection is secure and will persist until you disconnect.
+                            No secret keys need to be managed or updated.
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -170,18 +181,27 @@ export default function StripeIntegrationPage() {
                       <h3 className="text-sm font-medium text-amber-800">Action Required</h3>
                       <div className="mt-2 text-sm text-amber-700">
                         <p>
-                          To process payments, please connect your Stripe account.
-                          This is a one-time setup process.
+                          To process payments, please either connect your Stripe account using OAuth or
+                          set up direct API keys on the <Link href="/admin/stripe-keys" className="underline">API Keys page</Link>.
                         </p>
                       </div>
                     </div>
                   </div>
                 </div>
                 
-                <Button onClick={handleConnect} className="w-full bg-orange-600 hover:bg-orange-700">
-                  <LinkIcon className="mr-2 h-4 w-4" />
-                  Connect to Stripe
-                </Button>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  <Button onClick={handleConnect} className="w-full bg-orange-600 hover:bg-orange-700">
+                    <LinkIcon className="mr-2 h-4 w-4" />
+                    Connect with OAuth
+                  </Button>
+                  
+                  <Button asChild className="w-full">
+                    <Link href="/admin/stripe-keys">
+                      <CreditCard className="mr-2 h-4 w-4" />
+                      Set Up API Keys
+                    </Link>
+                  </Button>
+                </div>
                 
                 {process.env.NODE_ENV !== 'production' && (
                   <div className="mt-2">

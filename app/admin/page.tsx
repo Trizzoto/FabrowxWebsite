@@ -224,43 +224,6 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
         </div>
-
-        <h2 className="font-semibold text-xl mb-5">Integrations</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg">Xero</CardTitle>
-              <CardDescription>Accounting integration</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground mb-4">
-                Connect to Xero for invoice synchronization and financial management.
-              </p>
-              <Link href="/admin/xero">
-                <Button variant="outline" className="w-full">
-                  Manage Xero
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg">Stripe</CardTitle>
-              <CardDescription>Payment processing</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground mb-4">
-                Connect to Stripe for secure payment processing without API keys.
-              </p>
-              <Link href="/admin/stripe">
-                <Button variant="outline" className="w-full">
-                  Manage Stripe
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-        </div>
       </div>
     </div>
   )
