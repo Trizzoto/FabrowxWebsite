@@ -114,10 +114,55 @@ export async function getValidToken() {
 
 // Get the Xero authorization URL
 export const getXeroAuthUrl = async () => {
-  return await xero.buildConsentUrl();
+  return xero.buildConsentUrl();
 };
 
 // Check required environment variables
 if (!process.env.XERO_CLIENT_ID || !process.env.XERO_CLIENT_SECRET) {
   throw new Error('Missing required Xero credentials in environment variables');
+}
+
+export async function getXeroConnectUrl(): Promise<string> {
+  return xero.buildConsentUrl();
+}
+
+export async function getXeroClient(): Promise<XeroClient> {
+  // Get valid token
+  const token = await getValidToken();
+  
+  // Set the token in the client
+  await xero.setTokenSet({
+    access_token: token.accessToken,
+    refresh_token: token.refreshToken,
+    expires_in: Math.floor((token.expiresAt - Date.now()) / 1000)
+  });
+  
+  return xero;
+}
+
+export async function refreshXeroToken() {
+  const token = await getValidToken();
+  return {
+    accessToken: token.accessToken,
+    refreshToken: token.refreshToken,
+    expiresAt: token.expiresAt
+  };
+}
+
+export async function disconnectXero() {
+  // Clear credentials from storage and cookies
+  const cookieStore = cookies();
+  cookieStore.delete('xero_access_token');
+  cookieStore.delete('xero_refresh_token');
+  cookieStore.delete('xero_tenant_id');
+  return { success: true };
+}
+
+export async function isXeroConnected(): Promise<boolean> {
+  try {
+    await getValidToken();
+    return true;
+  } catch (error) {
+    return false;
+  }
 } 
