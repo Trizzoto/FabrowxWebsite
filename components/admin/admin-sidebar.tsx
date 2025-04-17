@@ -28,7 +28,6 @@ export default function AdminSidebar() {
     { href: "/admin/customers", label: "Customers", icon: Users },
     { href: "/admin/contact", label: "Contact Submissions", icon: Mail },
     { href: "/admin/stripe-keys", label: "Stripe Integration", icon: CreditCard },
-    { href: "/admin/xero", label: "Xero Integration", icon: Receipt },
     { href: "/admin/settings", label: "Settings", icon: Settings },
   ]
 
