@@ -20,13 +20,15 @@ export interface PageLayout {
 }
 
 export async function getLayout(pageId: string): Promise<PageLayout> {
-  const response = await fetch(`http://localhost:3000/api/layouts/${pageId}`, { cache: 'no-store' })
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
+  const response = await fetch(`${baseUrl}/api/layouts/${pageId}`, { cache: 'no-store' })
   const layout = await response.json()
   return layout
 }
 
 export async function saveLayout(layout: PageLayout): Promise<void> {
-  await fetch(`http://localhost:3000/api/layouts/${layout.id}`, {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
+  await fetch(`${baseUrl}/api/layouts/${layout.id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
