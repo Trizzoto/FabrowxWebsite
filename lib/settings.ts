@@ -1,10 +1,12 @@
 export interface Settings {
-  shopName: string
-  description: string
-  logo?: string
-  theme: {
-    primary: string
-    secondary: string
+  siteName: string
+  contactEmail: string
+  phone: string
+  address: string
+  socialMedia: {
+    facebook: string
+    instagram: string
+    linkedin: string
   }
 }
 
