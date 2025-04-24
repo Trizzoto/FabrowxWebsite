@@ -362,7 +362,7 @@ export function ShopContent({ initialData }: ShopContentProps) {
                     className="scroll-mt-40 lg:scroll-mt-24"
                   >
                     <h2 className="text-2xl font-bold mb-6 text-orange-400">{category.name}</h2>
-                    <div className="grid grid-cols-3 gap-2 sm:gap-4 md:gap-6">
+                    <div className="grid grid-cols-3 gap-2 sm:gap-4 md:gap-6 lg:grid-cols-4">
                       {categoryProducts.map((product) => (
                         <button 
                           key={product.id} 
@@ -399,7 +399,7 @@ export function ShopContent({ initialData }: ShopContentProps) {
                                   {product.name}
                                 </h3>
                               </div>
-                              <p className="text-xs sm:text-sm text-zinc-400 line-clamp-2 mb-2 sm:mb-4 hidden sm:block">
+                              <p className="text-xs sm:text-sm text-zinc-400 line-clamp-2 mb-2 sm:mb-4">
                                 {product.description}
                               </p>
                               <div className="mt-auto text-right">

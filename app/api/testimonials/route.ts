@@ -1,39 +1,56 @@
 import { NextResponse } from 'next/server'
 
-// Static testimonials data
+// Static testimonials data from Facebook
 const staticTestimonials = [
   {
-    name: "John Smith",
+    id: "1",
+    name: "Guy Jackson",
     avatar: "/default-avatar.png",
-    content: "Elite FabWorx did an amazing job on my 4WD build. The quality of work is outstanding and their attention to detail is second to none.",
+    content: "Had some work done by Elite Fabworx, was prompt & aftersales service was good!",
     rating: 5,
-    date: "2024-02-15"
+    date: "18 September 2019",
+    platform: "facebook",
+    comments: 1
   },
   {
-    name: "Sarah Johnson",
+    id: "2",
+    name: "Steve Rosewall",
     avatar: "/default-avatar.png",
-    content: "Fantastic custom fabrication work on my vehicle. The team was professional, knowledgeable, and delivered exactly what I wanted.",
+    content: "Amazing customer service and amazing quality of work",
     rating: 5,
-    date: "2024-02-10"
+    date: "14 May 2019",
+    platform: "facebook",
+    comments: 0
   },
   {
-    name: "Mike Thompson",
+    id: "3",
+    name: "Ognjen Saran",
     avatar: "/default-avatar.png",
-    content: "Great experience working with Elite FabWorx. They helped me design and build custom parts for my truck. Highly recommended!",
+    content: "Good quality work with excellent custom work skills. Top quality stainless steel and aluminum welding skills. Can't speak highly enough of Steven.",
     rating: 5,
-    date: "2024-02-05"
+    date: "5 April 2019",
+    platform: "facebook",
+    comments: 1
+  },
+  {
+    id: "4",
+    name: "Kurt Keesing",
+    avatar: "/default-avatar.png",
+    content: "absolutely fabulous work 💯",
+    rating: 5,
+    date: "31 January 2019",
+    platform: "facebook",
+    comments: 0
   }
 ]
 
 export async function GET() {
   try {
-    // Return static testimonials for now
-    // We can switch to Facebook integration later when we have access
     return NextResponse.json(staticTestimonials)
   } catch (error) {
     console.error('Error serving testimonials:', error)
     return NextResponse.json(
-      { error: 'Failed to load testimonials', details: error instanceof Error ? error.message : 'Unknown error' },
+      { error: 'Failed to load testimonials' },
       { status: 500 }
     )
   }

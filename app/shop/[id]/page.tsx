@@ -423,8 +423,16 @@ export default function ProductPage({ params }: ProductPageProps) {
             <div className="space-y-4 pt-6">
               <Separator className="bg-zinc-800" />
               <div className="prose prose-invert max-w-none">
-                <h3 className="text-lg font-semibold mb-2">Description</h3>
-                <div className="text-zinc-400 space-y-4" dangerouslySetInnerHTML={{ __html: product.description }} />
+                <h3 className="text-lg font-semibold mb-4">Description</h3>
+                <div className="text-zinc-400 space-y-4 whitespace-pre-wrap">
+                  {product.description.split('\n').map((paragraph, index) => (
+                    paragraph.trim() && (
+                      <p key={index} className="mb-4">
+                        {paragraph}
+                      </p>
+                    )
+                  ))}
+                </div>
               </div>
             </div>
           </div>

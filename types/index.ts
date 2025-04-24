@@ -1,6 +1,7 @@
 export interface ProductVariant {
   sku: string
   price: number
+  compareAtPrice?: number
   option1?: string
   option2?: string
   option3?: string
