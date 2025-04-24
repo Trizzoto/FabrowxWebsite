@@ -204,7 +204,6 @@ export default function ProductsPage() {
           body: JSON.stringify({
             ...newProduct,
             price: Number(newProduct.price),
-            originalPrice: newProduct.originalPrice ? Number(newProduct.originalPrice) : undefined,
             images: newProduct.images?.length ? newProduct.images : ["/placeholder.png"],
             options: productOptions.filter(opt => opt.name && opt.values.length > 0),
             variants: productVariants
@@ -799,7 +798,7 @@ export default function ProductsPage() {
         const optionKey = `option${optionIndex + 1}` as keyof ProductVariant
         const variantValue = variant[optionKey]
         if (variantValue) {
-          existingValues.add(variantValue)
+          existingValues.add(String(variantValue))
         }
       })
       
