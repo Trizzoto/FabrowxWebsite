@@ -1,36 +1,22 @@
 import { NextResponse } from "next/server"
-import { promises as fs } from 'fs'
-import path from 'path'
+import { MongoClient } from 'mongodb'
 import { Product } from "@/types"
 
-const dataFilePath = path.join(process.cwd(), 'data', 'products.json')
-const testProductPath = path.join(process.cwd(), 'data', 'test-product.json')
+// MongoDB connection
+const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017'
+const client = new MongoClient(uri)
+const dbName = 'elitefabworx'
+const collectionName = 'products'
 
-// Helper function to read products from file
-async function readProducts(): Promise<Product[]> {
+// Helper function to get the database connection
+async function getDb() {
   try {
-    const data = await fs.readFile(dataFilePath, 'utf-8')
-    return JSON.parse(data)
+    await client.connect()
+    return client.db(dbName)
   } catch (error) {
-    console.error('Error reading products:', error)
-    return []
+    console.error('Error connecting to MongoDB:', error)
+    throw error
   }
-}
-
-// Helper function to read test product
-async function readTestProduct(): Promise<Product | null> {
-  try {
-    const data = await fs.readFile(testProductPath, 'utf-8')
-    return JSON.parse(data)
-  } catch (error) {
-    console.error('Error reading test product:', error)
-    return null
-  }
-}
-
-// Helper function to write products to file
-async function writeProducts(products: Product[]): Promise<void> {
-  await fs.writeFile(dataFilePath, JSON.stringify(products, null, 2))
 }
 
 export async function GET(
@@ -38,28 +24,25 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    // Special case for test products during development
-    if (params.id === 'zoo-performance-untamed-t-shirts' || 
-        params.id === 'female-an6-to-5-16' ||
-        params.id === 'female-an6-to-barb') {
-      const testProduct = await readTestProduct()
-      if (testProduct) {
-        return NextResponse.json(testProduct)
-      }
-    }
-
-    // Regular product lookup
-    const products = await readProducts()
-    const product = products.find((p) => p.id === params.id)
-
+    const db = await getDb()
+    const collection = db.collection(collectionName)
+    
+    const product = await collection.findOne({ id: params.id })
+    
     if (!product) {
-      return new NextResponse("Product not found", { status: 404 })
+      return NextResponse.json(
+        { error: 'Product not found' },
+        { status: 404 }
+      )
     }
-
+    
     return NextResponse.json(product)
   } catch (error) {
-    console.error("[PRODUCT_GET]", error)
-    return new NextResponse("Internal error", { status: 500 })
+    console.error('Failed to fetch product:', error)
+    return NextResponse.json(
+      { error: 'Failed to fetch product' },
+      { status: 500 }
+    )
   }
 }
 
@@ -68,41 +51,39 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    const updatedProduct = await request.json()
+    const data = await request.json()
     
-    if (!updatedProduct || !updatedProduct.id) {
+    // Validate required fields
+    if (!data.name || !data.category || typeof data.price !== 'number') {
       return NextResponse.json(
-        { error: 'Invalid product data' },
+        { error: 'Missing required fields' },
         { status: 400 }
       )
     }
 
-    // Read existing products
-    const products = await readProducts()
+    const db = await getDb()
+    const collection = db.collection(collectionName)
     
-    // Find the index of the product to update
-    const productIndex = products.findIndex(p => p.id === params.id)
+    // Update the product
+    const result = await collection.findOneAndUpdate(
+      { id: params.id },
+      { $set: data },
+      { returnDocument: 'after' }
+    )
     
-    if (productIndex === -1) {
+    if (!result) {
       return NextResponse.json(
         { error: 'Product not found' },
         { status: 404 }
       )
     }
     
-    // Update the product
-    products[productIndex] = {
-      ...products[productIndex],
-      ...updatedProduct,
-      id: params.id // Ensure ID doesn't change
-    }
-    
-    // Save updated products
-    await writeProducts(products)
-    
-    return NextResponse.json({ success: true, product: products[productIndex] })
+    return NextResponse.json({ 
+      success: true,
+      product: result
+    })
   } catch (error) {
-    console.error("[PRODUCT_PUT]", error)
+    console.error('Failed to update product:', error)
     return NextResponse.json(
       { error: 'Failed to update product' },
       { status: 500 }
@@ -115,25 +96,24 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    // Read existing products
-    const products = await readProducts()
+    const db = await getDb()
+    const collection = db.collection(collectionName)
     
-    // Filter out the product to delete
-    const filteredProducts = products.filter(p => p.id !== params.id)
+    const result = await collection.deleteOne({ id: params.id })
     
-    if (filteredProducts.length === products.length) {
+    if (result.deletedCount === 0) {
       return NextResponse.json(
         { error: 'Product not found' },
         { status: 404 }
       )
     }
     
-    // Save filtered products
-    await writeProducts(filteredProducts)
-    
-    return NextResponse.json({ success: true })
+    return NextResponse.json({ 
+      success: true,
+      message: `Product ${params.id} deleted successfully`
+    })
   } catch (error) {
-    console.error("[PRODUCT_DELETE]", error)
+    console.error('Failed to delete product:', error)
     return NextResponse.json(
       { error: 'Failed to delete product' },
       { status: 500 }
