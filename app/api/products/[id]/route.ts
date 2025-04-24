@@ -64,10 +64,13 @@ export async function PUT(
     const db = await getDb()
     const collection = db.collection(collectionName)
     
-    // Update the product
+    // Create a copy of the data without the _id field
+    const { _id, ...updateData } = data
+    
+    // Update the product without modifying the _id field
     const result = await collection.findOneAndUpdate(
       { id: params.id },
-      { $set: data },
+      { $set: updateData },
       { returnDocument: 'after' }
     )
     
@@ -85,7 +88,7 @@ export async function PUT(
   } catch (error) {
     console.error('Failed to update product:', error)
     return NextResponse.json(
-      { error: 'Failed to update product' },
+      { error: 'Failed to update product: ' + (error instanceof Error ? error.message : String(error)) },
       { status: 500 }
     )
   }
