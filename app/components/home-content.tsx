@@ -829,7 +829,7 @@ function TestimonialSlider() {
   }
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8 relative">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8 relative">
       {testimonials.map((testimonial, index) => (
         <motion.div
           key={`testimonial-${testimonial.id || index}`}
@@ -840,21 +840,21 @@ function TestimonialSlider() {
           className="relative"
         >
           <Card className="bg-zinc-800 border-zinc-700 h-full">
-            <CardContent className="p-4 md:p-6">
-              <div className="flex flex-col">
+            <CardContent className="p-3 sm:p-4 md:p-6">
+              <div className="flex flex-col h-full">
                 {/* Header with name and date */}
-                <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center justify-between mb-2 sm:mb-3">
                   <div className="flex items-center gap-2">
-                    <div className="w-10 h-10 rounded-full overflow-hidden bg-zinc-700">
+                    <div className="w-8 sm:w-10 h-8 sm:h-10 rounded-full overflow-hidden bg-zinc-700">
                       <div className="w-full h-full flex items-center justify-center text-zinc-400">
-                        <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-4 sm:w-6 h-4 sm:h-6" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" />
                         </svg>
                       </div>
                     </div>
                     <div>
-                      <div className="font-semibold text-sm">{testimonial.name}</div>
-                      <div className="text-xs text-zinc-400">{testimonial.date}</div>
+                      <div className="font-semibold text-xs sm:text-sm">{testimonial.name}</div>
+                      <div className="text-[10px] sm:text-xs text-zinc-400">{testimonial.date}</div>
                     </div>
                   </div>
                   <a 
@@ -863,20 +863,20 @@ function TestimonialSlider() {
                     rel="noopener noreferrer"
                     className="text-zinc-400 hover:text-blue-500 transition-colors"
                   >
-                    <Facebook className="h-4 w-4" />
+                    <Facebook className="h-3 sm:h-4 w-3 sm:w-4" />
                   </a>
                 </div>
 
                 {/* Review content */}
-                <p className="text-sm mb-4">{testimonial.content}</p>
+                <p className="text-xs sm:text-sm mb-3 sm:mb-4 flex-grow">{testimonial.content}</p>
 
                 {/* Footer with likes and comments */}
-                <div className="mt-auto pt-4 border-t border-zinc-700">
-                  <div className="flex items-center justify-between text-xs text-zinc-400">
+                <div className="mt-auto pt-2 sm:pt-4 border-t border-zinc-700">
+                  <div className="flex items-center justify-between text-[10px] sm:text-xs text-zinc-400">
                     <div className="flex items-center gap-1">
                       <div className="flex -space-x-1">
-                        <div className="w-4 h-4 rounded-full bg-blue-500 flex items-center justify-center">
-                          <ThumbsUp className="w-2 h-2 text-white" />
+                        <div className="w-3 sm:w-4 h-3 sm:h-4 rounded-full bg-blue-500 flex items-center justify-center">
+                          <ThumbsUp className="w-1.5 sm:w-2 h-1.5 sm:h-2 text-white" />
                         </div>
                       </div>
                       <span>1</span>
@@ -888,17 +888,17 @@ function TestimonialSlider() {
                 </div>
 
                 {/* Action buttons */}
-                <div className="flex items-center justify-between mt-3 pt-3 border-t border-zinc-700">
-                  <button className="flex items-center gap-2 text-sm text-zinc-400 hover:text-zinc-300">
-                    <ThumbsUp className="w-4 h-4" />
+                <div className="flex items-center justify-between mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-zinc-700">
+                  <button className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-zinc-400 hover:text-zinc-300">
+                    <ThumbsUp className="w-3 sm:w-4 h-3 sm:h-4" />
                     Like
                   </button>
-                  <button className="flex items-center gap-2 text-sm text-zinc-400 hover:text-zinc-300">
-                    <MessageSquare className="w-4 h-4" />
+                  <button className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-zinc-400 hover:text-zinc-300">
+                    <MessageSquare className="w-3 sm:w-4 h-3 sm:h-4" />
                     Comment
                   </button>
-                  <button className="flex items-center gap-2 text-sm text-zinc-400 hover:text-zinc-300">
-                    <Share className="w-4 h-4" />
+                  <button className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-zinc-400 hover:text-zinc-300">
+                    <Share className="w-3 sm:w-4 h-3 sm:h-4" />
                     Share
                   </button>
                 </div>
