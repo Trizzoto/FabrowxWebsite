@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useState, useEffect } from "react"
+import { useRef, useState, useEffect, useCallback } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion"
@@ -147,20 +147,21 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
   const [embedsProcessed, setEmbedsProcessed] = useState(false);
   const instagramContainerRef = useRef<HTMLDivElement>(null);
   
+  // Function to process Instagram embeds
+  const processEmbeds = useCallback(() => {
+    if (window.instgrm && !embedsProcessed) {
+      try {
+        window.instgrm.Embeds.process();
+        setEmbedsProcessed(true);
+      } catch (error) {
+        console.error('Error processing Instagram embeds:', error);
+      }
+    }
+  }, [embedsProcessed]);
+  
   // Load Instagram embed script with better error handling
   useEffect(() => {
     if (typeof window === 'undefined') return;
-
-    const processEmbeds = () => {
-      if (window.instgrm && !embedsProcessed) {
-        try {
-          window.instgrm.Embeds.process();
-          setEmbedsProcessed(true);
-        } catch (error) {
-          console.error('Error processing Instagram embeds:', error);
-        }
-      }
-    };
 
     const loadInstagramScript = () => {
       const existingScript = document.querySelector('script[src="https://www.instagram.com/embed.js"]');
@@ -200,7 +201,7 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
     return () => {
       clearInterval(retryInterval);
     };
-  }, [embedsProcessed]);
+  }, [embedsProcessed, processEmbeds]);
 
   // Reprocess embeds when container becomes visible
   useEffect(() => {
@@ -222,7 +223,7 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
     return () => {
       observer.disconnect();
     };
-  }, [instagramLoaded, embedsProcessed]);
+  }, [instagramLoaded, embedsProcessed, processEmbeds]);
 
   return (
     <div className="bg-black text-white">
