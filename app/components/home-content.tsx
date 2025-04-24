@@ -144,67 +144,85 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
 
   // Add state for Instagram embeds
   const [instagramLoaded, setInstagramLoaded] = useState(false);
+  const [embedsProcessed, setEmbedsProcessed] = useState(false);
+  const instagramContainerRef = useRef<HTMLDivElement>(null);
   
-  // Load Instagram embed script with better error handling and retry mechanism
+  // Load Instagram embed script with better error handling
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    
-    // Function to load the Instagram script
+
+    const processEmbeds = () => {
+      if (window.instgrm && !embedsProcessed) {
+        try {
+          window.instgrm.Embeds.process();
+          setEmbedsProcessed(true);
+        } catch (error) {
+          console.error('Error processing Instagram embeds:', error);
+        }
+      }
+    };
+
     const loadInstagramScript = () => {
-      // Remove any existing script first to avoid duplicates
       const existingScript = document.querySelector('script[src="https://www.instagram.com/embed.js"]');
       if (existingScript) {
         existingScript.remove();
       }
-      
+
       const script = document.createElement('script');
       script.src = 'https://www.instagram.com/embed.js';
       script.async = true;
-      script.defer = true; // Add defer to improve loading
+      script.defer = true;
       script.crossOrigin = 'anonymous';
-      
+
       script.onload = () => {
-        // Process embeds when script loads
-        if (window.instgrm) {
-          setTimeout(() => {
-            if (window.instgrm && window.instgrm.Embeds) {
-              window.instgrm.Embeds.process();
-            }
-            setInstagramLoaded(true);
-          }, 500); // Add a delay to ensure DOM elements are ready
-        }
+        setInstagramLoaded(true);
+        // Add a small delay before processing embeds
+        setTimeout(processEmbeds, 1000);
       };
-      
-      script.onerror = () => {
-        console.error('Failed to load Instagram embed script');
+
+      script.onerror = (error) => {
+        console.error('Failed to load Instagram embed script:', error);
+        setInstagramLoaded(false);
       };
-      
+
       document.body.appendChild(script);
     };
-    
-    // Load the script
+
     loadInstagramScript();
-    
-    // Set up a delayed retry mechanism
-    const retryTimeout = setTimeout(() => {
-      if (!instagramLoaded && window.instgrm === undefined) {
-        console.log('Retrying Instagram script load...');
-        loadInstagramScript();
+
+    // Set up a retry mechanism
+    const retryInterval = setInterval(() => {
+      if (!embedsProcessed && instagramContainerRef.current) {
+        processEmbeds();
       }
-    }, 3000);
-    
-    // Process embeds again when the component mounts, in case the script was already loaded
-    if (window.instgrm) {
-      if (window.instgrm.Embeds) {
-        window.instgrm.Embeds.process();
-      }
-      setInstagramLoaded(true);
-    }
-    
+    }, 2000);
+
     return () => {
-      clearTimeout(retryTimeout);
+      clearInterval(retryInterval);
     };
-  }, [instagramLoaded]);
+  }, [embedsProcessed]);
+
+  // Reprocess embeds when container becomes visible
+  useEffect(() => {
+    if (!instagramContainerRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && window.instgrm && !embedsProcessed) {
+            processEmbeds();
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(instagramContainerRef.current);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [instagramLoaded, embedsProcessed]);
 
   return (
     <div className="bg-black text-white">
@@ -625,7 +643,7 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
       {/* Instagram Preview Section */}
       {settings.socialLinks?.instagram && (
         <section className="py-16 md:py-20 bg-black">
-        <div className="container px-4 md:px-6">
+          <div className="container px-4 md:px-6">
             <div className="text-center mb-10 md:mb-16">
               <h2 className="text-3xl md:text-4xl font-bold mb-3 md:mb-4">
                 Follow Us on <span className="text-orange-500">Instagram</span>
@@ -635,7 +653,7 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 items-start">
+            <div ref={instagramContainerRef} className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 items-start">
               {/* Instagram Post 1 */}
               <div className="instagram-post-container w-full overflow-hidden bg-zinc-800 rounded-lg">
                 {instagramLoaded ? (
@@ -644,7 +662,11 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
                     data-instgrm-captioned
                     data-instgrm-permalink="https://www.instagram.com/p/C5XmvX6Ru18/"
                     data-instgrm-version="14"
-                    style={{ border: '1px solid #333', minHeight: '300px' }}
+                    style={{ 
+                      border: '1px solid #333',
+                      minHeight: '300px',
+                      background: '#1a1a1a'
+                    }}
                   ></blockquote>
                 ) : (
                   <div className="aspect-square flex items-center justify-center p-4">
@@ -672,7 +694,11 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
                     data-instgrm-captioned
                     data-instgrm-permalink="https://www.instagram.com/p/C00fKqJRL8O/"
                     data-instgrm-version="14"
-                    style={{ border: '1px solid #333', minHeight: '300px' }}
+                    style={{ 
+                      border: '1px solid #333',
+                      minHeight: '300px',
+                      background: '#1a1a1a'
+                    }}
                   ></blockquote>
                 ) : (
                   <div className="aspect-square flex items-center justify-center p-4">
@@ -700,7 +726,11 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
                     data-instgrm-captioned
                     data-instgrm-permalink="https://www.instagram.com/p/CpR0E0zPU6O/"
                     data-instgrm-version="14"
-                    style={{ border: '1px solid #333', minHeight: '300px' }}
+                    style={{ 
+                      border: '1px solid #333',
+                      minHeight: '300px',
+                      background: '#1a1a1a'
+                    }}
                   ></blockquote>
                 ) : (
                   <div className="aspect-square flex items-center justify-center p-4">
