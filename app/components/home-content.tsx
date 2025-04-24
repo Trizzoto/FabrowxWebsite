@@ -262,7 +262,7 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
                     </div>
                     <p className="text-zinc-400 mb-3 md:mb-4 text-sm md:text-base line-clamp-3">{service.description}</p>
                     <Link
-                      href={`/services/${service.slug}`}
+                      href="/services"
                       className="text-orange-400 hover:text-orange-300 inline-flex items-center text-sm md:text-base"
                     >
                       Learn more
@@ -349,7 +349,7 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
             ) : (
               <div className="col-span-full text-center py-12">
                 <p className="text-zinc-400">No featured products available at the moment.</p>
-                <Link href="/catalogue" className="mt-4 inline-block">
+                <Link href="/shop" className="mt-4 inline-block">
                   <Button variant="outline" className="border-orange-600 text-orange-300 hover:bg-orange-950/50 focus-visible:ring-orange-600">
                     View All Products
                     <ChevronRight className="ml-2 h-4 w-4" />
@@ -360,7 +360,7 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
           </div>
 
           <div className="mt-12 text-center">
-            <Link href="/catalogue">
+            <Link href="/shop">
               <Button variant="outline" className="border-orange-600 text-orange-300 hover:bg-orange-950/50 focus-visible:ring-orange-600">
                 View All Products
                 <ChevronRight className="ml-2 h-4 w-4" />
@@ -492,7 +492,7 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
           </AnimatePresence>
 
           <div className="mt-12 text-center">
-            <Link href="/gallery">
+            <Link href="/shop">
               <Button variant="outline" className="border-orange-600 text-orange-300 hover:bg-orange-950/50 focus-visible:ring-orange-600">
                 View Full Gallery
                 <ChevronRight className="ml-2 h-4 w-4" />

@@ -15,7 +15,7 @@ interface ContactSubmission {
 }
 
 // Path to the contact submissions file
-const contactFilePath = path.join(process.cwd(), 'app/data/contact-submissions.json');
+const contactFilePath = path.join(process.cwd(), 'data/contact-submissions.json');
 
 // Ensure the file exists
 function ensureContactFileExists() {
