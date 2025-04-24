@@ -1,52 +1,70 @@
 import { NextResponse } from 'next/server'
 import { Product, ProductOption, ProductVariant } from '@/types'
-import { promises as fs } from 'fs'
-import path from 'path'
+import { MongoClient, ObjectId } from 'mongodb'
 
-const dataFilePath = path.join(process.cwd(), 'data', 'products.json')
+// MongoDB connection
+const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017';
+const client = new MongoClient(uri);
+const dbName = 'elitefabworx';
+const collectionName = 'products';
 
-// Helper function to read existing products
-async function readExistingProducts(): Promise<Product[]> {
+// Helper function to get the database connection
+async function getDb() {
   try {
-    const data = await fs.readFile(dataFilePath, 'utf-8')
-    return JSON.parse(data)
+    await client.connect();
+    return client.db(dbName);
   } catch (error) {
-    return []
+    console.error('Error connecting to MongoDB:', error);
+    throw error;
   }
 }
 
-// Helper function to write products to file
-async function writeProducts(products: Product[]): Promise<void> {
-  // Ensure the directory exists
-  await fs.mkdir(path.dirname(dataFilePath), { recursive: true })
-  await fs.writeFile(dataFilePath, JSON.stringify(products, null, 2))
-}
-
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const products = await readExistingProducts()
-    return NextResponse.json(products)
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+    
+    const db = await getDb();
+    const collection = db.collection(collectionName);
+    
+    if (id) {
+      // If an ID is provided, return a single product
+      const product = await collection.findOne({ id });
+      
+      if (!product) {
+        return NextResponse.json(
+          { error: 'Product not found' },
+          { status: 404 }
+        );
+      }
+      
+      return NextResponse.json(product);
+    }
+    
+    // Otherwise, return all products
+    const products = await collection.find({}).toArray();
+    return NextResponse.json(products);
   } catch (error) {
-    console.error('Failed to fetch products:', error)
+    console.error('Failed to fetch products:', error);
     return NextResponse.json(
       { error: 'Failed to fetch products' },
       { status: 500 }
-    )
+    );
   }
 }
 
 export async function POST(request: Request) {
   try {
-    const data = await request.json()
+    const data = await request.json();
     
     // Handle both single product and array of products
-    const newProducts = Array.isArray(data) ? data : [data]
+    const newProducts = Array.isArray(data) ? data : [data];
     
     if (newProducts.length === 0) {
       return NextResponse.json(
         { error: 'No product data provided' },
         { status: 400 }
-      )
+      );
     }
 
     // Validate each product has required fields
@@ -55,81 +73,108 @@ export async function POST(request: Request) {
       product.name && 
       product.category && 
       typeof product.price === 'number'
-    )
+    );
 
     if (!isValid) {
       return NextResponse.json(
         { error: 'Invalid product data. Missing required fields.' },
         { status: 400 }
-      )
+      );
     }
 
-    // Read existing products
-    const existingProducts = await readExistingProducts()
-
-    // Merge new products with existing ones, replacing duplicates by ID
-    const productMap = new Map<string, Product>()
+    const db = await getDb();
+    const collection = db.collection(collectionName);
     
-    // Add existing products to map
-    existingProducts.forEach(product => {
-      productMap.set(product.id, product)
-    })
-
-    // Add or update new products
-    newProducts.forEach(product => {
+    // Process each product
+    const processedProducts = [];
+    
+    for (const product of newProducts) {
       // Ensure options and variants are properly formatted
       if (product.options) {
         product.options = product.options.map((option: ProductOption) => ({
           name: option.name || '',
           values: Array.isArray(option.values) ? option.values : []
-        }))
+        }));
       }
       
       if (product.variants) {
         product.variants = product.variants.map((variant: ProductVariant) => ({
           sku: variant.sku || '',
           price: typeof variant.price === 'number' ? variant.price : product.price,
-          compareAtPrice: variant.compareAtPrice,
           option1: variant.option1,
           option2: variant.option2,
           option3: variant.option3,
           inventory: typeof variant.inventory === 'number' ? variant.inventory : 0
-        }))
+        }));
       }
       
-      productMap.set(product.id, product)
-    })
+      // Check if product already exists
+      const existingProduct = await collection.findOne({ id: product.id });
+      
+      if (existingProduct) {
+        // Update existing product
+        await collection.updateOne(
+          { id: product.id },
+          { $set: product }
+        );
+      } else {
+        // Insert new product
+        await collection.insertOne(product);
+      }
+      
+      processedProducts.push(product);
+    }
 
-    // Convert map back to array
-    const mergedProducts = Array.from(productMap.values())
-
-    // Save all products to file
-    await writeProducts(mergedProducts)
-
-    // Return the newly created/updated product(s)
+    // Return the processed product(s)
     return NextResponse.json({ 
       success: true, 
-      products: Array.isArray(data) ? mergedProducts : mergedProducts.find(p => p.id === data.id) 
-    })
+      products: Array.isArray(data) ? processedProducts : processedProducts[0]
+    });
   } catch (error) {
-    console.error('Error updating products:', error)
+    console.error('Error updating products:', error);
     return NextResponse.json(
       { error: 'Failed to update products' },
       { status: 500 }
-    )
+    );
   }
 }
 
-export async function DELETE() {
+export async function DELETE(request: Request) {
   try {
-    // Write an empty array to the products file
-    await writeProducts([])
-    return NextResponse.json({ message: 'All products deleted successfully' })
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+    
+    const db = await getDb();
+    const collection = db.collection(collectionName);
+    
+    if (id) {
+      // Delete a specific product
+      const result = await collection.deleteOne({ id });
+      
+      if (result.deletedCount === 0) {
+        return NextResponse.json(
+          { error: 'Product not found' },
+          { status: 404 }
+        );
+      }
+      
+      return NextResponse.json({ 
+        success: true, 
+        message: `Product ${id} deleted successfully` 
+      });
+    } else {
+      // Delete all products - this should be used with caution!
+      await collection.deleteMany({});
+      return NextResponse.json({ 
+        success: true, 
+        message: 'All products deleted successfully' 
+      });
+    }
   } catch (error) {
-    console.error('Failed to delete products:', error)
+    console.error('Failed to delete products:', error);
     return NextResponse.json(
       { error: 'Failed to delete products' },
       { status: 500 }
-    )
+    );
   }
 } 
