@@ -1,19 +1,19 @@
 import { NextResponse } from 'next/server';
-import * as cloudinary from 'cloudinary';
+import { v2 as cloudinary } from 'cloudinary';
 
 // Configure Cloudinary
-cloudinary.v2.config({
-  cloud_name: 'dz8iqfdvf',
-  api_key: '533469477878659',
-  api_secret: 'BUbjVnSyBZJ0RD_xiKV5Fsn3KZc'
+cloudinary.config({
+  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+  secure: true,
 });
 
 export async function POST(request: Request) {
   try {
-    const formData = await request.formData();
-    const file = formData.get('file') as File;
-    const section = formData.get('section') as string || 'hero';
-    
+    const data = await request.formData();
+    const file = data.get('file') as File;
+
     if (!file) {
       return NextResponse.json(
         { error: 'No file provided' },
@@ -21,30 +21,41 @@ export async function POST(request: Request) {
       );
     }
 
-    // Convert File to buffer
+    // Convert file to buffer
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Upload to Cloudinary with folder structure
+    // Upload to Cloudinary
     const result = await new Promise((resolve, reject) => {
-      cloudinary.v2.uploader.upload_stream(
+      const uploadStream = cloudinary.uploader.upload_stream(
         {
+          folder: 'elite-fabworx',
           resource_type: 'auto',
-          folder: `elite-fabworx/${section}`,
         },
         (error, result) => {
           if (error) reject(error);
           else resolve(result);
         }
-      ).end(buffer);
+      );
+
+      // Write buffer to stream
+      const bufferStream = require('stream').Readable.from(buffer);
+      bufferStream.pipe(uploadStream);
     });
 
     return NextResponse.json(result);
   } catch (error) {
     console.error('Upload error:', error);
     return NextResponse.json(
-      { error: 'Upload failed' },
+      { error: 'Failed to upload file' },
       { status: 500 }
     );
   }
-} 
+}
+
+// Set larger limit for API route
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+}; 
