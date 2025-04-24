@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { supabase } from '@/lib/supabase';
 
 // Define the contact submission interface
 interface ContactSubmission {
@@ -14,24 +13,17 @@ interface ContactSubmission {
   status: 'new' | 'read' | 'replied';
 }
 
-// Path to the contact submissions file
-const contactFilePath = path.join(process.cwd(), 'app/data/contact-submissions.json');
-
-// Ensure the file exists
-function ensureContactFileExists() {
-  if (!fs.existsSync(contactFilePath)) {
-    fs.writeFileSync(contactFilePath, JSON.stringify([]));
-  }
-}
-
 // GET handler to retrieve all contact submissions
 export async function GET() {
   try {
-    ensureContactFileExists();
-    const fileContent = fs.readFileSync(contactFilePath, 'utf8');
-    const submissions = JSON.parse(fileContent);
+    const { data: submissions, error } = await supabase
+      .from('contact_submissions')
+      .select('*')
+      .order('date', { ascending: false });
+
+    if (error) throw error;
     
-    return NextResponse.json(submissions);
+    return NextResponse.json(submissions || []);
   } catch (error) {
     console.error('Error reading contact submissions:', error);
     return NextResponse.json({ error: 'Failed to retrieve contact submissions' }, { status: 500 });
@@ -53,8 +45,7 @@ export async function POST(request: Request) {
     }
     
     // Create a new submission
-    const newSubmission: ContactSubmission = {
-      id: Date.now().toString(),
+    const newSubmission = {
       name,
       email,
       phone: phone || '',
@@ -64,18 +55,16 @@ export async function POST(request: Request) {
       status: 'new'
     };
     
-    // Read existing submissions
-    ensureContactFileExists();
-    const fileContent = fs.readFileSync(contactFilePath, 'utf8');
-    const submissions = JSON.parse(fileContent);
+    // Insert into Supabase
+    const { data, error } = await supabase
+      .from('contact_submissions')
+      .insert([newSubmission])
+      .select()
+      .single();
     
-    // Add the new submission
-    submissions.unshift(newSubmission);
+    if (error) throw error;
     
-    // Write back to file
-    fs.writeFileSync(contactFilePath, JSON.stringify(submissions, null, 2));
-    
-    return NextResponse.json({ success: true, submission: newSubmission });
+    return NextResponse.json({ success: true, submission: data });
   } catch (error) {
     console.error('Error saving contact submission:', error);
     return NextResponse.json(
@@ -98,26 +87,17 @@ export async function PATCH(request: Request) {
       );
     }
     
-    // Read existing submissions
-    ensureContactFileExists();
-    const fileContent = fs.readFileSync(contactFilePath, 'utf8');
-    const submissions = JSON.parse(fileContent);
+    // Update in Supabase
+    const { data, error } = await supabase
+      .from('contact_submissions')
+      .update({ status })
+      .eq('id', id)
+      .select()
+      .single();
     
-    // Find and update the submission
-    const submissionIndex = submissions.findIndex((s: ContactSubmission) => s.id === id);
-    if (submissionIndex === -1) {
-      return NextResponse.json(
-        { error: 'Submission not found' },
-        { status: 404 }
-      );
-    }
+    if (error) throw error;
     
-    submissions[submissionIndex].status = status;
-    
-    // Write back to file
-    fs.writeFileSync(contactFilePath, JSON.stringify(submissions, null, 2));
-    
-    return NextResponse.json({ success: true, submission: submissions[submissionIndex] });
+    return NextResponse.json({ success: true, submission: data });
   } catch (error) {
     console.error('Error updating contact submission:', error);
     return NextResponse.json(
@@ -140,23 +120,13 @@ export async function DELETE(request: Request) {
       );
     }
     
-    // Read existing submissions
-    ensureContactFileExists();
-    const fileContent = fs.readFileSync(contactFilePath, 'utf8');
-    const submissions = JSON.parse(fileContent);
+    // Delete from Supabase
+    const { error } = await supabase
+      .from('contact_submissions')
+      .delete()
+      .eq('id', id);
     
-    // Filter out the submission to delete
-    const updatedSubmissions = submissions.filter((s: ContactSubmission) => s.id !== id);
-    
-    if (updatedSubmissions.length === submissions.length) {
-      return NextResponse.json(
-        { error: 'Submission not found' },
-        { status: 404 }
-      );
-    }
-    
-    // Write back to file
-    fs.writeFileSync(contactFilePath, JSON.stringify(updatedSubmissions, null, 2));
+    if (error) throw error;
     
     return NextResponse.json({ success: true });
   } catch (error) {
