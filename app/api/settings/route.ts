@@ -24,7 +24,30 @@ export async function GET() {
         instagram: settingsValue.socialMedia?.instagram || '',
         youtube: '' // Not in original data, but expected by component
       },
-      siteName: settingsValue.siteName || 'Elite Fabworx'
+      siteName: settingsValue.siteName || 'Elite Fabworx',
+      services: settingsValue.services || [
+        {
+          title: "Custom Fabrication",
+          description: "Tailored metal fabrication solutions for your specific needs",
+          image: "/images/services/custom-fabrication.jpg",
+          icon: "Wrench",
+          slug: "custom-fabrication"
+        },
+        {
+          title: "Performance Parts",
+          description: "High-quality performance parts for enhanced vehicle capabilities",
+          image: "/images/services/performance-parts.jpg",
+          icon: "Car",
+          slug: "performance-parts"
+        },
+        {
+          title: "4WD Accessories",
+          description: "Durable and reliable accessories for your 4WD adventures",
+          image: "/images/services/4wd-accessories.jpg",
+          icon: "Truck",
+          slug: "4wd-accessories"
+        }
+      ]
     }
     
     return NextResponse.json(transformedSettings)
@@ -41,7 +64,30 @@ export async function GET() {
         instagram: '',
         youtube: ''
       },
-      siteName: 'Elite Fabworx'
+      siteName: 'Elite Fabworx',
+      services: [
+        {
+          title: "Custom Fabrication",
+          description: "Tailored metal fabrication solutions for your specific needs",
+          image: "/images/services/custom-fabrication.jpg",
+          icon: "Wrench",
+          slug: "custom-fabrication"
+        },
+        {
+          title: "Performance Parts",
+          description: "High-quality performance parts for enhanced vehicle capabilities",
+          image: "/images/services/performance-parts.jpg",
+          icon: "Car",
+          slug: "performance-parts"
+        },
+        {
+          title: "4WD Accessories",
+          description: "Durable and reliable accessories for your 4WD adventures",
+          image: "/images/services/4wd-accessories.jpg",
+          icon: "Truck",
+          slug: "4wd-accessories"
+        }
+      ]
     })
   }
 }
@@ -60,7 +106,8 @@ export async function POST(request: Request) {
         facebook: frontendSettings.socialLinks?.facebook || '',
         instagram: frontendSettings.socialLinks?.instagram || '',
         linkedin: frontendSettings.socialLinks?.youtube || '' // Using youtube for linkedin as a stopgap
-      }
+      },
+      services: frontendSettings.services || []
     }
     
     const { error } = await supabase

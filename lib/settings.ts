@@ -10,6 +10,13 @@ export interface Settings {
     instagram: string
     youtube: string
   }
+  services: {
+    title: string
+    description: string
+    image: string
+    icon: string
+    slug: string
+  }[]
 }
 
 export async function getSettings(): Promise<Settings> {
