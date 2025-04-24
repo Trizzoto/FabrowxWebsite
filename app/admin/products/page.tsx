@@ -537,13 +537,20 @@ export default function ProductsPage() {
               </div>
               <div className="flex items-baseline gap-2">
                 <span className="text-2xl font-bold text-orange-400">
-                  ${(selectedVariant?.price || product.price).toFixed(2)}
+                  ${(() => {
+                    // Ensure we have a valid number
+                    let price = selectedVariant?.price || product.price;
+                    if (typeof price !== 'number') price = Number(price);
+                    if (isNaN(price)) return '0';
+                    
+                    // Format the price properly
+                    if (price % 1 === 0) {
+                      return Math.round(price).toString();
+                    } else {
+                      return price.toFixed(2).replace(/\.?0+$/, '');
+                    }
+                  })()}
                 </span>
-                {product.originalPrice && (
-                  <span className="text-lg text-zinc-500 line-through">
-                    ${product.originalPrice.toFixed(2)}
-                  </span>
-                )}
               </div>
             </div>
 
@@ -1436,7 +1443,7 @@ export default function ProductsPage() {
                               <Button
                             variant="ghost" 
                                 size="icon"
-                            onClick={() => removeEditOption(index)}
+                            onClick={() => removeOption(index)}
                               >
                                 <X className="h-4 w-4" />
                               </Button>
@@ -1455,7 +1462,7 @@ export default function ProductsPage() {
                                       variant="ghost"
                                       size="icon"
                                 className="h-4 w-4 p-0"
-                                onClick={() => handleRemoveEditOptionValue(index, valueIndex)}
+                                onClick={() => handleRemoveOptionValue(index, valueIndex)}
                                     >
                                       <X className="h-3 w-3" />
                                     </Button>
@@ -1471,7 +1478,7 @@ export default function ProductsPage() {
                                   onChange={(e) => setNewOptionValue(e.target.value)}
                                   onKeyDown={(e) => {
                                     if (e.key === 'Enter') {
-                              handleAddEditOptionValue(index, newOptionValue);
+                              handleAddOptionValue(index, newOptionValue);
                               setNewOptionValue('');
                                     }
                                   }}
@@ -1479,7 +1486,7 @@ export default function ProductsPage() {
                                 <Button
                                   variant="outline"
                             onClick={() => {
-                              handleAddEditOptionValue(index, newOptionValue);
+                              handleAddOptionValue(index, newOptionValue);
                               setNewOptionValue('');
                             }}
                           >

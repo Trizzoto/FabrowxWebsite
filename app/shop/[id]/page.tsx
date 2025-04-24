@@ -246,7 +246,6 @@ export default function ProductPage({ params }: ProductPageProps) {
 
   // Get the price from the selected variant or fallback to product price
   const price = selectedVariant?.price || product.price
-  const compareAtPrice = selectedVariant?.compareAtPrice || product.originalPrice
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -304,16 +303,36 @@ export default function ProductPage({ params }: ProductPageProps) {
               <h1 className="text-3xl font-bold mb-2">{product.name}</h1>
               <div className="flex items-center gap-2">
                 <p className="text-2xl font-semibold text-orange-400">
-                  ${price.toFixed(2)}
+                  ${(() => {
+                    // Ensure we have a valid number
+                    let priceValue = typeof price === 'number' ? price : Number(price);
+                    if (isNaN(priceValue)) return '0';
+                    
+                    // Use parseFloat to normalize the number and remove any extra precision issues
+                    priceValue = parseFloat(priceValue.toString());
+                    
+                    // Format the price: no decimals for whole numbers, up to 2 decimals otherwise
+                    if (priceValue % 1 === 0) {
+                      return Math.round(priceValue).toString();
+                    } else {
+                      // Round to 2 decimal places and remove trailing zeros
+                      return priceValue.toFixed(2).replace(/\.?0+$/, '');
+                    }
+                  })()}
                 </p>
-                {compareAtPrice && compareAtPrice > price && (
-                  <p className="text-lg text-zinc-500 line-through">
-                    ${compareAtPrice.toFixed(2)}
-                  </p>
-                )}
               </div>
               <div className="mt-2 text-sm text-zinc-400">
-                or 4 interest-free payments of ${(price / 4).toFixed(2)} with
+                or 4 interest-free payments of ${(() => {
+                  // Ensure we have a valid number for the price
+                  let priceValue = typeof price === 'number' ? price : Number(price);
+                  if (isNaN(priceValue)) return '0';
+                  
+                  // Calculate the payment amount (price divided by 4)
+                  const paymentAmount = priceValue / 4;
+                  
+                  // Always use fixed 2 decimal places for payment amounts
+                  return paymentAmount.toFixed(2);
+                })()} with
                 <span className="font-semibold ml-1">Afterpay</span>
               </div>
             </div>

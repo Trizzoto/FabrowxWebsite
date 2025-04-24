@@ -62,7 +62,22 @@ export default function RelatedProducts({ products, currentProductId }: RelatedP
                 </Link>
                 <p className="text-zinc-500 text-sm mb-2">{product.category}</p>
                 <div className="flex justify-between items-center">
-                  <span className="text-orange-400 font-semibold">${product.price.toFixed(2)}</span>
+                  <span className="text-orange-400 font-semibold">${(() => {
+                    // Ensure we have a valid number
+                    let price = typeof product.price === 'number' ? product.price : Number(product.price);
+                    if (isNaN(price)) return '0';
+                    
+                    // Use parseFloat to normalize the number and remove any extra precision issues
+                    price = parseFloat(price.toString());
+                    
+                    // Format the price: no decimals for whole numbers, up to 2 decimals otherwise
+                    if (price % 1 === 0) {
+                      return Math.round(price).toString();
+                    } else {
+                      // Round to 2 decimal places and remove trailing zeros
+                      return price.toFixed(2).replace(/\.?0+$/, '');
+                    }
+                  })()}</span>
                   <Button
                     size="sm"
                     variant="ghost"

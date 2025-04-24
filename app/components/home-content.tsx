@@ -377,13 +377,23 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
                       </p>
                       <div className="mt-2">
                         <span className="text-orange-500 font-semibold">
-                          ${product.price.toFixed(2)}
+                          ${(() => {
+                            // Ensure we have a valid number
+                            let price = typeof product.price === 'number' ? product.price : Number(product.price);
+                            if (isNaN(price)) return '0';
+                            
+                            // Use parseFloat to normalize the number and remove any extra precision issues
+                            price = parseFloat(price.toString());
+                            
+                            // Format the price: no decimals for whole numbers, up to 2 decimals otherwise
+                            if (price % 1 === 0) {
+                              return Math.round(price).toString();
+                            } else {
+                              // Round to 2 decimal places and remove trailing zeros
+                              return price.toFixed(2).replace(/\.?0+$/, '');
+                            }
+                          })()}
                         </span>
-                        {product.originalPrice && (
-                          <span className="ml-2 text-sm text-zinc-500 line-through">
-                            ${product.originalPrice.toFixed(2)}
-                          </span>
-                        )}
                       </div>
                     </div>
                   </Link>
