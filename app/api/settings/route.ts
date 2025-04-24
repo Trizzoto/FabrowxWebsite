@@ -1,24 +1,40 @@
-import { promises as fs } from 'fs'
 import { NextResponse } from 'next/server'
-import path from 'path'
+import { supabase } from '@/lib/supabase'
 
 export async function GET() {
   try {
-    const settingsPath = path.join(process.cwd(), 'app/data/settings.json')
-    const settings = await fs.readFile(settingsPath, 'utf-8')
-    return NextResponse.json(JSON.parse(settings))
+    const { data, error } = await supabase
+      .from('settings')
+      .select('value')
+      .eq('key', 'site_settings')
+      .single()
+
+    if (error) throw error
+    
+    return NextResponse.json(data?.value || {})
   } catch (error) {
+    console.error('Error reading settings:', error)
     return NextResponse.json({ error: 'Failed to read settings' }, { status: 500 })
   }
 }
 
 export async function POST(request: Request) {
   try {
-    const settingsPath = path.join(process.cwd(), 'app/data/settings.json')
     const settings = await request.json()
-    await fs.writeFile(settingsPath, JSON.stringify(settings, null, 2))
+    
+    const { error } = await supabase
+      .from('settings')
+      .upsert({
+        key: 'site_settings',
+        value: settings,
+        updated_at: new Date().toISOString()
+      })
+
+    if (error) throw error
+    
     return NextResponse.json({ message: 'Settings saved successfully' })
   } catch (error) {
+    console.error('Error saving settings:', error)
     return NextResponse.json({ error: 'Failed to save settings' }, { status: 500 })
   }
 } 

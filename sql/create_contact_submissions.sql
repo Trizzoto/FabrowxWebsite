@@ -18,11 +18,23 @@ CREATE INDEX IF NOT EXISTS idx_contact_submissions_status ON contact_submissions
 -- Enable Row Level Security (RLS)
 ALTER TABLE contact_submissions ENABLE ROW LEVEL SECURITY;
 
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Allow anonymous insert" ON contact_submissions;
+DROP POLICY IF EXISTS "Allow anonymous read" ON contact_submissions;
+DROP POLICY IF EXISTS "Allow authenticated read" ON contact_submissions;
+DROP POLICY IF EXISTS "Allow authenticated update" ON contact_submissions;
+DROP POLICY IF EXISTS "Allow authenticated delete" ON contact_submissions;
+
 -- Create policies for RLS
 -- Allow anonymous users to insert new submissions
 CREATE POLICY "Allow anonymous insert" ON contact_submissions
   FOR INSERT TO anon
   WITH CHECK (true);
+
+-- Allow anonymous users to read their own submissions
+CREATE POLICY "Allow anonymous read" ON contact_submissions
+  FOR SELECT TO anon
+  USING (true);
 
 -- Allow authenticated users to read all submissions
 CREATE POLICY "Allow authenticated read" ON contact_submissions
