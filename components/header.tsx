@@ -106,14 +106,6 @@ export default function Header() {
             )}
           </Link>
 
-          {/* User Menu */}
-          {/* Placeholder for user menu until next-auth is set up */}
-          <Link href="/login">
-            <Button variant="ghost" size="sm">
-              Sign In
-            </Button>
-          </Link>
-
           {/* Mobile Menu Toggle */}
           <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
             {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
