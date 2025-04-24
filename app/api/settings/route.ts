@@ -11,22 +11,63 @@ export async function GET() {
 
     if (error) throw error
     
-    return NextResponse.json(data?.value || {})
+    // Transform the data to match the expected format in the frontend
+    const settingsValue = data?.value || {}
+    const transformedSettings = {
+      contactInfo: {
+        phone: settingsValue.phone || '',
+        email: settingsValue.contactEmail || '',
+        location: settingsValue.address || ''
+      },
+      socialLinks: {
+        facebook: settingsValue.socialMedia?.facebook || '',
+        instagram: settingsValue.socialMedia?.instagram || '',
+        youtube: '' // Not in original data, but expected by component
+      },
+      siteName: settingsValue.siteName || 'Elite Fabworx'
+    }
+    
+    return NextResponse.json(transformedSettings)
   } catch (error) {
     console.error('Error reading settings:', error)
-    return NextResponse.json({ error: 'Failed to read settings' }, { status: 500 })
+    return NextResponse.json({ 
+      contactInfo: {
+        phone: '',
+        email: '',
+        location: ''
+      },
+      socialLinks: {
+        facebook: '',
+        instagram: '',
+        youtube: ''
+      },
+      siteName: 'Elite Fabworx'
+    })
   }
 }
 
 export async function POST(request: Request) {
   try {
-    const settings = await request.json()
+    const frontendSettings = await request.json()
+    
+    // Transform the frontend format back to the Supabase format
+    const supabaseSettings = {
+      siteName: frontendSettings.siteName || 'Elite Fabworx',
+      contactEmail: frontendSettings.contactInfo?.email || '',
+      phone: frontendSettings.contactInfo?.phone || '',
+      address: frontendSettings.contactInfo?.location || '',
+      socialMedia: {
+        facebook: frontendSettings.socialLinks?.facebook || '',
+        instagram: frontendSettings.socialLinks?.instagram || '',
+        linkedin: frontendSettings.socialLinks?.youtube || '' // Using youtube for linkedin as a stopgap
+      }
+    }
     
     const { error } = await supabase
       .from('settings')
       .upsert({
         key: 'site_settings',
-        value: settings,
+        value: supabaseSettings,
         updated_at: new Date().toISOString()
       })
 

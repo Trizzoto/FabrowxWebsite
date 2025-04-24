@@ -1,12 +1,14 @@
 export interface Settings {
   siteName: string
-  contactEmail: string
-  phone: string
-  address: string
-  socialMedia: {
+  contactInfo: {
+    phone: string
+    email: string
+    location: string
+  }
+  socialLinks: {
     facebook: string
     instagram: string
-    linkedin: string
+    youtube: string
   }
 }
 
