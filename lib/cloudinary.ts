@@ -75,32 +75,37 @@ export const getCloudinaryUrl = (publicId: string, options: Record<string, any> 
   }/image/upload/${transformations}/${publicId}`;
 };
 
-export const uploadImage = async (file: File, section: string = 'hero') => {
+export async function uploadImage(file: File, section: string = 'general') {
+  if (!CLOUDINARY_CLOUD_NAME || !CLOUDINARY_UPLOAD_PRESET) {
+    throw new Error('Cloudinary configuration is missing');
+  }
+
   const formData = new FormData();
   formData.append('file', file);
-  formData.append('section', section);
+  formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+  formData.append('folder', `elite-fabworx/${section}`);
 
   try {
     console.log('Starting upload...', { fileName: file.name, fileSize: file.size, section });
 
-    const response = await fetch('/api/upload', {
-      method: 'POST',
-      body: formData,
-    });
-
-    const responseText = await response.text();
-    console.log('Raw response:', responseText);
+    const response = await fetch(
+      `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+      {
+        method: 'POST',
+        body: formData,
+      }
+    );
 
     if (!response.ok) {
       console.error('Upload failed with status:', response.status);
-      throw new Error(`Upload failed: ${response.status} ${response.statusText}`);
+      throw new Error(`Upload failed: ${response.status}`);
     }
 
-    const data = JSON.parse(responseText);
+    const data = await response.json();
     console.log('Upload successful:', data);
     return data;
   } catch (error) {
     console.error('Error uploading:', error);
     throw error;
   }
-}; 
+} 
