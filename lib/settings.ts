@@ -1,22 +1,11 @@
 export interface Settings {
-  siteName: string
-  contactInfo: {
-    phone: string
-    email: string
-    location: string
+  shopName: string
+  description: string
+  logo?: string
+  theme: {
+    primary: string
+    secondary: string
   }
-  socialLinks: {
-    facebook: string
-    instagram: string
-    youtube: string
-  }
-  services: {
-    title: string
-    description: string
-    image: string
-    icon: string
-    slug: string
-  }[]
 }
 
 export async function getSettings(): Promise<Settings> {

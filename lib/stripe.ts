@@ -12,7 +12,7 @@ export const getBaseUrl = () => {
   
   // For server-side
   const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
-  const host = process.env.VERCEL_URL || 'localhost:3000';
+  const host = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
   return `${protocol}://${host}`;
 };
 
