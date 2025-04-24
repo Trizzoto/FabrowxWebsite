@@ -16,8 +16,9 @@ export const maxDuration = 60;
 
 export async function POST(request: Request) {
   try {
-    const data = await request.formData();
-    const file = data.get('file') as File;
+    const formData = await request.formData();
+    const file = formData.get('file') as File;
+    const section = formData.get('section') as string || 'general';
 
     if (!file) {
       return NextResponse.json(
@@ -30,29 +31,49 @@ export async function POST(request: Request) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
+    // Create a temporary file path
+    const tempFilePath = `/tmp/${file.name}`;
+    require('fs').writeFileSync(tempFilePath, buffer);
+
     // Upload to Cloudinary
-    const result = await new Promise((resolve, reject) => {
-      const uploadStream = cloudinary.uploader.upload_stream(
-        {
-          folder: 'elite-fabworx',
-          resource_type: 'auto',
-        },
-        (error, result) => {
-          if (error) reject(error);
-          else resolve(result);
-        }
+    try {
+      const result = await new Promise((resolve, reject) => {
+        cloudinary.uploader.upload(
+          tempFilePath,
+          {
+            folder: `elite-fabworx/${section}`,
+            resource_type: 'auto',
+          },
+          (error, result) => {
+            // Clean up temp file
+            try {
+              require('fs').unlinkSync(tempFilePath);
+            } catch (e) {
+              console.error('Error cleaning up temp file:', e);
+            }
+
+            if (error) {
+              console.error('Cloudinary upload error:', error);
+              reject(error);
+            } else {
+              resolve(result);
+            }
+          }
+        );
+      });
+
+      return NextResponse.json(result);
+    } catch (error) {
+      console.error('Upload to Cloudinary failed:', error);
+      return NextResponse.json(
+        { error: 'Failed to upload to Cloudinary' },
+        { status: 500 }
       );
-
-      // Write buffer to stream
-      const bufferStream = require('stream').Readable.from(buffer);
-      bufferStream.pipe(uploadStream);
-    });
-
-    return NextResponse.json(result);
+    }
   } catch (error) {
     console.error('Upload error:', error);
     return NextResponse.json(
-      { error: 'Failed to upload file' },
+      { error: 'Failed to process upload' },
       { status: 500 }
     );
   }
