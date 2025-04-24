@@ -9,9 +9,10 @@ cloudinary.config({
   secure: true,
 });
 
-// New route segment config format
+// Route segment config
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+export const maxDuration = 60;
 
 export async function POST(request: Request) {
   try {
@@ -55,11 +56,4 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
-}
-
-// Set larger limit for API route
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-}; 
+} 
