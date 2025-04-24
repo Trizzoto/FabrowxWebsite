@@ -7,7 +7,7 @@ import { ArrowLeft, Minus, Plus, ShoppingCart, ChevronRight } from "lucide-react
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
-import { Product, ProductVariant, ProductOption } from "@/types"
+import { Product, ProductVariant, ProductOption, ProductOptions } from "@/types"
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { useCart } from "@/contexts/cart-context"
@@ -39,17 +39,77 @@ export default function ProductPage({ params }: ProductPageProps) {
           throw new Error('Product not found')
         }
         const data = await response.json()
+        
+        // Always rebuild options from variants to ensure all options are captured
+        // This is important for products where options may not be fully defined
+        if (data.variants && data.variants.length > 0) {
+          const optionSets: Record<string, Set<string>> = {}
+          
+          // Determine which option fields are used in variants
+          const optionFields = ['option1', 'option2', 'option3']
+          const usedOptions = optionFields.filter(field => 
+            data.variants?.some((v: any) => v[field] && v[field].toString().trim() !== '')
+          )
+          
+          // Create or use existing option names
+          usedOptions.forEach((field, index) => {
+            // Use existing option name if available, or use default
+            let optionName = 'Size'
+            if (data.options && data.options[index]) {
+              optionName = data.options[index].name
+            } else if (index === 1) {
+              optionName = 'Color'
+            } else if (index === 2) {
+              optionName = 'Style'
+            }
+            
+            optionSets[optionName] = new Set()
+          })
+          
+          // Extract all unique option values from variants
+          data.variants.forEach((variant: any) => {
+            usedOptions.forEach((field, index) => {
+              const value = variant[field]
+              if (value && value.toString().trim() !== '') {
+                let optionName = 'Size'
+                if (data.options && data.options[index]) {
+                  optionName = data.options[index].name
+                } else if (index === 1) {
+                  optionName = 'Color'
+                } else if (index === 2) {
+                  optionName = 'Style'
+                }
+                
+                optionSets[optionName].add(value.toString())
+              }
+            })
+          })
+          
+          // Convert sets to option arrays
+          data.options = Object.entries(optionSets)
+            .filter(([_, values]) => values.size > 0)
+            .map(([name, values]) => ({
+              name,
+              values: Array.from(values)
+            }))
+        }
+        
+        console.log('Product data:', data)
+        console.log('Product options:', data.options)
+        
         setProduct(data)
         
         // Initialize selected options with first value of each option
-        if (data.options) {
+        if (data.options && data.options.length > 0) {
           const initialOptions: Record<string, string> = {}
           data.options.forEach((option: ProductOption) => {
-            if (option.values.length > 0) {
+            if (option.values && option.values.length > 0) {
               initialOptions[option.name] = option.values[0]
+              console.log(`Setting initial option ${option.name} to ${option.values[0]}`)
             }
           })
           setSelectedOptions(initialOptions)
+          console.log('Initial options:', initialOptions)
         }
       } catch (error) {
         console.error('Error fetching product:', error)
@@ -66,13 +126,38 @@ export default function ProductPage({ params }: ProductPageProps) {
       // Find the variant that matches all selected options
       const variant = product.variants.find((v) => {
         return product.options?.every((opt, index) => {
-          const optionKey = `option${index + 1}` as keyof ProductVariant
-          return v[optionKey] === selectedOptions[opt.name]
+          const optionKey = `option${index + 1}` as 'option1' | 'option2' | 'option3'
+          const variantValue = v[optionKey]?.toString() || ''
+          const selectedValue = selectedOptions[opt.name]?.toString() || ''
+          
+          // Compare case-insensitive to handle any format inconsistencies
+          return variantValue.toLowerCase() === selectedValue.toLowerCase()
         })
       })
+      
+      console.log('Selected variant:', variant)
       setSelectedVariant(variant || null)
     }
   }, [selectedOptions, product])
+
+  useEffect(() => {
+    if (product && selectedVariant) {
+      // Update selected options based on the selected variant
+      const newSelectedOptions: Record<string, string> = {};
+      
+      product.options?.forEach((option, index) => {
+        const optionKey = `option${index + 1}` as keyof typeof selectedVariant;
+        const value = selectedVariant[optionKey];
+        if (value) {
+          newSelectedOptions[option.name] = value.toString();
+        }
+      });
+      
+      if (Object.keys(newSelectedOptions).length > 0) {
+        setSelectedOptions(newSelectedOptions);
+      }
+    }
+  }, [selectedVariant, product]);
 
   const handleQuantityChange = (delta: number) => {
     setQuantity(prev => Math.max(1, prev + delta))
@@ -88,7 +173,22 @@ export default function ProductPage({ params }: ProductPageProps) {
   const handleAddToCart = () => {
     if (!product) return;
     
-    addToCart(product, quantity);
+    // Create a modified product with the selected variant price
+    const productToAdd = {
+      ...product,
+      price: selectedVariant?.price || product.price,
+      // Include variant details if available
+      selectedVariant: selectedVariant ? {
+        sku: selectedVariant.sku,
+        option1: selectedVariant.option1,
+        option2: selectedVariant.option2,
+        option3: selectedVariant.option3
+      } : null,
+      // Create a composite ID for variant products
+      _id: selectedVariant ? `${product.id}-${selectedVariant.sku}` : product.id
+    };
+    
+    addToCart(productToAdd, quantity);
     toast({
       title: "Added to cart",
       description: `${product.name} has been added to your cart.`,
@@ -99,7 +199,22 @@ export default function ProductPage({ params }: ProductPageProps) {
   const handleBuyNow = () => {
     if (!product) return;
     
-    addToCart(product, quantity);
+    // Create a modified product with the selected variant price
+    const productToAdd = {
+      ...product,
+      price: selectedVariant?.price || product.price,
+      // Include variant details if available
+      selectedVariant: selectedVariant ? {
+        sku: selectedVariant.sku,
+        option1: selectedVariant.option1,
+        option2: selectedVariant.option2,
+        option3: selectedVariant.option3
+      } : null,
+      // Create a composite ID for variant products
+      _id: selectedVariant ? `${product.id}-${selectedVariant.sku}` : product.id
+    };
+    
+    addToCart(productToAdd, quantity);
     router.push('/checkout');
   };
 
@@ -129,6 +244,7 @@ export default function ProductPage({ params }: ProductPageProps) {
     )
   }
 
+  // Get the price from the selected variant or fallback to product price
   const price = selectedVariant?.price || product.price
   const compareAtPrice = selectedVariant?.compareAtPrice || product.originalPrice
 
@@ -203,31 +319,38 @@ export default function ProductPage({ params }: ProductPageProps) {
             </div>
 
             {/* Product Options */}
-            {product.options && product.options.length > 0 && product.options.some(opt => opt.name !== 'Title' && opt.values.some(v => v !== 'Default Title')) && (
+            {product.options && product.options.length > 0 && (
               <div className="space-y-6">
-                {product.options.map((option, optionIndex) => (
-                  option.name !== 'Title' && option.values.some(v => v !== 'Default Title') && (
-                    <div key={option.name} className="space-y-3">
-                      <h3 className="font-semibold text-lg">{option.name}</h3>
-                      <div className="flex flex-wrap gap-2">
-                        {option.values.filter(value => value !== 'Default Title').map((value) => (
-                          <Button
-                            key={value}
-                            variant={selectedOptions[option.name] === value ? "default" : "outline"}
-                            className={cn(
-                              selectedOptions[option.name] === value
-                                ? "bg-orange-500 text-white hover:bg-orange-600"
-                                : "border-orange-500/30 text-orange-300 hover:bg-orange-500/10",
-                              "focus-visible:ring-orange-500"
-                            )}
-                            onClick={() => handleOptionSelect(option.name, value)}
-                          >
-                            {value}
-                          </Button>
-                        ))}
-                      </div>
+                {product.options.map((option) => (
+                  <div key={option.name} className="space-y-3">
+                    <h3 className="font-semibold text-lg">{option.name}</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {option.values && Array.isArray(option.values) && option.values.length > 0 ? (
+                        option.values.map((value) => {
+                          const isSelected = selectedOptions[option.name]?.toString() === value?.toString()
+                          
+                          return (
+                            <Button
+                              key={value}
+                              variant={isSelected ? "default" : "outline"}
+                              className={cn(
+                                isSelected
+                                  ? "bg-orange-500 text-white hover:bg-orange-600"
+                                  : "border-orange-500/30 text-orange-300 hover:bg-orange-500/10",
+                                "focus-visible:ring-orange-500",
+                                "py-2 px-4 text-sm font-medium"
+                              )}
+                              onClick={() => handleOptionSelect(option.name, value)}
+                            >
+                              {value}
+                            </Button>
+                          )
+                        })
+                      ) : (
+                        <p className="text-sm text-zinc-400">No options available</p>
+                      )}
                     </div>
-                  )
+                  </div>
                 ))}
               </div>
             )}

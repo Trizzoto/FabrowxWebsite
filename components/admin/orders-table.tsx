@@ -16,10 +16,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
+interface OrderItem {
+  name: string;
+  variant?: {
+    options: string;
+  };
+}
+
 interface Order {
   id: number
   customerName: string
-  items: string[]
+  items: OrderItem[]
   total: number
   status: string
 }
@@ -34,14 +41,19 @@ export function OrdersTable() {
       {
         id: 1,
         customerName: "John Doe",
-        items: ["Product 1", "Product 2"],
+        items: [
+          { name: "Product 1" },
+          { name: "Product 2", variant: { options: "Color: Red" } }
+        ],
         total: 299.99,
         status: "Pending"
       },
       {
         id: 2,
         customerName: "Jane Smith",
-        items: ["Product 3"],
+        items: [
+          { name: "Product 3", variant: { options: "Size: M" } }
+        ],
         total: 149.99,
         status: "Completed"
       }
@@ -82,9 +94,31 @@ export function OrdersTable() {
             <tr key={order.id}>
               <td className="px-6 py-4 border-b">{order.id}</td>
               <td className="px-6 py-4 border-b">{order.customerName}</td>
-              <td className="px-6 py-4 border-b">{order.items.join(", ")}</td>
+              <td className="px-6 py-4 border-b">
+                <div className="space-y-1">
+                  {order.items.map((item, index) => (
+                    <div key={index}>
+                      <div>{item.name}</div>
+                      {item.variant && (
+                        <div className="text-sm text-zinc-500">
+                          {item.variant.options}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </td>
               <td className="px-6 py-4 border-b">${order.total}</td>
-              <td className="px-6 py-4 border-b">{order.status}</td>
+              <td className="px-6 py-4 border-b">
+                <Badge className={
+                  order.status === 'Completed' ? 'bg-green-500/10 text-green-500' :
+                  order.status === 'Processing' ? 'bg-blue-500/10 text-blue-500' :
+                  order.status === 'Cancelled' ? 'bg-red-500/10 text-red-500' :
+                  'bg-orange-500/10 text-orange-500'
+                }>
+                  {order.status}
+                </Badge>
+              </td>
               <td className="px-6 py-4 border-b">
                 <select
                   value={order.status}

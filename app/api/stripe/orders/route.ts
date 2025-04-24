@@ -22,12 +22,13 @@ export async function GET() {
       .filter(pi => pi.status === 'succeeded' && pi.metadata?.items) // Only include successful payments with items
       .map(pi => ({
         id: pi.id,
-        status: pi.status,
+        status: pi.metadata.order_status || 'new', // Use custom status from metadata or default to 'new'
         amount: pi.amount,
         customer: {
           name: pi.metadata.customer_name,
           email: pi.metadata.customer_email,
           phone: pi.metadata.customer_phone,
+          address: pi.metadata.customer_address || '',
         },
         items: JSON.parse(pi.metadata.items || '[]'),
         created: new Date(pi.created * 1000).toISOString(),

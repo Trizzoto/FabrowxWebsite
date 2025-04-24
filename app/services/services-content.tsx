@@ -62,25 +62,21 @@ const benefits = [
   }
 ]
 
+const getIcon = (iconName: string) => {
+  const icons: { [key: string]: JSX.Element } = {
+    wrench: <Wrench className="h-6 w-6 text-orange-400" />,
+    cog: <Cog className="h-6 w-6 text-orange-400" />,
+    car: <Car className="h-6 w-6 text-orange-400" />,
+    truck: <Truck className="h-6 w-6 text-orange-400" />,
+    shield: <Shield className="h-6 w-6 text-orange-400" />,
+    settings: <Settings className="h-6 w-6 text-orange-400" />,
+    zap: <Zap className="h-6 w-6 text-orange-400" />,
+  }
+  return icons[iconName] || <Wrench className="h-6 w-6 text-orange-400" />
+}
+
 export function ServicesContent({ services }: ServicesContentProps) {
   const router = useRouter()
-
-  const getIcon = (iconName: string) => {
-    switch (iconName) {
-      case 'Wrench':
-        return <Wrench className="h-6 w-6" />
-      case 'Cog':
-        return <Cog className="h-6 w-6" />
-      case 'Car':
-        return <Car className="h-6 w-6" />
-      case 'Truck':
-        return <Truck className="h-6 w-6" />
-      case 'Shield':
-        return <Shield className="h-6 w-6" />
-      default:
-        return <Wrench className="h-6 w-6" />
-    }
-  }
 
   // Define JSON-LD structured data for SEO
   const jsonLdData = {
@@ -121,25 +117,28 @@ export function ServicesContent({ services }: ServicesContentProps) {
       </div>
 
       {/* Hero Section */}
-      <div className="relative h-[300px] overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black z-10"></div>
-        <Image
-          src="https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741783803/lc03gne4mnc77za4awxa.jpg"
-          alt="Services header"
-          fill
-          className="object-cover object-center"
-        />
-        <div className="relative z-20 container h-full flex flex-col justify-center items-center text-center">
-          <h1 className="text-4xl md:text-7xl font-bold mb-4">
-            <span className="text-orange-500 font-extrabold tracking-wider">OUR</span>
-            <span className="font-light tracking-widest ml-2">SERVICES</span>
-          </h1>
-          <p className="text-lg md:text-xl text-zinc-300 max-w-2xl font-light tracking-wide">
-            Expert metal fabrication services for performance vehicles and 4WDs.
-            From custom builds to repairs, we've got you covered.
-          </p>
+      <section className="relative py-20 overflow-hidden">
+        <div className="absolute inset-0">
+          <Image
+            src="https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741783803/lc03gne4mnc77za4awxa.jpg"
+            alt="Elite FabWorx Services"
+            fill
+            className="object-cover object-center opacity-40"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black"></div>
         </div>
-      </div>
+        <div className="container relative z-10 px-4 md:px-6">
+          <div className="max-w-4xl mx-auto text-center">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6">
+              Our <span className="text-orange-500">Services</span>
+            </h1>
+            <p className="text-lg text-zinc-300 max-w-2xl mx-auto">
+              Expert metal fabrication services for performance vehicles and 4WDs. From custom builds to repairs, we've got you covered.
+            </p>
+          </div>
+        </div>
+      </section>
 
       {/* Services Grid */}
       <section className="py-20 bg-zinc-900">

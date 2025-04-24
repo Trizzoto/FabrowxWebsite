@@ -172,6 +172,14 @@ export default function CheckoutPage() {
             name: item.name,
             quantity: item.quantity,
             price: item.price,
+            variant: item.selectedVariant ? {
+              sku: item.selectedVariant.sku,
+              options: [
+                item.selectedVariant.option1,
+                item.selectedVariant.option2,
+                item.selectedVariant.option3
+              ].filter(Boolean).join(' / ')
+            } : null
           })),
         }),
       });
@@ -395,7 +403,7 @@ export default function CheckoutPage() {
           )}
         </div>
 
-        {/* Order summary column - takes 5/12 of space on desktop */}
+        {/* Order Summary column - takes 5/12 of space on desktop */}
         <div className="lg:col-span-5">
           <Card className="bg-zinc-900 border-zinc-800 sticky top-24">
             <CardHeader>
@@ -407,8 +415,8 @@ export default function CheckoutPage() {
             <CardContent>
               <div className="space-y-4">
                 {cart.map((item) => (
-                  <div key={item._id} className="flex items-center gap-4">
-                    <div className="w-12 h-12 relative flex-shrink-0">
+                  <div key={item._id} className="flex gap-4">
+                    <div className="w-16 h-16 relative flex-shrink-0">
                       <Image
                         src={item.image || "/placeholder.svg"}
                         alt={item.name}
@@ -418,47 +426,58 @@ export default function CheckoutPage() {
                     </div>
                     <div className="flex-1">
                       <div className="flex justify-between">
-                        <span className="font-medium">{item.name}</span>
-                        <span>${(item.price * item.quantity).toFixed(2)}</span>
+                        <div>
+                          <h3 className="font-medium">{item.name}</h3>
+                          {item.selectedVariant && (
+                            <div className="text-xs text-zinc-400">
+                              {[
+                                item.selectedVariant.option1,
+                                item.selectedVariant.option2,
+                                item.selectedVariant.option3
+                              ]
+                                .filter(Boolean)
+                                .join(' / ')}
+                            </div>
+                          )}
+                        </div>
+                        <span className="font-medium">${(item.price * item.quantity).toFixed(2)}</span>
                       </div>
-                      <div className="text-sm text-zinc-400">
+                      <div className="text-sm text-zinc-400 mt-1">
                         Quantity: {item.quantity} × ${item.price.toFixed(2)}
                       </div>
                     </div>
                   </div>
                 ))}
-                
-                <Separator className="bg-zinc-800" />
-                
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-zinc-400">Subtotal</span>
-                    <span>${totalPrice.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-zinc-400">Shipping</span>
-                    <span>Free</span>
-                  </div>
-                </div>
-                
-                <Separator className="bg-zinc-800" />
-                
-                <div className="flex justify-between font-bold text-xl">
-                  <span>Total</span>
+              </div>
+
+              <Separator className="my-4 bg-zinc-800" />
+
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-zinc-400">Subtotal</span>
                   <span>${totalPrice.toFixed(2)}</span>
                 </div>
-                
-                {clientSecret && (
-                  <div className="mt-6">
-                    <PaymentProvider
-                      clientSecret={clientSecret}
-                      amount={totalPrice}
-                      onSuccess={handlePaymentSuccess}
-                      onError={handlePaymentError}
-                    />
-                  </div>
-                )}
+                <div className="flex justify-between text-sm">
+                  <span className="text-zinc-400">Shipping</span>
+                  <span className="text-green-500">Free</span>
+                </div>
+                <Separator className="my-2 bg-zinc-800" />
+                <div className="flex justify-between font-bold">
+                  <span>Total</span>
+                  <span className="text-orange-500">${totalPrice.toFixed(2)}</span>
+                </div>
               </div>
+
+              {clientSecret && (
+                <div className="mt-6">
+                  <PaymentProvider
+                    clientSecret={clientSecret}
+                    amount={totalPrice}
+                    onSuccess={handlePaymentSuccess}
+                    onError={handlePaymentError}
+                  />
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>

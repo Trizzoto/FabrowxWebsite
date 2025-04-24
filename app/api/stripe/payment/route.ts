@@ -9,11 +9,17 @@ export async function POST(request: Request) {
     // Convert amount to cents for Stripe
     const amountInCents = Math.round(amount * 100);
 
+    // Format the full address
+    const fullAddress = customer.address ? 
+      `${customer.address.street}, ${customer.address.city}, ${customer.address.state} ${customer.address.postcode}, ${customer.address.country}` : 
+      '';
+
     // Create metadata for the payment intent
     const metadata = {
       customer_name: customer.name,
       customer_email: customer.email,
       customer_phone: customer.phone,
+      customer_address: fullAddress,
       items: JSON.stringify(items)
     };
 

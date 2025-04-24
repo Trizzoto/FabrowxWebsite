@@ -1,33 +1,37 @@
 import { NextResponse } from 'next/server'
 import { Product, ProductOption, ProductVariant } from '@/types'
-import fs from 'fs'
+import { promises as fs } from 'fs'
 import path from 'path'
 
 const dataFilePath = path.join(process.cwd(), 'data', 'products.json')
 
-// Helper function to read products from file
-async function readProducts(): Promise<Product[]> {
+// Helper function to read existing products
+async function readExistingProducts(): Promise<Product[]> {
   try {
-    const data = fs.readFileSync(dataFilePath, 'utf-8')
+    const data = await fs.readFile(dataFilePath, 'utf-8')
     return JSON.parse(data)
   } catch (error) {
-    console.error('Error reading products:', error)
     return []
   }
 }
 
 // Helper function to write products to file
 async function writeProducts(products: Product[]): Promise<void> {
-  fs.writeFileSync(dataFilePath, JSON.stringify(products, null, 2))
+  // Ensure the directory exists
+  await fs.mkdir(path.dirname(dataFilePath), { recursive: true })
+  await fs.writeFile(dataFilePath, JSON.stringify(products, null, 2))
 }
 
 export async function GET() {
   try {
-    const products = await readProducts()
+    const products = await readExistingProducts()
     return NextResponse.json(products)
   } catch (error) {
-    console.error('Error getting products:', error)
-    return NextResponse.json({ error: 'Failed to get products' }, { status: 500 })
+    console.error('Failed to fetch products:', error)
+    return NextResponse.json(
+      { error: 'Failed to fetch products' },
+      { status: 500 }
+    )
   }
 }
 
@@ -61,7 +65,7 @@ export async function POST(request: Request) {
     }
 
     // Read existing products
-    const existingProducts = await readProducts()
+    const existingProducts = await readExistingProducts()
 
     // Merge new products with existing ones, replacing duplicates by ID
     const productMap = new Map<string, Product>()
@@ -118,11 +122,11 @@ export async function POST(request: Request) {
 
 export async function DELETE() {
   try {
-    // Clear all products
+    // Write an empty array to the products file
     await writeProducts([])
-    return NextResponse.json({ success: true })
+    return NextResponse.json({ message: 'All products deleted successfully' })
   } catch (error) {
-    console.error('Error deleting products:', error)
+    console.error('Failed to delete products:', error)
     return NextResponse.json(
       { error: 'Failed to delete products' },
       { status: 500 }

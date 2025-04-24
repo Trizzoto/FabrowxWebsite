@@ -4,6 +4,7 @@ import path from 'path'
 import { Product } from "@/types"
 
 const dataFilePath = path.join(process.cwd(), 'data', 'products.json')
+const testProductPath = path.join(process.cwd(), 'data', 'test-product.json')
 
 // Helper function to read products from file
 async function readProducts(): Promise<Product[]> {
@@ -13,6 +14,17 @@ async function readProducts(): Promise<Product[]> {
   } catch (error) {
     console.error('Error reading products:', error)
     return []
+  }
+}
+
+// Helper function to read test product
+async function readTestProduct(): Promise<Product | null> {
+  try {
+    const data = await fs.readFile(testProductPath, 'utf-8')
+    return JSON.parse(data)
+  } catch (error) {
+    console.error('Error reading test product:', error)
+    return null
   }
 }
 
@@ -26,6 +38,17 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
+    // Special case for test products during development
+    if (params.id === 'zoo-performance-untamed-t-shirts' || 
+        params.id === 'female-an6-to-5-16' ||
+        params.id === 'female-an6-to-barb') {
+      const testProduct = await readTestProduct()
+      if (testProduct) {
+        return NextResponse.json(testProduct)
+      }
+    }
+
+    // Regular product lookup
     const products = await readProducts()
     const product = products.find((p) => p.id === params.id)
 

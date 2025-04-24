@@ -64,6 +64,20 @@ export default function CartPage() {
                       </div>
                       <div>
                         <h3 className="font-medium">{item.name}</h3>
+                        {item.selectedVariant && (
+                          <div className="text-xs text-zinc-400 mt-1">
+                            {[
+                              item.selectedVariant.option1, 
+                              item.selectedVariant.option2, 
+                              item.selectedVariant.option3
+                            ]
+                              .filter(Boolean)
+                              .join(' / ')}
+                            {item.selectedVariant.sku && (
+                              <span className="ml-1">- SKU: {item.selectedVariant.sku}</span>
+                            )}
+                          </div>
+                        )}
                         <button
                           onClick={() => removeFromCart(item._id)}
                           className="text-sm text-red-500 flex items-center mt-1"
@@ -150,6 +164,20 @@ export default function CartPage() {
                         <span className="font-medium">{item.name}</span>
                         <span>${(item.price * item.quantity).toFixed(2)}</span>
                       </div>
+                      {item.selectedVariant && (
+                        <div className="text-xs text-zinc-400">
+                          {[
+                            item.selectedVariant.option1, 
+                            item.selectedVariant.option2, 
+                            item.selectedVariant.option3
+                          ]
+                            .filter(Boolean)
+                            .join(' / ')}
+                          {item.selectedVariant.sku && (
+                            <span className="ml-1">- SKU: {item.selectedVariant.sku}</span>
+                          )}
+                        </div>
+                      )}
                       <div className="text-sm text-zinc-400">
                         Quantity: {item.quantity} × ${item.price.toFixed(2)}
                       </div>

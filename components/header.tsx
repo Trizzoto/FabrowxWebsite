@@ -86,14 +86,6 @@ export default function Header() {
             Book a Job
           </Link>
           <Link
-            href="/track-order"
-            className={`text-sm font-medium transition-colors hover:text-orange-400 ${
-              pathname.startsWith("/track-order") ? "text-orange-500" : "text-zinc-400"
-            }`}
-          >
-            Track Order
-          </Link>
-          <Link
             href="/contact-us"
             className={`text-sm font-medium transition-colors hover:text-orange-400 ${
               pathname === "/contact-us" ? "text-orange-500" : "text-zinc-400"
@@ -160,14 +152,6 @@ export default function Header() {
               }`}
             >
               Book a Job
-            </Link>
-            <Link
-              href="/track-order"
-              className={`py-2 text-sm font-medium ${
-                pathname.startsWith("/track-order") ? "text-orange-500" : "text-zinc-400"
-              }`}
-            >
-              Track Order
             </Link>
             <Link
               href="/contact-us"

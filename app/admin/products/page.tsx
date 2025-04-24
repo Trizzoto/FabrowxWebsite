@@ -51,9 +51,10 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Toaster } from '@/components/ui/toaster'
-import { CSVUpload } from '@/components/admin/csv-upload'
 import { productCategories } from '@/app/data'
 import { cn } from '@/lib/utils'
+import { ManageProducts } from '@/components/admin/manage-products'
+import { ImportProducts } from '@/components/admin/import-products'
 
 interface ProductImage {
   url: string
@@ -71,17 +72,16 @@ export default function ProductsPage() {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
   const [isCreatingProduct, setIsCreatingProduct] = useState(false)
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
-  const [newProduct, setNewProduct] = useState<Omit<Product, 'id'> & { id: string }>({
+  const [newProduct, setNewProduct] = useState<Product>({
     id: 'FABWORX-0001',
     name: '',
     category: '',
     price: 0,
     description: '',
-    images: []
+    images: [],
   })
   const [productToDelete, setProductToDelete] = useState<string | null>(null)
   const [showImport, setShowImport] = useState(false)
-  const [showNewCategory, setShowNewCategory] = useState(false)
   const [newCategoryName, setNewCategoryName] = useState("")
   const [productOptions, setProductOptions] = useState<ProductOption[]>([])
   const [productVariants, setProductVariants] = useState<ProductVariant[]>([])
@@ -138,7 +138,39 @@ export default function ProductsPage() {
 
   const handleSaveProduct = async () => {
     try {
+      // Check if we need to create a new category
+      const processCategory = async (categoryName: string | number) => {
+        if (!categoryName) return true;
+        
+        const categoryString = String(categoryName);
+        if (categoryString && !categories.includes(categoryString)) {
+          // Create the category via API
+          const categoryResponse = await fetch('/api/categories', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ category: categoryString }),
+          });
+          
+          if (categoryResponse.ok) {
+            // Add new category to local state
+            setCategories(prev => [...prev, categoryString]);
+            
+            console.log(`New category created: ${categoryString}`);
+            return true;
+          } else {
+            console.error('Failed to create category:', categoryString);
+            return false;
+          }
+        }
+        return true; // Category already exists or is empty
+      };
+      
       if (editingProduct) {
+        // Check if we need to create a new category
+        await processCategory(editingProduct.category);
+        
         // Update existing product via API
         const response = await fetch(`/api/products/${editingProduct.id}`, {
           method: 'PUT',
@@ -162,6 +194,9 @@ export default function ProductsPage() {
         
         setEditingProduct(null)
       } else if (isCreatingProduct && newProduct.name && newProduct.category) {
+        // Check if we need to create a new category
+        await processCategory(newProduct.category);
+        
         // Create new product via API
         const response = await fetch('/api/products', {
           method: 'POST',
@@ -274,42 +309,6 @@ export default function ProductsPage() {
     }
   }
 
-  const handleCreateCategory = async () => {
-    if (!newCategoryName) return
-
-    try {
-      const response = await fetch('/api/categories', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ category: newCategoryName }),
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error || 'Failed to create category')
-      }
-
-      // Add the new category to the list and select it
-      setCategories(prev => [...prev, newCategoryName])
-      setNewProduct(prev => ({ ...prev, category: newCategoryName }))
-      setNewCategoryName("")
-      setShowNewCategory(false)
-
-      toast({
-        title: "Success",
-        description: "New category created successfully",
-      })
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to create category",
-        variant: "destructive"
-      })
-    }
-  }
-
   const handleOptionChange = (index: number, field: 'name' | 'values', value: string | string[]) => {
     const newOptions = [...productOptions]
     if (field === 'name') {
@@ -326,11 +325,9 @@ export default function ProductsPage() {
 
   const generateVariants = (options: ProductOption[]) => {
     const activeOptions = options.filter(opt => opt.name && opt.values.length > 0)
-    if (activeOptions.length === 0) {
-      setProductVariants([])
-      return
-    }
+    if (!activeOptions.length) return []
 
+    // Helper function to generate combinations
     const generateCombinations = (arrays: string[][]): string[][] => {
       if (arrays.length === 0) return [[]]
       const result: string[][] = []
@@ -343,47 +340,49 @@ export default function ProductsPage() {
       return result
     }
 
+    // Get all option values
     const optionValues = activeOptions.map(opt => opt.values)
+
+    // Generate all combinations
     const combinations = generateCombinations(optionValues)
     
-    // Generate base SKU from product ID
-    const baseSku = newProduct.id.replace('FABWORX-', '')
+    // Generate a base SKU
+    const baseId = newProduct.id || 'TEMP'
+    const baseSku = baseId.replace('FABWORX-', '')
     
+    // Create variants for each combination
     const newVariants = combinations.map((combo, index) => {
-      // Create SKU by combining base SKU with variant index
       const variantSku = `${baseSku}-${(index + 1).toString().padStart(2, '0')}`
-      
-      // Create variant name for price calculation
       const variantName = combo.join(' / ').toLowerCase()
       
-      // Calculate price based on variant options
-      let variantPrice = newProduct.price
+      // Adjust price based on option values
+      let variantPrice = newProduct.price || 0
       
-      // Add price modifiers based on keywords in variant name
       if (variantName.includes('large') || variantName.includes('xl')) {
-        variantPrice *= 1.2 // 20% more for large sizes
+        variantPrice *= 1.2
       }
       if (variantName.includes('premium') || variantName.includes('deluxe')) {
-        variantPrice *= 1.3 // 30% more for premium options
+        variantPrice *= 1.3
       }
       if (variantName.includes('custom')) {
-        variantPrice *= 1.5 // 50% more for custom options
+        variantPrice *= 1.5
       }
       
-      // Round price to 2 decimal places
       variantPrice = Math.round(variantPrice * 100) / 100
 
+      // Map options to the correct positions
       return {
         sku: variantSku,
         price: variantPrice,
         inventory: 0,
-        option1: combo[0],
-        option2: combo[1],
-        option3: combo[2]
+        option1: activeOptions[0]?.name ? `${activeOptions[0].name}: ${combo[0]}` : combo[0],
+        option2: activeOptions[1]?.name ? `${activeOptions[1].name}: ${combo[1]}` : combo[1],
+        option3: activeOptions[2]?.name ? `${activeOptions[2].name}: ${combo[2]}` : combo[2]
       }
     })
 
     setProductVariants(newVariants)
+    return newVariants
   }
 
   const addOption = () => {
@@ -455,9 +454,9 @@ export default function ProductsPage() {
 
     // Get option names from the first variant that has them
     const optionNames = product.variants?.reduce((acc, variant) => {
-      if (variant.option1Name && !acc.option1) acc.option1 = variant.option1Name
-      if (variant.option2Name && !acc.option2) acc.option2 = variant.option2Name
-      if (variant.option3Name && !acc.option3) acc.option3 = variant.option3Name
+      if (variant.option1 && !acc.option1) acc.option1 = variant.option1
+      if (variant.option2 && !acc.option2) acc.option2 = variant.option2
+      if (variant.option3 && !acc.option3) acc.option3 = variant.option3
       return acc
     }, {} as Record<string, string>) || {}
 
@@ -520,7 +519,7 @@ export default function ProductsPage() {
                     size="icon"
                     onClick={() => {
                       setSelectedProduct(null)
-                      setEditingProduct(product)
+                      handleEditProduct(product)
                     }}
                     className="h-8 w-8 border-orange-500/30 hover:bg-orange-500/10"
                   >
@@ -592,6 +591,11 @@ export default function ProductsPage() {
                   <span className="text-zinc-400">Stock:</span>
                   <span>{selectedVariant.inventory} units</span>
                 </div>
+                <div>
+                  <p>Option 1: {selectedVariant?.option1 || 'N/A'}</p>
+                  <p>Option 2: {selectedVariant?.option2 || 'N/A'}</p>
+                  <p>Option 3: {selectedVariant?.option3 || 'N/A'}</p>
+                </div>
               </div>
             )}
 
@@ -635,25 +639,6 @@ export default function ProductsPage() {
     )
   }
 
-  const handleEditOptionChange = (index: number, field: 'name' | 'values', value: string | string[]) => {
-    if (!editingProduct) return
-    
-    const newOptions = [...(editingProduct.options || [])]
-    if (field === 'name') {
-      newOptions[index] = { ...newOptions[index], name: value as string }
-    } else {
-      newOptions[index] = { 
-        ...newOptions[index], 
-        values: value as string[]
-      }
-    }
-    setEditingProduct({
-      ...editingProduct,
-      options: newOptions
-    })
-    generateEditVariants(newOptions)
-  }
-
   const generateEditVariants = (options: ProductOption[]) => {
     if (!editingProduct) return
     
@@ -684,33 +669,49 @@ export default function ProductsPage() {
     // Generate base SKU from product ID
     const baseSku = editingProduct.id.replace('FABWORX-', '')
     
+    // Create a map of existing variants for quick lookup
+    const existingVariantMap = new Map<string, ProductVariant>()
+    editingProduct.variants?.forEach(variant => {
+      const key = [variant.option1, variant.option2, variant.option3]
+        .filter(Boolean)
+        .join('|')
+      existingVariantMap.set(key, variant)
+    })
+    
     const newVariants = combinations.map((combo, index) => {
-      // Try to find existing variant with same options to preserve its data
-      const existingVariant = editingProduct.variants?.find(v => 
-        v.option1 === combo[0] && 
-        v.option2 === combo[1] && 
-        v.option3 === combo[2]
-      )
-
+      // Create the variant key for lookup
+      const variantKey = combo.join('|')
+      
+      // Try to find existing variant
+      const existingVariant = existingVariantMap.get(variantKey)
       if (existingVariant) {
-        return existingVariant
+        return {
+          ...existingVariant,
+          option1: combo[0] || undefined,
+          option2: combo[1] || undefined,
+          option3: combo[2] || undefined
+        }
       }
 
-      // Create new variant if no existing one found
+      // Create new variant
       const variantSku = `${baseSku}-${(index + 1).toString().padStart(2, '0')}`
       const variantName = combo.join(' / ').toLowerCase()
       
       let variantPrice = editingProduct.price
       
-      if (variantName.includes('large') || variantName.includes('xl')) {
+      // Apply price adjustments based on variant options
+      combo.forEach(value => {
+        const lowerValue = value.toLowerCase()
+        if (lowerValue.includes('large') || lowerValue.includes('xl')) {
         variantPrice *= 1.2
       }
-      if (variantName.includes('premium') || variantName.includes('deluxe')) {
+        if (lowerValue.includes('premium') || lowerValue.includes('deluxe')) {
         variantPrice *= 1.3
       }
-      if (variantName.includes('custom')) {
+        if (lowerValue.includes('custom')) {
         variantPrice *= 1.5
       }
+      })
       
       variantPrice = Math.round(variantPrice * 100) / 100
 
@@ -718,16 +719,42 @@ export default function ProductsPage() {
         sku: variantSku,
         price: variantPrice,
         inventory: 0,
-        option1: combo[0],
-        option2: combo[1],
-        option3: combo[2]
+        option1: combo[0] || undefined,
+        option2: combo[1] || undefined,
+        option3: combo[2] || undefined
       }
     })
 
+    // Update the product with new variants
     setEditingProduct({
       ...editingProduct,
       variants: newVariants
     })
+  }
+
+  const handleEditOptionChange = (index: number, field: 'name' | 'values', value: string | string[]) => {
+    if (!editingProduct) return
+    
+    const newOptions = [...(editingProduct.options || [])]
+    if (field === 'name') {
+      newOptions[index] = { ...newOptions[index], name: value as string }
+    } else {
+      // Ensure values are unique and trimmed
+      const values = Array.isArray(value) ? value : [value]
+      const uniqueValues = [...new Set(values.map(v => v.trim()))]
+      newOptions[index] = { 
+        ...newOptions[index], 
+        values: uniqueValues
+      }
+    }
+    
+    setEditingProduct({
+      ...editingProduct,
+      options: newOptions
+    })
+    
+    // Regenerate variants when options change
+    generateEditVariants(newOptions)
   }
 
   const addEditOption = () => {
@@ -755,11 +782,29 @@ export default function ProductsPage() {
     
     const newOptions = [...(editingProduct.options || [])]
     const currentValues = newOptions[optionIndex].values || []
-    if (!currentValues.includes(value.trim())) {
+    const trimmedValue = value.trim()
+    
+    // Only add if value doesn't already exist (case-insensitive)
+    if (!currentValues.some(v => v.toLowerCase() === trimmedValue.toLowerCase())) {
+      // Extract all existing values from variants for this option
+      const existingValues = new Set<string>()
+      editingProduct.variants?.forEach(variant => {
+        const optionKey = `option${optionIndex + 1}` as keyof ProductVariant
+        const variantValue = variant[optionKey]
+        if (variantValue) {
+          existingValues.add(variantValue)
+        }
+      })
+      
+      // Add the new value
+      existingValues.add(trimmedValue)
+      
+      // Update the option with all values
       newOptions[optionIndex] = {
         ...newOptions[optionIndex],
-        values: [...currentValues, value.trim()]
+        values: Array.from(existingValues)
       }
+      
       setEditingProduct({
         ...editingProduct,
         options: newOptions
@@ -767,6 +812,73 @@ export default function ProductsPage() {
       generateEditVariants(newOptions)
     }
   }
+
+  const initializeEditOptions = (variants: ProductVariant[], product: Product) => {
+    // Create a map for all options
+    const optionMap: Record<string, Set<string>> = {
+      'Size': new Set<string>()
+    }
+    
+    // Extract all option values from variants
+    variants.forEach(variant => {
+      // For each option, collect the unique values - ensure all values are strings
+      if (variant.option1) optionMap['Size'].add(String(variant.option1))
+      if (variant.option2) {
+        const opt2 = String(variant.option2 || '')
+        if (opt2 && !opt2.includes('undefined')) optionMap['Size'].add(opt2)
+      }
+      if (variant.option3) {
+        const opt3 = String(variant.option3 || '')
+        if (opt3 && !opt3.includes('undefined')) optionMap['Size'].add(opt3)
+      }
+    })
+    
+    // Generate options array from the collected values
+    const options = Object.entries(optionMap)
+      .filter(([_, values]) => values.size > 0)
+      .map(([name, values]) => ({
+        name,
+        values: Array.from(values)
+      }))
+    
+    // Set the options on the product directly
+    setEditingProduct({
+      ...product,
+      options: options
+    })
+    
+    console.log("Initialized product options:", options)
+  }
+
+  // When setting editingProduct, immediately initialize options
+  const handleEditProduct = (product: Product) => {
+    // If product has variants but no options, generate them
+    if (product.variants?.length && (!product.options || product.options.length === 0)) {
+      // Clone the product to avoid reference issues
+      const productCopy = JSON.parse(JSON.stringify(product)) as Product
+      
+      // Initialize options directly
+      initializeEditOptions(productCopy.variants || [], productCopy)
+    } else {
+      // Otherwise just set the product as is
+      setEditingProduct(product)
+    }
+  }
+
+  useEffect(() => {
+    // Force re-initialization of options any time a product is set for editing
+    if (editingProduct && editingProduct.variants && editingProduct.variants.length > 0) {
+      const variantCount = editingProduct.variants.length
+      const optionsEmpty = !editingProduct.options || editingProduct.options.length === 0
+      const optionsIncomplete = editingProduct.options && 
+                               editingProduct.options[0] && 
+                               editingProduct.options[0].values.length < variantCount
+      
+      if (optionsEmpty || optionsIncomplete) {
+        initializeEditOptions(editingProduct.variants, editingProduct)
+      }
+    }
+  }, [editingProduct?.id])
 
   const handleRemoveEditOptionValue = (optionIndex: number, valueIndex: number) => {
     if (!editingProduct) return
@@ -780,10 +892,14 @@ export default function ProductsPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">Products</h1>
-        <div className="flex items-center gap-4">
+    <div className="space-y-6 p-6">
+      <div className="flex flex-col gap-6">
+        {/* Header with Manage Products */}
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-bold">Products</h1>
+          <div className="flex gap-4">
+            <ImportProducts />
+            <ManageProducts />
           <Button onClick={() => setIsCreatingProduct(true)}>
             <Plus className="mr-2 h-4 w-4" />
             Add Product
@@ -791,20 +907,24 @@ export default function ProductsPage() {
         </div>
       </div>
 
-      <div className="flex items-center gap-4">
+        {/* Search and Filter */}
+        <div className="flex gap-4">
         <div className="flex-1">
+            <div className="relative">
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search products..."
+                className="pl-8"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="max-w-sm"
           />
+            </div>
         </div>
         <Select
           value={selectedCategory}
           onValueChange={setSelectedCategory}
         >
-          <SelectTrigger className="w-[200px]">
+            <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Select category" />
           </SelectTrigger>
           <SelectContent>
@@ -818,762 +938,45 @@ export default function ProductsPage() {
         </Select>
       </div>
 
-      <Tabs defaultValue="list">
-        <TabsList className="mb-4">
-          <TabsTrigger value="list">Product List</TabsTrigger>
-          <TabsTrigger value="import">Import Products</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="list">
-          {editingProduct ? (
-            <Card className="mb-6">
+        {/* Products Table */}
+        <Card>
               <CardHeader>
-                <CardTitle>Edit Product: {editingProduct.name}</CardTitle>
+            <CardTitle>Products ({filteredProducts.length})</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium mb-1">Product ID</label>
-                      <Input
-                        value={editingProduct.id}
-                        disabled
-                        className="w-full bg-zinc-800"
-                      />
-                      <p className="text-xs text-zinc-500 mt-1">Product ID cannot be changed</p>
+            {isLoading ? (
+              <div className="flex justify-center items-center h-32">
+                <Loader2 className="h-8 w-8 animate-spin" />
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-1">Product Name</label>
-                      <Input
-                        value={editingProduct.name}
-                        onChange={(e) => setEditingProduct({...editingProduct, name: e.target.value})}
-                        placeholder="Enter product name"
-                        className="w-full"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-1">Category</label>
-                      <Select
-                        value={editingProduct.category}
-                        onValueChange={(value) => {
-                          setEditingProduct({
-                            ...editingProduct,
-                            category: value,
-                          })
-                        }}
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select category" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {categories.map((category) => (
-                            <SelectItem key={category} value={category}>
-                              {category}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-1">Price *</label>
-                      <Input
-                        type="number"
-                        value={editingProduct.price}
-                        onChange={(e) => setEditingProduct({...editingProduct, price: parseFloat(e.target.value) || 0})}
-                        placeholder="Enter price"
-                        className="w-full"
-                        min="0"
-                        step="0.01"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-1">Original Price (optional)</label>
-                      <Input
-                        type="number"
-                        value={editingProduct.originalPrice || ''}
-                        onChange={(e) => setEditingProduct({...editingProduct, originalPrice: parseFloat(e.target.value) || undefined})}
-                        placeholder="Enter original price for discount display"
-                        className="w-full"
-                        min="0"
-                        step="0.01"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-1">Description *</label>
-                      <Textarea
-                        value={editingProduct.description}
-                        onChange={(e) => setEditingProduct({...editingProduct, description: e.target.value})}
-                        placeholder="Enter product description"
-                        className="w-full"
-                        rows={4}
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-6">
-                    <div>
-                      <div className="flex items-center justify-between mb-4">
-                        <label className="block text-sm font-medium">Product Options</label>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={addEditOption}
-                          className="h-8"
-                        >
-                          <Plus className="h-4 w-4 mr-1" />
-                          Add Option Type
-                        </Button>
-                      </div>
-                      <div className="space-y-6">
-                        {(editingProduct.options || []).map((option, optionIndex) => (
-                          <div key={optionIndex} className="rounded-lg border border-zinc-800 overflow-hidden">
-                            <div className="bg-zinc-800/50 p-4 flex items-center justify-between">
-                              <div className="flex-1">
-                                <Input
-                                  value={option.name}
-                                  onChange={(e) => handleEditOptionChange(optionIndex, 'name', e.target.value)}
-                                  placeholder="Option name (e.g., Size, Color)"
-                                  className="bg-zinc-900 border-zinc-700"
-                                />
-                              </div>
-                              <Button
-                                type="button"
-                                variant="destructive"
-                                size="icon"
-                                onClick={() => removeEditOption(optionIndex)}
-                                className="h-8 w-8 ml-2"
-                              >
-                                <X className="h-4 w-4" />
-                              </Button>
-                            </div>
-                            <div className="p-4">
-                              <div className="flex flex-wrap gap-2 mb-4">
-                                {option.values.map((value, valueIndex) => (
-                                  <div
-                                    key={valueIndex}
-                                    className="group relative bg-zinc-800 rounded-md px-3 py-1.5 text-sm flex items-center gap-2"
-                                  >
-                                    <span>{value}</span>
-                                    <Button
-                                      type="button"
-                                      variant="ghost"
-                                      size="icon"
-                                      onClick={() => handleRemoveEditOptionValue(optionIndex, valueIndex)}
-                                      className="h-5 w-5 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                                    >
-                                      <X className="h-3 w-3" />
-                                    </Button>
-                                  </div>
-                                ))}
-                              </div>
-                              <div className="flex gap-2">
-                                <Input
-                                  placeholder="Enter new value"
-                                  className="bg-zinc-900 border-zinc-700"
-                                  onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                      e.preventDefault()
-                                      const input = e.currentTarget
-                                      handleAddEditOptionValue(optionIndex, input.value)
-                                      input.value = ''
-                                    }
-                                  }}
-                                />
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  onClick={(e) => {
-                                    const input = e.currentTarget.previousElementSibling as HTMLInputElement
-                                    handleAddEditOptionValue(optionIndex, input.value)
-                                    input.value = ''
-                                  }}
-                                  className="shrink-0"
-                                >
-                                  Add Value
-                                </Button>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {editingProduct.variants && editingProduct.variants.length > 0 && (
-                      <div>
-                        <label className="block text-sm font-medium mb-2">Product Variants</label>
-                        <div className="rounded-md border border-zinc-700">
-                          <table className="w-full">
-                            <thead>
-                              <tr className="border-b border-zinc-700">
-                                <th className="px-4 py-2 text-left text-sm">Variant</th>
-                                <th className="px-4 py-2 text-left text-sm">SKU</th>
-                                <th className="px-4 py-2 text-left text-sm">Price</th>
-                                <th className="px-4 py-2 text-left text-sm">Inventory</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {editingProduct.variants.map((variant, index) => (
-                                <tr key={index} className="border-b border-zinc-700 last:border-0">
-                                  <td className="px-4 py-2">
-                                    {[variant.option1, variant.option2, variant.option3]
-                                      .filter(Boolean)
-                                      .join(' / ')}
-                                  </td>
-                                  <td className="px-4 py-2">
-                                    <Input
-                                      value={variant.sku}
-                                      onChange={(e) => {
-                                        const newVariants = [...editingProduct.variants]
-                                        newVariants[index] = { ...variant, sku: e.target.value }
-                                        setEditingProduct({...editingProduct, variants: newVariants})
-                                      }}
-                                      placeholder="SKU"
-                                      className="h-8"
-                                    />
-                                  </td>
-                                  <td className="px-4 py-2">
-                                    <Input
-                                      type="number"
-                                      value={variant.price}
-                                      onChange={(e) => {
-                                        const newVariants = [...editingProduct.variants]
-                                        newVariants[index] = { ...variant, price: parseFloat(e.target.value) || 0 }
-                                        setEditingProduct({...editingProduct, variants: newVariants})
-                                      }}
-                                      placeholder="Price"
-                                      className="h-8"
-                                      min="0"
-                                      step="0.01"
-                                    />
-                                  </td>
-                                  <td className="px-4 py-2">
-                                    <Input
-                                      type="number"
-                                      value={variant.inventory}
-                                      onChange={(e) => {
-                                        const newVariants = [...editingProduct.variants]
-                                        newVariants[index] = { ...variant, inventory: parseInt(e.target.value) || 0 }
-                                        setEditingProduct({...editingProduct, variants: newVariants})
-                                      }}
-                                      placeholder="Stock"
-                                      className="h-8"
-                                      min="0"
-                                    />
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                    )}
-
-                    <div>
-                      <label className="block text-sm font-medium mb-1">Product Images</label>
-                      <div className="grid grid-cols-2 gap-2 mb-2">
-                        {(editingProduct.images || []).map((image, index) => (
-                          <div key={index} className="relative aspect-square rounded-md overflow-hidden bg-zinc-800">
-                            <img 
-                              src={image} 
-                              alt={`Product ${index + 1}`} 
-                              className="object-cover w-full h-full"
-                            />
-                            <Button
-                              variant="destructive"
-                              size="icon"
-                              className="absolute top-1 right-1 h-6 w-6"
-                              onClick={() => {
-                                const updatedImages = [...(editingProduct.images || [])];
-                                updatedImages.splice(index, 1);
-                                setEditingProduct({...editingProduct, images: updatedImages});
-                              }}
-                            >
-                              <X className="h-3 w-3" />
-                            </Button>
-                          </div>
-                        ))}
-                      </div>
-                      <CloudinaryUpload
-                        onUploadComplete={handleProductImageUpload}
-                        section={`product-${editingProduct.id}`}
-                        buttonText="Upload Product Image"
-                      />
-                    </div>
-                    
-                    <div className="flex gap-2 mt-6">
-                      <Button 
-                        onClick={handleSaveProduct}
-                        className="flex-1 bg-orange-600 hover:bg-orange-700"
-                      >
-                        <Save className="mr-2 h-4 w-4" />
-                        Save Changes
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        onClick={() => setEditingProduct(null)}
-                        className="flex-1"
-                      >
-                        Cancel
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ) : isCreatingProduct ? (
-            <Card className="mb-6">
-              <CardHeader>
-                <CardTitle>Add New Product</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium mb-1">Product ID *</label>
-                      <div className="flex gap-2">
-                        <Input
-                          value={newProduct.id}
-                          onChange={(e) => setNewProduct({...newProduct, id: e.target.value})}
-                          placeholder="Enter product ID"
-                          className="flex-1"
-                          required
-                        />
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={() => setNewProduct({...newProduct, id: generateProductId()})}
-                          className="shrink-0"
-                          title="Generate new ID"
-                        >
-                          <RefreshCw className="h-4 w-4" />
-                        </Button>
-                      </div>
-                      <p className="text-xs text-zinc-500 mt-1">
-                        Product ID must be unique. Click the refresh button to generate a new one.
-                      </p>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-1">Product Name *</label>
-                      <Input
-                        value={newProduct.name}
-                        onChange={(e) => setNewProduct({...newProduct, name: e.target.value})}
-                        placeholder="Enter product name"
-                        className="w-full"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-1">Category *</label>
-                      {showNewCategory ? (
-                        <div className="flex gap-2">
-                          <Input
-                            value={newCategoryName}
-                            onChange={(e) => setNewCategoryName(e.target.value)}
-                            placeholder="Enter new category name"
-                            className="flex-1"
-                          />
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={handleCreateCategory}
-                            className="whitespace-nowrap"
-                          >
-                            Add Category
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            onClick={() => {
-                              setShowNewCategory(false)
-                              setNewCategoryName("")
-                            }}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
+            ) : filteredProducts.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                No products found
                         </div>
                       ) : (
-                        <div className="flex gap-2">
-                      <Select
-                        value={newProduct.category}
-                            onValueChange={(value) => setNewProduct({ ...newProduct, category: value })}
-                          >
-                            <SelectTrigger className="flex-1">
-                              <SelectValue placeholder="Select a category" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {categories.map((category) => (
-                            <SelectItem key={category} value={category}>
-                              {category}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => setShowNewCategory(true)}
-                            className="whitespace-nowrap"
-                          >
-                            New Category
-                          </Button>
-                        </div>
-                      )}
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-1">Price *</label>
-                      <Input
-                        type="number"
-                        value={newProduct.price}
-                        onChange={(e) => setNewProduct({...newProduct, price: parseFloat(e.target.value) || 0})}
-                        placeholder="Enter price"
-                        className="w-full"
-                        min="0"
-                        step="0.01"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-1">Original Price (optional)</label>
-                      <Input
-                        type="number"
-                        value={newProduct.originalPrice || ''}
-                        onChange={(e) => setNewProduct({...newProduct, originalPrice: parseFloat(e.target.value) || undefined})}
-                        placeholder="Enter original price for discount display"
-                        className="w-full"
-                        min="0"
-                        step="0.01"
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-4">
-                    <div>
-                      <div className="flex items-center justify-between mb-4">
-                        <label className="block text-sm font-medium">Product Options</label>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={addOption}
-                          className="h-8"
-                        >
-                          <Plus className="h-4 w-4 mr-1" />
-                          Add Option Type
-                        </Button>
-                      </div>
-                      <div className="space-y-6">
-                        {productOptions.map((option, optionIndex) => (
-                          <div key={optionIndex} className="rounded-lg border border-zinc-800 overflow-hidden">
-                            <div className="bg-zinc-800/50 p-4 flex items-center justify-between">
-                              <div className="flex-1">
-                                <Input
-                                  value={option.name}
-                                  onChange={(e) => handleOptionChange(optionIndex, 'name', e.target.value)}
-                                  placeholder="Option name (e.g., Size, Color)"
-                                  className="bg-zinc-900 border-zinc-700"
-                                />
-                              </div>
-                              <Button
-                                type="button"
-                                variant="destructive"
-                                size="icon"
-                                onClick={() => removeOption(optionIndex)}
-                                className="h-8 w-8 ml-2"
-                              >
-                                <X className="h-4 w-4" />
-                              </Button>
-                            </div>
-                            <div className="p-4">
-                              <div className="flex flex-wrap gap-2 mb-4">
-                                {option.values.map((value, valueIndex) => (
-                                  <div
-                                    key={valueIndex}
-                                    className="group relative bg-zinc-800 rounded-md px-3 py-1.5 text-sm flex items-center gap-2"
-                                  >
-                                    <span>{value}</span>
-                                    <Button
-                                      type="button"
-                                      variant="ghost"
-                                      size="icon"
-                                      onClick={() => handleRemoveOptionValue(optionIndex, valueIndex)}
-                                      className="h-5 w-5 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                                    >
-                                      <X className="h-3 w-3" />
-                                    </Button>
-                                  </div>
-                                ))}
-                              </div>
-                              <div className="flex gap-2">
-                                <Input
-                                  value={newOptionValue}
-                                  onChange={(e) => setNewOptionValue(e.target.value)}
-                                  placeholder="Enter new value"
-                                  className="bg-zinc-900 border-zinc-700"
-                                  onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                      e.preventDefault()
-                                      handleAddOptionValue(optionIndex, e.target.value)
-                                    }
-                                  }}
-                                />
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  onClick={(e) => {
-                                    e.preventDefault()
-                                    handleAddOptionValue(optionIndex, e.target.value)
-                                  }}
-                                  className="shrink-0"
-                                >
-                                  Add Value
-                                </Button>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                        {productOptions.length === 0 && (
-                          <div className="text-center py-6 border border-dashed border-zinc-800 rounded-lg">
-                            <p className="text-zinc-400 mb-2">No options added yet</p>
-                            <Button
-                              type="button"
-                              variant="outline"
-                              onClick={addOption}
-                              className="h-8"
-                            >
-                              <Plus className="h-4 w-4 mr-1" />
-                              Add Option Type
-                            </Button>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-1">Product Images</label>
-                      <div className="grid grid-cols-2 gap-2 mb-2">
-                        {(newProduct.images || []).map((image, index) => (
-                          <div key={index} className="relative aspect-square rounded-md overflow-hidden bg-zinc-800">
-                            <img 
-                              src={image} 
-                              alt={`Product ${index + 1}`} 
-                              className="object-cover w-full h-full"
-                            />
-                            <Button
-                              variant="destructive"
-                              size="icon"
-                              className="absolute top-1 right-1 h-6 w-6"
-                              onClick={() => {
-                                const updatedImages = [...(newProduct.images || [])];
-                                updatedImages.splice(index, 1);
-                                setNewProduct({...newProduct, images: updatedImages});
-                              }}
-                            >
-                              <X className="h-3 w-3" />
-                            </Button>
-                          </div>
-                        ))}
-                      </div>
-                      <CloudinaryUpload
-                        onUploadComplete={handleProductImageUpload}
-                        section="new-product"
-                        buttonText="Upload Product Image"
-                      />
-                    </div>
-                    
-                    {productVariants.length > 0 && (
-                      <div>
-                        <label className="block text-sm font-medium mb-2">Product Variants</label>
-                        <div className="rounded-md border border-zinc-700">
-                          <table className="w-full">
-                            <thead>
-                              <tr className="border-b border-zinc-700">
-                                <th className="px-4 py-2 text-left text-sm">Variant</th>
-                                <th className="px-4 py-2 text-left text-sm">SKU</th>
-                                <th className="px-4 py-2 text-left text-sm">Price</th>
-                                <th className="px-4 py-2 text-left text-sm">Inventory</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {productVariants.map((variant, index) => (
-                                <tr key={index} className="border-b border-zinc-700 last:border-0">
-                                  <td className="px-4 py-2">
-                                    {[variant.option1, variant.option2, variant.option3]
-                                      .filter(Boolean)
-                                      .join(' / ')}
-                                  </td>
-                                  <td className="px-4 py-2">
-                                    <Input
-                                      value={variant.sku}
-                                      onChange={(e) => {
-                                        const newVariants = [...productVariants]
-                                        newVariants[index] = { ...variant, sku: e.target.value }
-                                        setProductVariants(newVariants)
-                                      }}
-                                      placeholder="SKU"
-                                      className="h-8"
-                                    />
-                                  </td>
-                                  <td className="px-4 py-2">
-                                    <Input
-                                      type="number"
-                                      value={variant.price}
-                                      onChange={(e) => {
-                                        const newVariants = [...productVariants]
-                                        newVariants[index] = { ...variant, price: parseFloat(e.target.value) || 0 }
-                                        setProductVariants(newVariants)
-                                      }}
-                                      placeholder="Price"
-                                      className="h-8"
-                                      min="0"
-                                      step="0.01"
-                                    />
-                                  </td>
-                                  <td className="px-4 py-2">
-                                    <Input
-                                      type="number"
-                                      value={variant.inventory}
-                                      onChange={(e) => {
-                                        const newVariants = [...productVariants]
-                                        newVariants[index] = { ...variant, inventory: parseInt(e.target.value) || 0 }
-                                        setProductVariants(newVariants)
-                                      }}
-                                      placeholder="Stock"
-                                      className="h-8"
-                                      min="0"
-                                    />
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                    )}
-                    
-                    <div className="mt-8 border-t border-zinc-800 pt-8">
-                      <h3 className="text-lg font-semibold mb-4">Live Preview</h3>
-                      <div className="bg-zinc-900 rounded-lg overflow-hidden max-w-md mx-auto shadow-lg">
-                        <div className="aspect-video relative bg-zinc-800">
-                          {newProduct.images && newProduct.images.length > 0 ? (
-                            <img
-                              src={newProduct.images[0]}
-                              alt={newProduct.name}
-                              className="object-cover w-full h-full"
-                            />
-                          ) : (
-                            <div className="flex items-center justify-center h-full text-zinc-600">
-                              <ImageIcon className="h-12 w-12" />
-                            </div>
-                          )}
-                        </div>
-                        <div className="p-6">
-                          {newProduct.category && (
-                            <span className="text-sm text-orange-400 block mb-1">{newProduct.category}</span>
-                          )}
-                          <h3 className="font-semibold text-lg mb-2">
-                            {newProduct.name || "Product Name"}
-                          </h3>
-                          <p className="text-zinc-400 text-sm mb-4 line-clamp-2">
-                            {newProduct.description || "Product description will appear here"}
-                          </p>
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-baseline gap-2">
-                              <span className="text-lg font-bold text-orange-400">
-                                ${newProduct.price.toFixed(2)}
-                              </span>
-                              {newProduct.originalPrice && (
-                                <span className="text-sm text-zinc-500 line-through">
-                                  ${newProduct.originalPrice.toFixed(2)}
-                                </span>
-                              )}
-                            </div>
-                            {productVariants.length > 0 && (
-                              <Badge variant="outline" className="text-orange-400 border-orange-400/30">
-                                {productOptions.length} {productOptions.length === 1 ? 'Option' : 'Options'}
-                              </Badge>
-                            )}
-                          </div>
-                          {productVariants.length > 0 && (
-                            <div className="mt-4 pt-4 border-t border-zinc-800">
-                              <span className="text-sm text-zinc-400 block mb-2">Available Variants:</span>
-                              <div className="flex flex-wrap gap-2">
-                                {productVariants.slice(0, 3).map((variant, index) => (
-                                  <Badge key={index} variant="secondary" className="bg-zinc-800">
-                                    {[variant.option1, variant.option2, variant.option3]
-                                      .filter(Boolean)
-                                      .join(' / ')}
-                                  </Badge>
-                                ))}
-                                {productVariants.length > 3 && (
-                                  <Badge variant="secondary" className="bg-zinc-800">
-                                    +{productVariants.length - 3} more
-                                  </Badge>
-                                )}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="flex gap-2 mt-8">
-                      <Button 
-                        onClick={handleSaveProduct}
-                        className="flex-1 bg-orange-600 hover:bg-orange-700"
-                        disabled={!newProduct.name || !newProduct.category || newProduct.price <= 0}
-                      >
-                        <Save className="mr-2 h-4 w-4" />
-                        Create Product
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        onClick={() => setIsCreatingProduct(false)}
-                        className="flex-1"
-                      >
-                        Cancel
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ) : (
-            <>
-              {isLoading ? (
-                <div className="flex items-center justify-center h-60">
-                  <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
-                </div>
-              ) : filteredProducts.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="rounded-md border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Product</TableHead>
+                      <TableHead>Category</TableHead>
+                      <TableHead>Price</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
                   {filteredProducts.map((product) => (
-                    <Card key={product.id} className="overflow-hidden cursor-pointer group" onClick={() => setSelectedProduct(product)}>
-                      <div className="aspect-video relative bg-zinc-800">
-                        <img
-                          src={product.images?.[0] || "/placeholder.png"}
-                          alt={product.name}
-                          className="object-cover w-full h-full"
-                        />
-                      </div>
-                      <CardContent className="p-4">
-                        <div className="mb-2">
-                          <span className="text-sm text-orange-400 block">{product.category}</span>
-                          <h3 className="font-semibold text-lg line-clamp-1 group-hover:text-orange-400 transition-colors">{product.name}</h3>
-                        </div>
-                        <p className="text-zinc-400 text-sm line-clamp-2 mb-3">{product.description}</p>
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <span className="text-lg font-bold text-orange-400">${product.price.toFixed(2)}</span>
-                            {product.originalPrice && (
-                              <span className="text-sm text-zinc-500 line-through ml-2">
-                                ${product.originalPrice.toFixed(2)}
-                              </span>
-                            )}
-                          </div>
+                      <TableRow key={product.id}>
+                        <TableCell className="font-medium">{product.name}</TableCell>
+                        <TableCell>{product.category}</TableCell>
+                        <TableCell>${product.price.toFixed(2)}</TableCell>
+                        <TableCell>
                           <div className="flex gap-2">
                             <Button
                               variant="outline"
                               size="icon"
                               onClick={(e) => {
                                 e.stopPropagation()
-                                setEditingProduct(product)
+                                handleEditProduct(product)
                               }}
                               className="h-8 w-8 border-orange-500/30 hover:bg-orange-500/10"
                             >
@@ -1591,34 +994,16 @@ export default function ProductsPage() {
                               <Trash className="h-4 w-4" />
                             </Button>
                           </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
                         </div>
+            )}
                       </CardContent>
                     </Card>
-                  ))}
                 </div>
-              ) : (
-                <div className="text-center py-12 bg-zinc-900 rounded-lg">
-                  <h3 className="text-xl font-medium mb-2">No products found</h3>
-                  <p className="text-zinc-400 mb-6">Try adjusting your search or filters</p>
-                  <Button
-                    onClick={() => {
-                      setSearchQuery('');
-                      setSelectedCategory('all');
-                    }}
-                    variant="outline"
-                  >
-                    Clear Filters
-                  </Button>
-                </div>
-              )}
-            </>
-          )}
-        </TabsContent>
-        
-        <TabsContent value="import">
-          {showImport && <CSVUpload />}
-        </TabsContent>
-      </Tabs>
       <Dialog open={productToDelete !== null} onOpenChange={() => setProductToDelete(null)}>
         <DialogContent>
           <DialogHeader>
@@ -1645,6 +1030,526 @@ export default function ProductsPage() {
       </Dialog>
       <Dialog open={selectedProduct !== null} onOpenChange={(open) => !open && setSelectedProduct(null)}>
         {selectedProduct && <ProductViewDialog product={selectedProduct} />}
+      </Dialog>
+      <Dialog open={editingProduct !== null} onOpenChange={(open) => !open && setEditingProduct(null)}>
+        {editingProduct && (
+          <DialogContent className="max-w-4xl w-full h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Edit Product</DialogTitle>
+              <DialogDescription>
+                Make changes to the product information and variants.
+              </DialogDescription>
+            </DialogHeader>
+            
+            <Tabs defaultValue="general" className="mt-6">
+              <TabsList className="grid grid-cols-3">
+                <TabsTrigger value="general">General</TabsTrigger>
+                <TabsTrigger value="options">Options & Variants</TabsTrigger>
+                <TabsTrigger value="images">Images</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="general" className="space-y-4 mt-4">
+                <div className="space-y-2">
+                  <label htmlFor="edit-name" className="text-sm font-medium">Product Name</label>
+                      <Input
+                    id="edit-name"
+                        value={editingProduct.name}
+                        onChange={(e) => setEditingProduct({...editingProduct, name: e.target.value})}
+                    placeholder="Product name"
+                      />
+                    </div>
+                
+                <div className="space-y-2">
+                  <label htmlFor="edit-category" className="text-sm font-medium">Category</label>
+                  <div className="flex gap-2">
+                    <Input
+                      id="edit-category"
+                        value={editingProduct.category}
+                      onChange={(e) => setEditingProduct({...editingProduct, category: e.target.value})}
+                      placeholder="Enter category (new or existing)"
+                      className="flex-1"
+                      list="categories-list"
+                    />
+                    <datalist id="categories-list">
+                          {categories.map((category) => (
+                        <option key={category} value={category}>
+                              {category}
+                        </option>
+                          ))}
+                    </datalist>
+                    </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <label htmlFor="edit-price" className="text-sm font-medium">Price</label>
+                      <Input
+                    id="edit-price"
+                        type="number"
+                        value={editingProduct.price}
+                    onChange={(e) => setEditingProduct({...editingProduct, price: parseFloat(e.target.value)})}
+                    placeholder="0.00"
+                      />
+                    </div>
+                
+                <div className="space-y-2">
+                  <label htmlFor="edit-description" className="text-sm font-medium">Description</label>
+                      <Textarea
+                    id="edit-description"
+                        value={editingProduct.description}
+                        onChange={(e) => setEditingProduct({...editingProduct, description: e.target.value})}
+                    placeholder="Product description"
+                    className="min-h-[200px]"
+                      />
+                    </div>
+              </TabsContent>
+              
+              <TabsContent value="options" className="space-y-6 mt-4">
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-lg font-medium">Product Options</h3>
+                    <Button onClick={addEditOption} variant="outline" size="sm">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Option
+                        </Button>
+                      </div>
+                  
+                  {(editingProduct.options || []).map((option, index) => (
+                    <Card key={index} className="bg-zinc-900 border-zinc-800">
+                      <CardHeader className="pb-2">
+                        <div className="flex justify-between items-center">
+                                <Input
+                                  value={option.name}
+                            onChange={(e) => handleEditOptionChange(index, 'name', e.target.value)}
+                            placeholder="Option name (e.g. Size, Color)"
+                            className="max-w-[250px]"
+                          />
+                              <Button
+                            variant="ghost" 
+                                size="icon"
+                            onClick={() => removeEditOption(index)}
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </div>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div className="flex flex-wrap gap-2">
+                                {option.values.map((value, valueIndex) => (
+                            <Badge 
+                                    key={valueIndex}
+                              variant="outline"
+                              className="py-1 px-3 gap-2 border-orange-500/30 bg-orange-500/5"
+                                  >
+                              {value}
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                className="h-4 w-4 p-0"
+                                onClick={() => handleRemoveEditOptionValue(index, valueIndex)}
+                                    >
+                                      <X className="h-3 w-3" />
+                                    </Button>
+                            </Badge>
+                                ))}
+                              </div>
+                        
+                              <div className="flex gap-2">
+                                <Input
+                            placeholder="Add option value"
+                            className="max-w-[250px]"
+                            value={newOptionValue}
+                            onChange={(e) => setNewOptionValue(e.target.value)}
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                handleAddEditOptionValue(index, newOptionValue);
+                                setNewOptionValue('');
+                                    }
+                                  }}
+                                />
+                                <Button
+                                  variant="outline"
+                            onClick={() => {
+                              handleAddEditOptionValue(index, newOptionValue);
+                              setNewOptionValue('');
+                            }}
+                          >
+                            Add
+                                </Button>
+                              </div>
+                      </CardContent>
+                    </Card>
+                        ))}
+                    </div>
+
+                {(editingProduct.variants?.length || 0) > 0 && (
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-medium">Variants ({editingProduct.variants?.length})</h3>
+                    <div className="rounded-md border border-zinc-800">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Variant</TableHead>
+                            <TableHead>Price</TableHead>
+                            <TableHead>SKU</TableHead>
+                            <TableHead>Inventory</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {editingProduct.variants?.map((variant, index) => (
+                            <TableRow key={index}>
+                              <TableCell>
+                                    {[variant.option1, variant.option2, variant.option3]
+                                      .filter(Boolean)
+                                      .join(' / ')}
+                              </TableCell>
+                              <TableCell>
+                                    <Input
+                                  type="number"
+                                  value={variant.price}
+                                      onChange={(e) => {
+                                    const newVariants = [...(editingProduct.variants || [])];
+                                    newVariants[index] = {
+                                      ...newVariants[index],
+                                      price: parseFloat(e.target.value)
+                                    };
+                                    setEditingProduct({
+                                      ...editingProduct,
+                                      variants: newVariants
+                                    });
+                                  }}
+                                  className="max-w-[120px]"
+                                />
+                              </TableCell>
+                              <TableCell>
+                                    <Input
+                                  value={variant.sku}
+                                      onChange={(e) => {
+                                    const newVariants = [...(editingProduct.variants || [])];
+                                    newVariants[index] = {
+                                      ...newVariants[index],
+                                      sku: e.target.value
+                                    };
+                                    setEditingProduct({
+                                      ...editingProduct,
+                                      variants: newVariants
+                                    });
+                                  }}
+                                  className="max-w-[120px]"
+                                />
+                              </TableCell>
+                              <TableCell>
+                                    <Input
+                                      type="number"
+                                      value={variant.inventory}
+                                      onChange={(e) => {
+                                    const newVariants = [...(editingProduct.variants || [])];
+                                    newVariants[index] = {
+                                      ...newVariants[index],
+                                      inventory: parseInt(e.target.value)
+                                    };
+                                    setEditingProduct({
+                                      ...editingProduct,
+                                      variants: newVariants
+                                    });
+                                  }}
+                                  className="max-w-[120px]"
+                                />
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                        </div>
+                      </div>
+                    )}
+              </TabsContent>
+              
+              <TabsContent value="images" className="space-y-6 mt-4">
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-lg font-medium">Product Images</h3>
+                    <CloudinaryUpload onUploadComplete={handleProductImageUpload} />
+                  </div>
+                  
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                        {(editingProduct.images || []).map((image, index) => (
+                      <div 
+                        key={index} 
+                        className="relative aspect-square rounded-md overflow-hidden border border-zinc-800 group"
+                      >
+                            <img 
+                              src={image} 
+                          alt={`Product image ${index + 1}`}
+                              className="object-cover w-full h-full"
+                            />
+                        <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <Button
+                              variant="destructive"
+                              size="icon"
+                              onClick={() => {
+                              const newImages = [...(editingProduct.images || [])];
+                              newImages.splice(index, 1);
+                              setEditingProduct({
+                                ...editingProduct,
+                                images: newImages
+                              });
+                            }}
+                          >
+                            <Trash className="h-4 w-4" />
+                            </Button>
+                        </div>
+                          </div>
+                        ))}
+                    
+                    {(editingProduct.images || []).length === 0 && (
+                      <div className="col-span-full flex flex-col items-center justify-center p-8 border border-dashed border-zinc-700 rounded-md">
+                        <ImageIcon className="h-8 w-8 mb-2 text-zinc-500" />
+                        <p className="text-zinc-500">No images yet. Upload some!</p>
+                      </div>
+                    )}
+                    </div>
+                </div>
+              </TabsContent>
+            </Tabs>
+            
+            <DialogFooter className="mt-6">
+              <Button variant="outline" onClick={() => setEditingProduct(null)}>
+                Cancel
+              </Button>
+              <Button onClick={handleSaveProduct}>
+                        <Save className="mr-2 h-4 w-4" />
+                        Save Changes
+                      </Button>
+            </DialogFooter>
+          </DialogContent>
+        )}
+      </Dialog>
+      <Dialog open={isCreatingProduct} onOpenChange={setIsCreatingProduct}>
+        <DialogContent className="max-w-4xl w-full h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Create New Product</DialogTitle>
+            <DialogDescription>
+              Add details for your new product.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <Tabs defaultValue="general" className="mt-6">
+            <TabsList className="grid grid-cols-3">
+              <TabsTrigger value="general">General</TabsTrigger>
+              <TabsTrigger value="options">Options & Variants</TabsTrigger>
+              <TabsTrigger value="images">Images</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="general" className="space-y-4 mt-4">
+              <div className="space-y-2">
+                <label htmlFor="new-id" className="text-sm font-medium">Product ID</label>
+                        <Input
+                  id="new-id"
+                          value={newProduct.id}
+                          onChange={(e) => setNewProduct({...newProduct, id: e.target.value})}
+                  placeholder="FABWORX-0000"
+                        />
+                        <Button
+                          variant="outline"
+                  size="sm"
+                          onClick={() => setNewProduct({...newProduct, id: generateProductId()})}
+                        >
+                  <RefreshCw className="h-3 w-3 mr-2" />
+                  Generate ID
+                        </Button>
+                      </div>
+              
+              <div className="space-y-2">
+                <label htmlFor="new-name" className="text-sm font-medium">Product Name</label>
+                      <Input
+                  id="new-name"
+                        value={newProduct.name}
+                        onChange={(e) => setNewProduct({...newProduct, name: e.target.value})}
+                  placeholder="Product name"
+                      />
+                    </div>
+              
+              <div className="space-y-2">
+                <label htmlFor="new-category" className="text-sm font-medium">Category</label>
+                        <div className="flex gap-2">
+                          <Input
+                    id="new-category"
+                    value={newProduct.category}
+                    onChange={(e) => setNewProduct({...newProduct, category: e.target.value})}
+                    placeholder="Enter category (new or existing)"
+                            className="flex-1"
+                    list="new-categories-list"
+                  />
+                  <datalist id="new-categories-list">
+                          {categories.map((category) => (
+                      <option key={category} value={category}>
+                              {category}
+                      </option>
+                    ))}
+                  </datalist>
+                        </div>
+                    </div>
+              
+              <div className="space-y-2">
+                <label htmlFor="new-price" className="text-sm font-medium">Price</label>
+                      <Input
+                  id="new-price"
+                        type="number"
+                        value={newProduct.price}
+                        onChange={(e) => setNewProduct({...newProduct, price: parseFloat(e.target.value) || 0})}
+                  placeholder="0.00"
+                      />
+                    </div>
+              
+              <div className="space-y-2">
+                <label htmlFor="new-description" className="text-sm font-medium">Description</label>
+                <Textarea 
+                  id="new-description"
+                  value={newProduct.description}
+                  onChange={(e) => setNewProduct({...newProduct, description: e.target.value})}
+                  placeholder="Product description"
+                  className="min-h-[200px]"
+                      />
+                    </div>
+            </TabsContent>
+                  
+            <TabsContent value="options" className="space-y-6 mt-4">
+                  <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-lg font-medium">Product Options</h3>
+                  <Button onClick={addEditOption} variant="outline" size="sm">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Option
+                        </Button>
+                      </div>
+                
+                {productOptions.map((option, index) => (
+                  <Card key={index} className="bg-zinc-900 border-zinc-800">
+                    <CardHeader className="pb-2">
+                      <div className="flex justify-between items-center">
+                                <Input
+                                  value={option.name}
+                            onChange={(e) => handleOptionChange(index, 'name', e.target.value)}
+                            placeholder="Option name (e.g. Size, Color)"
+                            className="max-w-[250px]"
+                          />
+                              <Button
+                            variant="ghost" 
+                                size="icon"
+                            onClick={() => removeEditOption(index)}
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </div>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="flex flex-wrap gap-2">
+                                {option.values.map((value, valueIndex) => (
+                            <Badge 
+                                    key={valueIndex}
+                              variant="outline"
+                              className="py-1 px-3 gap-2 border-orange-500/30 bg-orange-500/5"
+                                  >
+                              {value}
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                className="h-4 w-4 p-0"
+                                onClick={() => handleRemoveEditOptionValue(index, valueIndex)}
+                                    >
+                                      <X className="h-3 w-3" />
+                                    </Button>
+                            </Badge>
+                                ))}
+                              </div>
+                        
+                              <div className="flex gap-2">
+                                <Input
+                            placeholder="Add option value"
+                            className="max-w-[250px]"
+                                  value={newOptionValue}
+                                  onChange={(e) => setNewOptionValue(e.target.value)}
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                              handleAddEditOptionValue(index, newOptionValue);
+                              setNewOptionValue('');
+                                    }
+                                  }}
+                                />
+                                <Button
+                                  variant="outline"
+                            onClick={() => {
+                              handleAddEditOptionValue(index, newOptionValue);
+                              setNewOptionValue('');
+                            }}
+                          >
+                            Add
+                                </Button>
+                              </div>
+                    </CardContent>
+                  </Card>
+                ))}
+                          </div>
+            </TabsContent>
+            
+            <TabsContent value="images" className="space-y-6 mt-4">
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-lg font-medium">Product Images</h3>
+                  <CloudinaryUpload onUploadComplete={handleProductImageUpload} />
+                      </div>
+                
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                        {(newProduct.images || []).map((image, index) => (
+                    <div 
+                      key={index} 
+                      className="relative aspect-square rounded-md overflow-hidden border border-zinc-800 group"
+                    >
+                            <img 
+                              src={image} 
+                        alt={`Product image ${index + 1}`}
+                              className="object-cover w-full h-full"
+                            />
+                      <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <Button
+                              variant="destructive"
+                              size="icon"
+                              onClick={() => {
+                            const newImages = [...(newProduct.images || [])];
+                            newImages.splice(index, 1);
+                            setNewProduct({
+                              ...newProduct,
+                              images: newImages
+                            });
+                          }}
+                        >
+                          <Trash className="h-4 w-4" />
+                            </Button>
+                          </div>
+                      </div>
+                  ))}
+                  
+                  {(newProduct.images || []).length === 0 && (
+                    <div className="col-span-full flex flex-col items-center justify-center p-8 border border-dashed border-zinc-700 rounded-md">
+                      <ImageIcon className="h-8 w-8 mb-2 text-zinc-500" />
+                      <p className="text-zinc-500">No images yet. Upload some!</p>
+                            </div>
+                          )}
+                        </div>
+                            </div>
+        </TabsContent>
+      </Tabs>
+          
+          <DialogFooter className="mt-6">
+            <Button variant="outline" onClick={() => setIsCreatingProduct(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveProduct}>
+              <Save className="mr-2 h-4 w-4" />
+              Create Product
+            </Button>
+          </DialogFooter>
+        </DialogContent>
       </Dialog>
       <Toaster />
     </div>

@@ -8,6 +8,12 @@ export interface CartItem {
   price: number
   image: string
   quantity: number
+  selectedVariant?: {
+    sku: string
+    option1?: string
+    option2?: string
+    option3?: string
+  }
 }
 
 interface CartContextType {
@@ -43,11 +49,24 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const addToCart = (product: any, quantity: number) => {
     setCart((prevCart) => {
-      const existingItem = prevCart.find((item) => item._id === product._id)
+      // Create a unique ID based on product ID and variant (if any)
+      const variantId = product.selectedVariant?.sku 
+        ? `${product._id}-${product.selectedVariant.sku}`
+        : product._id;
+        
+      const existingItem = prevCart.find((item) => 
+        (item.selectedVariant?.sku && product.selectedVariant?.sku) 
+          ? item._id === product._id && item.selectedVariant.sku === product.selectedVariant.sku
+          : item._id === product._id
+      );
 
       if (existingItem) {
         return prevCart.map((item) =>
-          item._id === product._id ? { ...item, quantity: item.quantity + quantity } : item,
+          ((item.selectedVariant?.sku && product.selectedVariant?.sku) 
+            ? item._id === product._id && item.selectedVariant.sku === product.selectedVariant.sku
+            : item._id === product._id) 
+            ? { ...item, quantity: item.quantity + quantity } 
+            : item
         )
       } else {
         return [
@@ -56,8 +75,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
             _id: product._id,
             name: product.name,
             price: product.price,
-            image: product.images[0],
+            image: product.images?.[0] || '',
             quantity,
+            selectedVariant: product.selectedVariant || undefined
           },
         ]
       }
