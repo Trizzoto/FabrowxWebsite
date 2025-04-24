@@ -28,7 +28,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { ParticleContainer } from "@/components/particle-container"
 import { Product } from "@/types"
-import { ContactForm } from "../contact/contact-form"
+import dynamic from 'next/dynamic'
 
 interface Service {
   title: string
@@ -74,6 +74,22 @@ interface HomeContentProps {
   }
   galleryImages: GalleryImage[]
 }
+
+// Add type declaration for Instagram embed script
+declare global {
+  interface Window {
+    instgrm?: {
+      Embeds: {
+        process: () => void;
+      }
+    }
+  }
+}
+
+// Import ContactForm with no SSR to prevent hydration issues
+const ContactForm = dynamic(() => import('@/app/contact/contact-form').then(mod => mod.ContactForm), { 
+  ssr: false 
+})
 
 export function HomeContent({ settings, galleryImages }: HomeContentProps) {
   const ref = useRef(null)
@@ -129,39 +145,62 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
   // Add state for Instagram embeds
   const [instagramLoaded, setInstagramLoaded] = useState(false);
   
-  // Load Instagram embed script
+  // Load Instagram embed script with better error handling and retry mechanism
   useEffect(() => {
-    // Only run on client side
-    if (typeof window !== 'undefined') {
-      // Check if script already exists
-      if (!document.querySelector('script[src="https://www.instagram.com/embed.js"]')) {
-        const script = document.createElement('script');
-        script.src = 'https://www.instagram.com/embed.js';
-        script.async = true;
-        script.crossOrigin = 'anonymous';
-        script.onload = () => {
-          // @ts-ignore - Instagram adds this to window
-          if (window.instgrm) {
-            // @ts-ignore
-            window.instgrm.Embeds.process();
-          }
-          setInstagramLoaded(true);
-        };
-        document.body.appendChild(script);
-      } else {
-        setInstagramLoaded(true);
-        // @ts-ignore
-        if (window.instgrm) {
-          // @ts-ignore
-          window.instgrm.Embeds.process();
-        }
+    if (typeof window === 'undefined') return;
+    
+    // Function to load the Instagram script
+    const loadInstagramScript = () => {
+      // Remove any existing script first to avoid duplicates
+      const existingScript = document.querySelector('script[src="https://www.instagram.com/embed.js"]');
+      if (existingScript) {
+        existingScript.remove();
       }
+      
+      const script = document.createElement('script');
+      script.src = 'https://www.instagram.com/embed.js';
+      script.async = true;
+      script.defer = true; // Add defer to improve loading
+      script.crossOrigin = 'anonymous';
+      
+      script.onload = () => {
+        // Process embeds when script loads
+        if (window.instgrm) {
+          setTimeout(() => {
+            window.instgrm.Embeds.process();
+            setInstagramLoaded(true);
+          }, 500); // Add a delay to ensure DOM elements are ready
+        }
+      };
+      
+      script.onerror = () => {
+        console.error('Failed to load Instagram embed script');
+      };
+      
+      document.body.appendChild(script);
+    };
+    
+    // Load the script
+    loadInstagramScript();
+    
+    // Set up a delayed retry mechanism
+    const retryTimeout = setTimeout(() => {
+      if (!instagramLoaded && window.instgrm === undefined) {
+        console.log('Retrying Instagram script load...');
+        loadInstagramScript();
+      }
+    }, 3000);
+    
+    // Process embeds again when the component mounts, in case the script was already loaded
+    if (window.instgrm) {
+      window.instgrm.Embeds.process();
+      setInstagramLoaded(true);
     }
     
     return () => {
-      // Cleanup if needed
+      clearTimeout(retryTimeout);
     };
-  }, []);
+  }, [instagramLoaded]);
 
   return (
     <div className="bg-black text-white">
@@ -406,10 +445,6 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
                   </div>
                 </div>
               </div>
-              <Button className="bg-orange-700 hover:bg-orange-800 text-white focus-visible:ring-orange-600">
-                Learn More About Us
-                <ChevronRight className="ml-2 h-4 w-4" />
-              </Button>
             </motion.div>
             <motion.div
               initial={{ opacity: 0, x: 20 }}
@@ -492,7 +527,7 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
           </AnimatePresence>
 
           <div className="mt-12 text-center">
-            <Link href="/shop">
+            <Link href="/gallery">
               <Button variant="outline" className="border-orange-600 text-orange-300 hover:bg-orange-950/50 focus-visible:ring-orange-600">
                 View Full Gallery
                 <ChevronRight className="ml-2 h-4 w-4" />
@@ -588,52 +623,85 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 items-start">
               {/* Instagram Post 1 */}
-              <div className="instagram-post-container w-full overflow-hidden">
+              <div className="instagram-post-container w-full overflow-hidden bg-zinc-800 rounded-lg">
                 {instagramLoaded ? (
                   <blockquote 
-                    className="instagram-media w-full h-full !max-w-full !min-w-0 !m-0" 
+                    className="instagram-media w-full !max-w-full !min-w-0 !m-0 bg-zinc-800 rounded-lg aspect-square" 
                     data-instgrm-captioned
                     data-instgrm-permalink="https://www.instagram.com/p/C5XmvX6Ru18/"
                     data-instgrm-version="14"
-                    style={{ margin: '0 !important', width: '100% !important', height: '100% !important' }}
+                    style={{ border: '1px solid #333', minHeight: '300px' }}
                   ></blockquote>
                 ) : (
-                  <div className="bg-zinc-800 rounded-md flex items-center justify-center w-full h-full">
-                    <div className="text-zinc-400">Loading Instagram post...</div>
+                  <div className="aspect-square flex items-center justify-center p-4">
+                    <div className="text-center">
+                      <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-orange-500 mb-4 mx-auto"></div>
+                      <p className="text-zinc-400">Loading Instagram post...</p>
+                      <a 
+                        href="https://www.instagram.com/p/C5XmvX6Ru18/" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="mt-4 text-orange-400 hover:text-orange-300 text-sm inline-block"
+                      >
+                        View on Instagram
+                      </a>
+                    </div>
                   </div>
                 )}
               </div>
 
               {/* Instagram Post 2 */}
-              <div className="instagram-post-container w-full overflow-hidden">
+              <div className="instagram-post-container w-full overflow-hidden bg-zinc-800 rounded-lg">
                 {instagramLoaded ? (
                   <blockquote 
-                    className="instagram-media w-full h-full !max-w-full !min-w-0 !m-0" 
+                    className="instagram-media w-full !max-w-full !min-w-0 !m-0 bg-zinc-800 rounded-lg aspect-square" 
                     data-instgrm-captioned
                     data-instgrm-permalink="https://www.instagram.com/p/C00fKqJRL8O/"
                     data-instgrm-version="14"
-                    style={{ margin: '0 !important', width: '100% !important', height: '100% !important' }}
+                    style={{ border: '1px solid #333', minHeight: '300px' }}
                   ></blockquote>
                 ) : (
-                  <div className="bg-zinc-800 rounded-md flex items-center justify-center w-full h-full">
-                    <div className="text-zinc-400">Loading Instagram post...</div>
+                  <div className="aspect-square flex items-center justify-center p-4">
+                    <div className="text-center">
+                      <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-orange-500 mb-4 mx-auto"></div>
+                      <p className="text-zinc-400">Loading Instagram post...</p>
+                      <a 
+                        href="https://www.instagram.com/p/C00fKqJRL8O/" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="mt-4 text-orange-400 hover:text-orange-300 text-sm inline-block"
+                      >
+                        View on Instagram
+                      </a>
+                    </div>
                   </div>
                 )}
               </div>
 
               {/* Instagram Post 3 */}
-              <div className="instagram-post-container w-full overflow-hidden">
+              <div className="instagram-post-container w-full overflow-hidden bg-zinc-800 rounded-lg">
                 {instagramLoaded ? (
                   <blockquote 
-                    className="instagram-media w-full h-full !max-w-full !min-w-0 !m-0" 
+                    className="instagram-media w-full !max-w-full !min-w-0 !m-0 bg-zinc-800 rounded-lg aspect-square" 
                     data-instgrm-captioned
                     data-instgrm-permalink="https://www.instagram.com/p/CpR0E0zPU6O/"
                     data-instgrm-version="14"
-                    style={{ margin: '0 !important', width: '100% !important', height: '100% !important' }}
+                    style={{ border: '1px solid #333', minHeight: '300px' }}
                   ></blockquote>
                 ) : (
-                  <div className="bg-zinc-800 rounded-md flex items-center justify-center w-full h-full">
-                    <div className="text-zinc-400">Loading Instagram post...</div>
+                  <div className="aspect-square flex items-center justify-center p-4">
+                    <div className="text-center">
+                      <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-orange-500 mb-4 mx-auto"></div>
+                      <p className="text-zinc-400">Loading Instagram post...</p>
+                      <a 
+                        href="https://www.instagram.com/p/CpR0E0zPU6O/" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="mt-4 text-orange-400 hover:text-orange-300 text-sm inline-block"
+                      >
+                        View on Instagram
+                      </a>
+                    </div>
                   </div>
                 )}
               </div>
