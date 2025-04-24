@@ -20,14 +20,26 @@ export interface PageLayout {
 }
 
 export async function getLayout(pageId: string): Promise<PageLayout> {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL 
+    ? (process.env.NEXT_PUBLIC_BASE_URL.startsWith('http') 
+        ? process.env.NEXT_PUBLIC_BASE_URL 
+        : `https://${process.env.NEXT_PUBLIC_BASE_URL}`)
+    : (process.env.VERCEL_URL 
+        ? `https://${process.env.VERCEL_URL}` 
+        : 'http://localhost:3000');
   const response = await fetch(`${baseUrl}/api/layouts/${pageId}`, { cache: 'no-store' })
   const layout = await response.json()
   return layout
 }
 
 export async function saveLayout(layout: PageLayout): Promise<void> {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL 
+    ? (process.env.NEXT_PUBLIC_BASE_URL.startsWith('http') 
+        ? process.env.NEXT_PUBLIC_BASE_URL 
+        : `https://${process.env.NEXT_PUBLIC_BASE_URL}`)
+    : (process.env.VERCEL_URL 
+        ? `https://${process.env.VERCEL_URL}` 
+        : 'http://localhost:3000');
   await fetch(`${baseUrl}/api/layouts/${layout.id}`, {
     method: 'PUT',
     headers: {
