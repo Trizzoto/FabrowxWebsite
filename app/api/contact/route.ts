@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { MongoClient } from 'mongodb';
 
 // Define the contact submission interface
 interface ContactSubmission {
@@ -14,22 +13,29 @@ interface ContactSubmission {
   status: 'new' | 'read' | 'replied';
 }
 
-// Path to the contact submissions file
-const contactFilePath = path.join(process.cwd(), 'data/contact-submissions.json');
+// MongoDB connection
+const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017';
+const client = new MongoClient(uri);
+const dbName = 'elitefabworx';
+const collectionName = 'contactSubmissions';
 
-// Ensure the file exists
-function ensureContactFileExists() {
-  if (!fs.existsSync(contactFilePath)) {
-    fs.writeFileSync(contactFilePath, JSON.stringify([]));
+// Helper function to get the database connection
+async function getDb() {
+  try {
+    await client.connect();
+    return client.db(dbName);
+  } catch (error) {
+    console.error('Error connecting to MongoDB:', error);
+    throw error;
   }
 }
 
 // GET handler to retrieve all contact submissions
 export async function GET() {
   try {
-    ensureContactFileExists();
-    const fileContent = fs.readFileSync(contactFilePath, 'utf8');
-    const submissions = JSON.parse(fileContent);
+    const db = await getDb();
+    const collection = db.collection(collectionName);
+    const submissions = await collection.find({}).toArray();
     
     return NextResponse.json(submissions);
   } catch (error) {
@@ -64,16 +70,9 @@ export async function POST(request: Request) {
       status: 'new'
     };
     
-    // Read existing submissions
-    ensureContactFileExists();
-    const fileContent = fs.readFileSync(contactFilePath, 'utf8');
-    const submissions = JSON.parse(fileContent);
-    
-    // Add the new submission
-    submissions.unshift(newSubmission);
-    
-    // Write back to file
-    fs.writeFileSync(contactFilePath, JSON.stringify(submissions, null, 2));
+    const db = await getDb();
+    const collection = db.collection(collectionName);
+    await collection.insertOne(newSubmission);
     
     return NextResponse.json({ success: true, submission: newSubmission });
   } catch (error) {
@@ -98,26 +97,22 @@ export async function PATCH(request: Request) {
       );
     }
     
-    // Read existing submissions
-    ensureContactFileExists();
-    const fileContent = fs.readFileSync(contactFilePath, 'utf8');
-    const submissions = JSON.parse(fileContent);
+    const db = await getDb();
+    const collection = db.collection(collectionName);
+    const result = await collection.findOneAndUpdate(
+      { id },
+      { $set: { status } },
+      { returnDocument: 'after' }
+    );
     
-    // Find and update the submission
-    const submissionIndex = submissions.findIndex((s: ContactSubmission) => s.id === id);
-    if (submissionIndex === -1) {
+    if (!result) {
       return NextResponse.json(
         { error: 'Submission not found' },
         { status: 404 }
       );
     }
     
-    submissions[submissionIndex].status = status;
-    
-    // Write back to file
-    fs.writeFileSync(contactFilePath, JSON.stringify(submissions, null, 2));
-    
-    return NextResponse.json({ success: true, submission: submissions[submissionIndex] });
+    return NextResponse.json({ success: true, submission: result });
   } catch (error) {
     console.error('Error updating contact submission:', error);
     return NextResponse.json(
@@ -140,23 +135,16 @@ export async function DELETE(request: Request) {
       );
     }
     
-    // Read existing submissions
-    ensureContactFileExists();
-    const fileContent = fs.readFileSync(contactFilePath, 'utf8');
-    const submissions = JSON.parse(fileContent);
+    const db = await getDb();
+    const collection = db.collection(collectionName);
+    const result = await collection.deleteOne({ id });
     
-    // Filter out the submission to delete
-    const updatedSubmissions = submissions.filter((s: ContactSubmission) => s.id !== id);
-    
-    if (updatedSubmissions.length === submissions.length) {
+    if (result.deletedCount === 0) {
       return NextResponse.json(
         { error: 'Submission not found' },
         { status: 404 }
       );
     }
-    
-    // Write back to file
-    fs.writeFileSync(contactFilePath, JSON.stringify(updatedSubmissions, null, 2));
     
     return NextResponse.json({ success: true });
   } catch (error) {
