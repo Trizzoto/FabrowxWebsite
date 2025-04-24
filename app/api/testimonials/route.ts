@@ -10,7 +10,8 @@ const staticTestimonials = [
     rating: 5,
     date: "18 September 2019",
     platform: "facebook",
-    comments: 1
+    comments: 1,
+    likes: 1
   },
   {
     id: "2",
@@ -20,7 +21,8 @@ const staticTestimonials = [
     rating: 5,
     date: "14 May 2019",
     platform: "facebook",
-    comments: 0
+    comments: 0,
+    likes: 1
   },
   {
     id: "3",
@@ -30,7 +32,8 @@ const staticTestimonials = [
     rating: 5,
     date: "5 April 2019",
     platform: "facebook",
-    comments: 1
+    comments: 1,
+    likes: 2
   },
   {
     id: "4",
@@ -40,7 +43,8 @@ const staticTestimonials = [
     rating: 5,
     date: "31 January 2019",
     platform: "facebook",
-    comments: 0
+    comments: 0,
+    likes: 1
   }
 ]
 

@@ -57,6 +57,8 @@ interface Testimonial {
   avatar?: string
   date: string
   comments: number
+  likes: number
+  platform: string
 }
 
 interface HomeContentProps {
@@ -790,12 +792,7 @@ function TestimonialSlider() {
         const response = await fetch('/api/testimonials')
         if (!response.ok) throw new Error('Failed to fetch testimonials')
         const data = await response.json()
-        // Ensure each testimonial has an id
-        const testimonialsWithIds = data.map((testimonial: Testimonial, index: number) => ({
-          ...testimonial,
-          id: testimonial.id || `temp-id-${index}`
-        }))
-        setTestimonials(testimonialsWithIds)
+        setTestimonials(data)
       } catch (err) {
         setError('Failed to load reviews')
         console.error('Error fetching testimonials:', err)
@@ -809,7 +806,6 @@ function TestimonialSlider() {
     }
   }, [mounted])
 
-  // Don't render anything until after hydration
   if (!mounted) return null
 
   if (isLoading) {
@@ -839,7 +835,7 @@ function TestimonialSlider() {
           viewport={{ once: true }}
           className="relative"
         >
-          <Card className="bg-zinc-800 border-zinc-700 h-full">
+          <Card className="bg-zinc-800 border-zinc-700 h-full hover:border-blue-500/20 transition-colors">
             <CardContent className="p-3 sm:p-4 md:p-6">
               <div className="flex flex-col h-full">
                 {/* Header with name and date */}
@@ -879,7 +875,7 @@ function TestimonialSlider() {
                           <ThumbsUp className="w-1.5 sm:w-2 h-1.5 sm:h-2 text-white" />
                         </div>
                       </div>
-                      <span>1</span>
+                      <span>{testimonial.likes}</span>
                     </div>
                     {testimonial.comments > 0 && (
                       <div>{testimonial.comments} comment{testimonial.comments > 1 ? 's' : ''}</div>
@@ -889,15 +885,15 @@ function TestimonialSlider() {
 
                 {/* Action buttons */}
                 <div className="flex items-center justify-between mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-zinc-700">
-                  <button className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-zinc-400 hover:text-zinc-300">
+                  <button className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-zinc-400 hover:text-blue-500 transition-colors">
                     <ThumbsUp className="w-3 sm:w-4 h-3 sm:h-4" />
                     Like
                   </button>
-                  <button className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-zinc-400 hover:text-zinc-300">
+                  <button className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-zinc-400 hover:text-blue-500 transition-colors">
                     <MessageSquare className="w-3 sm:w-4 h-3 sm:h-4" />
                     Comment
                   </button>
-                  <button className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-zinc-400 hover:text-zinc-300">
+                  <button className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-zinc-400 hover:text-blue-500 transition-colors">
                     <Share className="w-3 sm:w-4 h-3 sm:h-4" />
                     Share
                   </button>
