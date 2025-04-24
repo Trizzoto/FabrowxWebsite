@@ -78,6 +78,14 @@ export default function Header() {
             Services
           </Link>
           <Link
+            href="/gallery"
+            className={`text-sm font-medium transition-colors hover:text-orange-400 ${
+              pathname.startsWith("/gallery") ? "text-orange-500" : "text-zinc-400"
+            }`}
+          >
+            Gallery
+          </Link>
+          <Link
             href="/contact"
             className={`text-sm font-medium transition-colors hover:text-orange-400 ${
               pathname === "/contact" ? "text-orange-500" : "text-zinc-400"
@@ -136,6 +144,14 @@ export default function Header() {
               }`}
             >
               Services
+            </Link>
+            <Link
+              href="/gallery"
+              className={`py-2 text-sm font-medium ${
+                pathname.startsWith("/gallery") ? "text-orange-500" : "text-zinc-400"
+              }`}
+            >
+              Gallery
             </Link>
             <Link
               href="/contact"

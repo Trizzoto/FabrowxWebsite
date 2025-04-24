@@ -167,7 +167,9 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
         // Process embeds when script loads
         if (window.instgrm) {
           setTimeout(() => {
-            window.instgrm.Embeds.process();
+            if (window.instgrm && window.instgrm.Embeds) {
+              window.instgrm.Embeds.process();
+            }
             setInstagramLoaded(true);
           }, 500); // Add a delay to ensure DOM elements are ready
         }
@@ -193,7 +195,9 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
     
     // Process embeds again when the component mounts, in case the script was already loaded
     if (window.instgrm) {
-      window.instgrm.Embeds.process();
+      if (window.instgrm.Embeds) {
+        window.instgrm.Embeds.process();
+      }
       setInstagramLoaded(true);
     }
     

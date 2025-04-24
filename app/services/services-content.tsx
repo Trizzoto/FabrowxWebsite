@@ -105,7 +105,7 @@ export function ServicesContent({ services }: ServicesContentProps) {
   return (
     <main className="bg-black min-h-screen" role="main">
       {/* Home Button */}
-      <div className="fixed top-4 left-4 z-50">
+      <div className="fixed top-4 left-4 z-50 hidden md:block">
         <Button
           variant="outline"
           className="border-orange-500/30 bg-black/20 backdrop-blur-sm hover:bg-black/40 hover:border-orange-500/50 transition-all duration-300"

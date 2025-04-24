@@ -215,8 +215,7 @@ function processCSV(records: any[]): Product[] {
       name: sanitizeText(mainRow['Title'] || handle),
       description: sanitizeText(mainRow['Body (HTML)'] || ''),
       category: sanitizeText(mainRow['Product Category'] || mainRow['Type'] || 'Uncategorized'),
-      price: validateNumber(mainRow['Variant Compare At Price']) || validateNumber(mainRow['Variant Price']),
-      originalPrice: validateNumber(mainRow['Variant Compare At Price']),
+      price: validateNumber(mainRow['Variant Price']),
       images: sortedImages,
       options,
       variants: productVariants

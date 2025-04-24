@@ -57,20 +57,8 @@ export function GalleryContent({ galleryImages }: GalleryContentProps) {
 
   return (
     <div className="bg-black min-h-screen">
-      {/* Home Button */}
-      <div className="fixed top-4 left-4 z-50">
-        <Button
-          variant="outline"
-          className="border-orange-500/30 bg-black/20 backdrop-blur-sm hover:bg-black/40 hover:border-orange-500/50 transition-all duration-300"
-          onClick={() => router.push("/")}
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Home
-        </Button>
-      </div>
-
       {/* Get a Quote Button */}
-      <div className="fixed top-4 right-4 z-50">
+      <div className="fixed bottom-6 right-6 z-50">
         <Button
           className="bg-orange-600 hover:bg-orange-700 text-white transition-all duration-300"
           asChild
