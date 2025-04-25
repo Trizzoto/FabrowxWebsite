@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
+import { useRouter } from "next/navigation"
 import { useToast } from "@/components/ui/use-toast"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -63,6 +64,7 @@ interface ProductImage {
 
 export default function ProductsPage() {
   const { toast } = useToast()
+  const router = useRouter()
   const [isLoading, setIsLoading] = useState(true)
   const [products, setProducts] = useState<Product[]>([])
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
@@ -70,7 +72,6 @@ export default function ProductsPage() {
   const [selectedCategory, setSelectedCategory] = useState("all")
   const [categories, setCategories] = useState<string[]>([])
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
-  const [isCreatingProduct, setIsCreatingProduct] = useState(false)
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
   const [newProduct, setNewProduct] = useState<Product>({
     id: 'FABWORX-0001',
@@ -79,6 +80,7 @@ export default function ProductsPage() {
     price: 0,
     description: '',
     images: [],
+    brand: 'Zoo Performance'
   })
   const [productToDelete, setProductToDelete] = useState<string | null>(null)
   const [showImport, setShowImport] = useState(false)
@@ -154,8 +156,12 @@ export default function ProductsPage() {
           });
           
           if (categoryResponse.ok) {
-            // Add new category to local state
-            setCategories(prev => [...prev, categoryString]);
+            // Fetch updated categories list
+            const updatedCategoriesResponse = await fetch('/api/categories');
+            if (updatedCategoriesResponse.ok) {
+              const updatedCategories = await updatedCategoriesResponse.json();
+              setCategories(updatedCategories);
+            }
             
             console.log(`New category created: ${categoryString}`);
             return true;
@@ -193,7 +199,7 @@ export default function ProductsPage() {
         })
         
         setEditingProduct(null)
-      } else if (isCreatingProduct && newProduct.name && newProduct.category) {
+      } else if (newProduct.name && newProduct.category) {
         // Check if we need to create a new category
         await processCategory(newProduct.category);
         
@@ -222,14 +228,14 @@ export default function ProductsPage() {
           description: `${newProduct.name} has been created`,
         })
         
-        setIsCreatingProduct(false)
         setNewProduct({
           id: 'FABWORX-0001',
           name: '',
           category: '',
           price: 0,
           description: '',
-          images: []
+          images: [],
+          brand: 'Zoo Performance'
         })
         setProductOptions([])
         setProductVariants([])
@@ -289,7 +295,7 @@ export default function ProductsPage() {
         ...editingProduct,
         images: [...(editingProduct.images || []), imageUrl]
       });
-    } else if (isCreatingProduct) {
+    } else if (newProduct.name && newProduct.category) {
       setNewProduct({
         ...newProduct,
         images: [...(newProduct.images || []), imageUrl]
@@ -516,9 +522,9 @@ export default function ProductsPage() {
                   <Button
                     variant="outline"
                     size="icon"
-                    onClick={() => {
-                      setSelectedProduct(null)
-                      handleEditProduct(product)
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      router.push(`/admin/products/${product.id}`)
                     }}
                     className="h-8 w-8 border-orange-500/30 hover:bg-orange-500/10"
                   >
@@ -906,7 +912,7 @@ export default function ProductsPage() {
           <div className="flex gap-4">
             <ImportProducts />
             <ManageProducts />
-          <Button onClick={() => setIsCreatingProduct(true)}>
+          <Button onClick={() => router.push("/admin/products/new")}>
             <Plus className="mr-2 h-4 w-4" />
             Add Product
           </Button>
@@ -982,7 +988,7 @@ export default function ProductsPage() {
                               size="icon"
                               onClick={(e) => {
                                 e.stopPropagation()
-                                handleEditProduct(product)
+                                router.push(`/admin/products/${product.id}`)
                               }}
                               className="h-8 w-8 border-orange-500/30 hover:bg-orange-500/10"
                             >
@@ -1066,499 +1072,86 @@ export default function ProductsPage() {
                     </div>
                 
                 <div className="space-y-2">
+                  <label htmlFor="edit-brand" className="text-sm font-medium">Brand</label>
+                  <Select
+                    value={editingProduct.brand || "Zoo Performance"}
+                    onValueChange={(value) => setEditingProduct({...editingProduct, brand: value})}
+                  >
+                    <SelectTrigger className="bg-zinc-900 border-zinc-800">
+                      <SelectValue placeholder="Select a brand" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Zoo Performance">Zoo Performance</SelectItem>
+                      <SelectItem value="Elite Fabworx">Elite Fabworx</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-zinc-400 mt-1">
+                    Select which brand this product belongs to
+                  </p>
+                    </div>
+                
+                <div className="space-y-2">
                   <label htmlFor="edit-category" className="text-sm font-medium">Category</label>
-                  <div className="flex gap-2">
-                    <Input
-                      id="edit-category"
+                  <Select
                         value={editingProduct.category}
-                      onChange={(e) => setEditingProduct({...editingProduct, category: e.target.value})}
-                      placeholder="Enter category (new or existing)"
-                      className="flex-1"
-                      list="categories-list"
-                    />
-                    <datalist id="categories-list">
+                    onValueChange={(value) => setEditingProduct({...editingProduct, category: value as string})}
+                  >
+                    <SelectTrigger className="bg-zinc-900 border-zinc-800">
+                      <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                    <SelectContent>
                           {categories.map((category) => (
-                        <option key={category} value={category}>
+                        <SelectItem key={category} value={category}>
                               {category}
-                        </option>
-                          ))}
-                    </datalist>
-                    </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <label htmlFor="edit-price" className="text-sm font-medium">Price</label>
-                      <Input
-                    id="edit-price"
-                        type="number"
-                        value={editingProduct.price}
-                    onChange={(e) => setEditingProduct({...editingProduct, price: parseFloat(e.target.value)})}
-                    placeholder="0.00"
-                      />
-                    </div>
-                
-                <div className="space-y-2">
-                  <label htmlFor="edit-description" className="text-sm font-medium">Description</label>
-                      <Textarea
-                    id="edit-description"
-                        value={editingProduct.description}
-                        onChange={(e) => setEditingProduct({...editingProduct, description: e.target.value})}
-                    placeholder="Product description"
-                    className="min-h-[200px]"
-                      />
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                     </div>
               </TabsContent>
               
-              <TabsContent value="options" className="space-y-6 mt-4">
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <h3 className="text-lg font-medium">Product Options</h3>
-                    <Button onClick={addEditOption} variant="outline" size="sm">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Option
-                        </Button>
-                      </div>
-                  
-                  {(editingProduct.options || []).map((option, index) => (
-                    <Card key={index} className="bg-zinc-900 border-zinc-800">
-                      <CardHeader className="pb-2">
-                        <div className="flex justify-between items-center">
+              <TabsContent value="options" className="space-y-4 mt-4">
+                {editingProduct.options?.map((option, index) => (
+                  <div key={index} className="space-y-2">
+                    <label htmlFor={`edit-option-${index}-name`} className="text-sm font-medium">Option Name</label>
                                 <Input
+                      id={`edit-option-${index}-name`}
                                   value={option.name}
                             onChange={(e) => handleEditOptionChange(index, 'name', e.target.value)}
-                            placeholder="Option name (e.g. Size, Color)"
-                            className="max-w-[250px]"
-                          />
-                              <Button
-                            variant="ghost" 
-                                size="icon"
-                            onClick={() => removeEditOption(index)}
-                              >
-                                <X className="h-4 w-4" />
-                              </Button>
+                    />
                             </div>
-                      </CardHeader>
-                      <CardContent className="space-y-4">
-                        <div className="flex flex-wrap gap-2">
-                                {option.values.map((value, valueIndex) => (
-                            <Badge 
-                                    key={valueIndex}
-                              variant="outline"
-                              className="py-1 px-3 gap-2 border-orange-500/30 bg-orange-500/5"
-                                  >
-                              {value}
-                                    <Button
-                                      variant="ghost"
-                                      size="icon"
-                                className="h-4 w-4 p-0"
-                                onClick={() => handleRemoveEditOptionValue(index, valueIndex)}
-                                    >
-                                      <X className="h-3 w-3" />
-                                    </Button>
-                            </Badge>
-                                ))}
-                              </div>
-                        
-                              <div className="flex gap-2">
+                ))}
+                {editingProduct.options?.map((option, index) => (
+                  <div key={`${index}-values`} className="space-y-2">
+                    <label htmlFor={`edit-option-${index}-values`} className="text-sm font-medium">Values</label>
                                 <Input
-                            placeholder="Add option value"
-                            className="max-w-[250px]"
-                            value={newOptionValue}
-                            onChange={(e) => setNewOptionValue(e.target.value)}
-                                  onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                handleAddEditOptionValue(index, newOptionValue);
-                                setNewOptionValue('');
-                                    }
-                                  }}
-                                />
-                                <Button
-                                  variant="outline"
-                            onClick={() => {
-                              handleAddEditOptionValue(index, newOptionValue);
-                              setNewOptionValue('');
-                            }}
-                          >
-                            Add
-                                </Button>
+                      id={`edit-option-${index}-values`}
+                      value={option.values.join(', ')}
+                      onChange={(e) => handleEditOptionChange(index, 'values', e.target.value.split(', '))}
+                    />
                               </div>
-                      </CardContent>
-                    </Card>
-                        ))}
-                    </div>
-
-                {(editingProduct.variants?.length || 0) > 0 && (
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Variants ({editingProduct.variants?.length})</h3>
-                    <div className="rounded-md border border-zinc-800">
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Variant</TableHead>
-                            <TableHead>Price</TableHead>
-                            <TableHead>SKU</TableHead>
-                            <TableHead>Inventory</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {editingProduct.variants?.map((variant, index) => (
-                            <TableRow key={index}>
-                              <TableCell>
-                                    {[variant.option1, variant.option2, variant.option3]
-                                      .filter(Boolean)
-                                      .join(' / ')}
-                              </TableCell>
-                              <TableCell>
-                                    <Input
-                                  type="number"
-                                  value={variant.price}
-                                      onChange={(e) => {
-                                    const newVariants = [...(editingProduct.variants || [])];
-                                    newVariants[index] = {
-                                      ...newVariants[index],
-                                      price: parseFloat(e.target.value)
-                                    };
-                                    setEditingProduct({
-                                      ...editingProduct,
-                                      variants: newVariants
-                                    });
-                                  }}
-                                  className="max-w-[120px]"
-                                />
-                              </TableCell>
-                              <TableCell>
-                                    <Input
-                                  value={variant.sku}
-                                      onChange={(e) => {
-                                    const newVariants = [...(editingProduct.variants || [])];
-                                    newVariants[index] = {
-                                      ...newVariants[index],
-                                      sku: e.target.value
-                                    };
-                                    setEditingProduct({
-                                      ...editingProduct,
-                                      variants: newVariants
-                                    });
-                                  }}
-                                  className="max-w-[120px]"
-                                />
-                              </TableCell>
-                              <TableCell>
-                                    <Input
-                                      type="number"
-                                      value={variant.inventory}
-                                      onChange={(e) => {
-                                    const newVariants = [...(editingProduct.variants || [])];
-                                    newVariants[index] = {
-                                      ...newVariants[index],
-                                      inventory: parseInt(e.target.value)
-                                    };
-                                    setEditingProduct({
-                                      ...editingProduct,
-                                      variants: newVariants
-                                    });
-                                  }}
-                                  className="max-w-[120px]"
-                                />
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                        </div>
-                      </div>
-                    )}
+                ))}
               </TabsContent>
               
-              <TabsContent value="images" className="space-y-6 mt-4">
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <h3 className="text-lg font-medium">Product Images</h3>
-                    <CloudinaryUpload onUploadComplete={handleProductImageUpload} />
-                  </div>
-                  
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                        {(editingProduct.images || []).map((image, index) => (
-                      <div 
-                        key={index} 
-                        className="relative aspect-square rounded-md overflow-hidden border border-zinc-800 group"
-                      >
-                            <img 
-                              src={image} 
-                          alt={`Product image ${index + 1}`}
-                              className="object-cover w-full h-full"
-                            />
-                        <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                            <Button
-                              variant="destructive"
-                              size="icon"
-                              onClick={() => {
-                              const newImages = [...(editingProduct.images || [])];
-                              newImages.splice(index, 1);
-                              setEditingProduct({
-                                ...editingProduct,
-                                images: newImages
-                              });
-                            }}
-                          >
-                            <Trash className="h-4 w-4" />
-                            </Button>
-                        </div>
+              <TabsContent value="images" className="space-y-4 mt-4">
+                {editingProduct.images?.map((image, index) => (
+                  <div key={index} className="space-y-2">
+                    <label htmlFor={`edit-image-${index}`} className="text-sm font-medium">Image URL</label>
+                                    <Input
+                      id={`edit-image-${index}`}
+                      value={image}
+                                      onChange={(e) => {
+                        const newImages = [...(editingProduct.images || []).slice(0, index), e.target.value, ...(editingProduct.images || []).slice(index + 1)]
+                        setEditingProduct({...editingProduct, images: newImages})
+                      }}
+                    />
                           </div>
                         ))}
-                    
-                    {(editingProduct.images || []).length === 0 && (
-                      <div className="col-span-full flex flex-col items-center justify-center p-8 border border-dashed border-zinc-700 rounded-md">
-                        <ImageIcon className="h-8 w-8 mb-2 text-zinc-500" />
-                        <p className="text-zinc-500">No images yet. Upload some!</p>
-                      </div>
-                    )}
-                    </div>
-                </div>
               </TabsContent>
             </Tabs>
-            
-            <DialogFooter className="mt-6">
-              <Button variant="outline" onClick={() => setEditingProduct(null)}>
-                Cancel
-              </Button>
-              <Button onClick={handleSaveProduct}>
-                        <Save className="mr-2 h-4 w-4" />
-                        Save Changes
-                      </Button>
-            </DialogFooter>
           </DialogContent>
         )}
       </Dialog>
-      <Dialog open={isCreatingProduct} onOpenChange={setIsCreatingProduct}>
-        <DialogContent className="max-w-4xl w-full h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Create New Product</DialogTitle>
-            <DialogDescription>
-              Add details for your new product.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <Tabs defaultValue="general" className="mt-6">
-            <TabsList className="grid grid-cols-3">
-              <TabsTrigger value="general">General</TabsTrigger>
-              <TabsTrigger value="options">Options & Variants</TabsTrigger>
-              <TabsTrigger value="images">Images</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="general" className="space-y-4 mt-4">
-              <div className="space-y-2">
-                <label htmlFor="new-id" className="text-sm font-medium">Product ID</label>
-                        <Input
-                  id="new-id"
-                          value={newProduct.id}
-                          onChange={(e) => setNewProduct({...newProduct, id: e.target.value})}
-                  placeholder="FABWORX-0000"
-                        />
-                        <Button
-                          variant="outline"
-                  size="sm"
-                          onClick={() => setNewProduct({...newProduct, id: generateProductId()})}
-                        >
-                  <RefreshCw className="h-3 w-3 mr-2" />
-                  Generate ID
-                        </Button>
-                      </div>
-              
-              <div className="space-y-2">
-                <label htmlFor="new-name" className="text-sm font-medium">Product Name</label>
-                      <Input
-                  id="new-name"
-                        value={newProduct.name}
-                        onChange={(e) => setNewProduct({...newProduct, name: e.target.value})}
-                  placeholder="Product name"
-                      />
-                    </div>
-              
-              <div className="space-y-2">
-                <label htmlFor="new-category" className="text-sm font-medium">Category</label>
-                        <div className="flex gap-2">
-                          <Input
-                    id="new-category"
-                    value={newProduct.category}
-                    onChange={(e) => setNewProduct({...newProduct, category: e.target.value})}
-                    placeholder="Enter category (new or existing)"
-                            className="flex-1"
-                    list="new-categories-list"
-                  />
-                  <datalist id="new-categories-list">
-                          {categories.map((category) => (
-                      <option key={category} value={category}>
-                              {category}
-                      </option>
-                    ))}
-                  </datalist>
-                        </div>
-                    </div>
-              
-              <div className="space-y-2">
-                <label htmlFor="new-price" className="text-sm font-medium">Price</label>
-                      <Input
-                  id="new-price"
-                        type="number"
-                        value={newProduct.price}
-                        onChange={(e) => setNewProduct({...newProduct, price: parseFloat(e.target.value) || 0})}
-                  placeholder="0.00"
-                      />
-                    </div>
-              
-              <div className="space-y-2">
-                <label htmlFor="new-description" className="text-sm font-medium">Description</label>
-                <Textarea 
-                  id="new-description"
-                  value={newProduct.description}
-                  onChange={(e) => setNewProduct({...newProduct, description: e.target.value})}
-                  placeholder="Product description"
-                  className="min-h-[200px]"
-                      />
-                    </div>
-            </TabsContent>
-                  
-            <TabsContent value="options" className="space-y-6 mt-4">
-                  <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-medium">Product Options</h3>
-                  <Button onClick={addEditOption} variant="outline" size="sm">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Option
-                        </Button>
-                      </div>
-                
-                {productOptions.map((option, index) => (
-                  <Card key={index} className="bg-zinc-900 border-zinc-800">
-                    <CardHeader className="pb-2">
-                      <div className="flex justify-between items-center">
-                                <Input
-                                  value={option.name}
-                            onChange={(e) => handleOptionChange(index, 'name', e.target.value)}
-                            placeholder="Option name (e.g. Size, Color)"
-                            className="max-w-[250px]"
-                          />
-                              <Button
-                            variant="ghost" 
-                                size="icon"
-                            onClick={() => removeOption(index)}
-                              >
-                                <X className="h-4 w-4" />
-                              </Button>
-                            </div>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="flex flex-wrap gap-2">
-                                {option.values.map((value, valueIndex) => (
-                            <Badge 
-                                    key={valueIndex}
-                              variant="outline"
-                              className="py-1 px-3 gap-2 border-orange-500/30 bg-orange-500/5"
-                                  >
-                              {value}
-                                    <Button
-                                      variant="ghost"
-                                      size="icon"
-                                className="h-4 w-4 p-0"
-                                onClick={() => handleRemoveOptionValue(index, valueIndex)}
-                                    >
-                                      <X className="h-3 w-3" />
-                                    </Button>
-                            </Badge>
-                                ))}
-                              </div>
-                        
-                              <div className="flex gap-2">
-                                <Input
-                            placeholder="Add option value"
-                            className="max-w-[250px]"
-                                  value={newOptionValue}
-                                  onChange={(e) => setNewOptionValue(e.target.value)}
-                                  onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                              handleAddOptionValue(index, newOptionValue);
-                              setNewOptionValue('');
-                                    }
-                                  }}
-                                />
-                                <Button
-                                  variant="outline"
-                            onClick={() => {
-                              handleAddOptionValue(index, newOptionValue);
-                              setNewOptionValue('');
-                            }}
-                          >
-                            Add
-                                </Button>
-                              </div>
-                    </CardContent>
-                  </Card>
-                ))}
-                          </div>
-            </TabsContent>
-            
-            <TabsContent value="images" className="space-y-6 mt-4">
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-medium">Product Images</h3>
-                  <CloudinaryUpload onUploadComplete={handleProductImageUpload} />
-                      </div>
-                
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                        {(newProduct.images || []).map((image, index) => (
-                    <div 
-                      key={index} 
-                      className="relative aspect-square rounded-md overflow-hidden border border-zinc-800 group"
-                    >
-                            <img 
-                              src={image} 
-                        alt={`Product image ${index + 1}`}
-                              className="object-cover w-full h-full"
-                            />
-                      <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                            <Button
-                              variant="destructive"
-                              size="icon"
-                              onClick={() => {
-                            const newImages = [...(newProduct.images || [])];
-                            newImages.splice(index, 1);
-                            setNewProduct({
-                              ...newProduct,
-                              images: newImages
-                            });
-                          }}
-                        >
-                          <Trash className="h-4 w-4" />
-                            </Button>
-                          </div>
-                      </div>
-                  ))}
-                  
-                  {(newProduct.images || []).length === 0 && (
-                    <div className="col-span-full flex flex-col items-center justify-center p-8 border border-dashed border-zinc-700 rounded-md">
-                      <ImageIcon className="h-8 w-8 mb-2 text-zinc-500" />
-                      <p className="text-zinc-500">No images yet. Upload some!</p>
-                            </div>
-                          )}
-                        </div>
-                            </div>
-        </TabsContent>
-      </Tabs>
-          
-          <DialogFooter className="mt-6">
-            <Button variant="outline" onClick={() => setIsCreatingProduct(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleSaveProduct}>
-              <Save className="mr-2 h-4 w-4" />
-              Create Product
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-      <Toaster />
     </div>
   )
 }
-

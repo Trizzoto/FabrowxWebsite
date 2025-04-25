@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" width="400" height="200">
+  <!-- Background -->
+  <path d="M20,20 L380,20 Q395,20 395,35 L395,165 Q395,180 380,180 L20,180 Q5,180 5,165 L5,35 Q5,20 20,20 Z" fill="#0f172a" stroke="#0ea5e9" stroke-width="3" />
+  
+  <!-- Fangs -->
+  <path d="M95,45 L110,70 L125,45 L140,70 L155,45 L170,70 L185,45 L200,70 L215,45 L230,70 L245,45 L260,70 L275,45 L290,70 L305,45" fill="none" stroke="white" stroke-width="3" stroke-linejoin="round" />
+  
+  <!-- ZOO text -->
+  <text x="200" y="120" font-family="Arial Black, sans-serif" font-size="60" font-weight="bold" text-anchor="middle" fill="white">ZOO</text>
+  
+  <!-- PERFORMANCE text -->
+  <text x="200" y="160" font-family="Arial, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#0ea5e9">PERFORMANCE</text>
+</svg> 

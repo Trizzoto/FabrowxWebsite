@@ -25,7 +25,7 @@ export default function ProductForm({ params }: { params: { id: string } }) {
   const [newCategory, setNewCategory] = useState("")
   const [showNewCategory, setShowNewCategory] = useState(false)
 
-  const [formData, setFormData] = useState<Product & { options: ProductOption[], variants: ProductVariant[], images: string[] }>({
+  const [formData, setFormData] = useState<Product & { options: ProductOption[], variants: ProductVariant[], images: string[], brand: string }>({
     id: "",
     name: "",
     category: "",
@@ -33,7 +33,8 @@ export default function ProductForm({ params }: { params: { id: string } }) {
     description: "",
     images: [],
     options: [],
-    variants: []
+    variants: [],
+    brand: "Zoo Performance" // Default to Zoo Performance
   })
 
   useEffect(() => {
@@ -74,7 +75,8 @@ export default function ProductForm({ params }: { params: { id: string } }) {
           ...product,
           options: options || [],
           variants: product.variants || [],
-          images: product.images || []
+          images: product.images || [],
+          brand: product.brand || "Zoo Performance"
         })
       }
     } catch (error) {
@@ -182,6 +184,13 @@ export default function ProductForm({ params }: { params: { id: string } }) {
           throw new Error(errorData.error || 'Failed to create category')
         }
         
+        // Fetch updated categories list
+        const updatedCategoriesResponse = await fetch('/api/categories')
+        if (updatedCategoriesResponse.ok) {
+          const updatedCategories = await updatedCategoriesResponse.json()
+          setCategories(updatedCategories)
+        }
+        
         // Update formData with new category
         setFormData(prev => ({ ...prev, category: newCategory }))
       }
@@ -210,7 +219,10 @@ export default function ProductForm({ params }: { params: { id: string } }) {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(productToSave),
+        body: JSON.stringify({
+          ...productToSave,
+          brand: productToSave.brand || "Zoo Performance"
+        }),
       })
 
       if (!response.ok) {
@@ -248,8 +260,8 @@ export default function ProductForm({ params }: { params: { id: string } }) {
     setFormData((prev) => ({ ...prev, [name]: parseFloat(value) || 0 }))
   }
 
-  const handleSelectChange = (value: string) => {
-    setFormData((prev) => ({ ...prev, category: value }))
+  const handleSelectChange = (field: string) => (value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
   const handleOptionChange = (index: number, field: 'name' | 'values', value: string) => {
@@ -353,6 +365,25 @@ export default function ProductForm({ params }: { params: { id: string } }) {
               />
             </div>
 
+            <div className="space-y-2">
+              <Label htmlFor="brand">Brand</Label>
+              <Select
+                value={formData.brand}
+                onValueChange={handleSelectChange('brand')}
+              >
+                <SelectTrigger className="bg-zinc-800 border-zinc-700">
+                  <SelectValue placeholder="Select a brand" />
+                </SelectTrigger>
+                <SelectContent className="bg-zinc-900 border-zinc-800">
+                  <SelectItem value="Zoo Performance">Zoo Performance</SelectItem>
+                  <SelectItem value="Elite Fabworx">Elite Fabworx</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-sm text-zinc-500 mt-1">
+                Select which brand this product belongs to. This will determine where it appears in the shop.
+              </p>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="category">Category *</Label>
@@ -380,7 +411,7 @@ export default function ProductForm({ params }: { params: { id: string } }) {
                     <>
                       <Select
                         value={formData.category}
-                        onValueChange={handleSelectChange}
+                        onValueChange={handleSelectChange('category')}
                       >
                         <SelectTrigger className="flex-1 bg-zinc-800 border-zinc-700">
                           <SelectValue placeholder="Select a category" />

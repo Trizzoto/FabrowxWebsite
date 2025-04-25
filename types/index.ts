@@ -23,6 +23,7 @@ export interface Product {
   images?: string[]
   variants?: ProductVariant[]
   options?: ProductOption[]
+  brand?: string // 'Zoo Performance' or 'Elite Fabworx'
 }
 
 export interface ProductOptions {

@@ -29,6 +29,9 @@ export default function ProductGrid({ products }: ProductGridProps) {
             </div>
             <div className="p-2 md:p-4 flex flex-col flex-1">
               <div className="mb-1 md:mb-2">
+                {product.brand === "Elite Fabworx" && (
+                  <span className="text-xs md:text-sm text-orange-500 font-bold block mb-1">ELITE FABWORX ENGINEERED</span>
+                )}
                 <span className="text-xs md:text-sm text-orange-400 font-medium block mb-1">{product.category}</span>
                 <h3 className="font-semibold text-sm md:text-lg line-clamp-2 group-hover:text-orange-400 transition-colors duration-300 min-h-[40px] md:min-h-[56px]">
                   {product.name}
