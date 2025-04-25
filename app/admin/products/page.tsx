@@ -70,6 +70,7 @@ export default function ProductsPage() {
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("all")
+  const [selectedBrand, setSelectedBrand] = useState("all")
   const [categories, setCategories] = useState<string[]>([])
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
@@ -92,6 +93,7 @@ export default function ProductsPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setIsLoading(true)
         const [productsResponse, categoriesResponse] = await Promise.all([
           fetch('/api/products'),
           fetch('/api/categories')
@@ -117,8 +119,45 @@ export default function ProductsPage() {
     fetchData()
   }, [])
 
+  // Force a fetch of latest categories whenever the product page is loaded or focused
+  useEffect(() => {
+    // Fetch latest categories
+    const refreshCategories = async () => {
+      try {
+        const response = await fetch('/api/categories', {
+          cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-cache'
+          }
+        })
+        
+        if (response.ok) {
+          const data = await response.json()
+          setCategories(data)
+        }
+      } catch (error) {
+        console.error('Error refreshing categories:', error)
+      }
+    }
+
+    // Call immediately when component mounts
+    refreshCategories()
+
+    // Also refresh when window gets focus (user returns to page)
+    const handleFocus = () => refreshCategories()
+    window.addEventListener('focus', handleFocus)
+    
+    return () => {
+      window.removeEventListener('focus', handleFocus)
+    }
+  }, [])
+
   useEffect(() => {
     let filtered = [...products]
+
+    if (selectedBrand !== "all") {
+      filtered = filtered.filter(product => product.brand === selectedBrand)
+    }
 
     if (selectedCategory !== "all") {
       filtered = filtered.filter(product => {
@@ -136,7 +175,7 @@ export default function ProductsPage() {
     }
 
     setFilteredProducts(filtered)
-  }, [selectedCategory, searchQuery, products])
+  }, [selectedCategory, selectedBrand, searchQuery, products])
 
   const handleSaveProduct = async () => {
     try {
@@ -912,7 +951,7 @@ export default function ProductsPage() {
           <div className="flex gap-4">
             <ImportProducts />
             <ManageProducts />
-          <Button onClick={() => router.push("/admin/products/new")}>
+            <Button onClick={() => router.push("/admin/products/new")}>
             <Plus className="mr-2 h-4 w-4" />
             Add Product
           </Button>
@@ -932,6 +971,19 @@ export default function ProductsPage() {
           />
             </div>
         </div>
+          <Select
+            value={selectedBrand}
+            onValueChange={setSelectedBrand}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Select brand" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Brands</SelectItem>
+              <SelectItem value="Elite Fabworx">Elite Fabworx</SelectItem>
+              <SelectItem value="Zoo Performance">Zoo Performance</SelectItem>
+            </SelectContent>
+          </Select>
         <Select
           value={selectedCategory}
           onValueChange={setSelectedCategory}
@@ -970,6 +1022,7 @@ export default function ProductsPage() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Product</TableHead>
+                      <TableHead>Brand</TableHead>
                       <TableHead>Category</TableHead>
                       <TableHead>Price</TableHead>
                       <TableHead>Actions</TableHead>
@@ -979,6 +1032,7 @@ export default function ProductsPage() {
                   {filteredProducts.map((product) => (
                       <TableRow key={product.id}>
                         <TableCell className="font-medium">{product.name}</TableCell>
+                        <TableCell>{product.brand || "Zoo Performance"}</TableCell>
                         <TableCell>{product.category}</TableCell>
                         <TableCell>${product.price.toFixed(2)}</TableCell>
                         <TableCell>

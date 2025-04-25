@@ -219,12 +219,12 @@ export function ShopContent({ initialData }: ShopContentProps) {
   const getFilteredProductsByCategory = (category: string) => {
     return products
       .filter(product => {
-        const matchesCategory = product.category === category
-        const matchesSearch = searchQuery === "" || 
-          product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          product.description.toLowerCase().includes(searchQuery.toLowerCase())
-        return matchesCategory && matchesSearch
-      })
+      const matchesCategory = product.category === category
+      const matchesSearch = searchQuery === "" || 
+        product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.description.toLowerCase().includes(searchQuery.toLowerCase())
+      return matchesCategory && matchesSearch
+    })
       .sort((a, b) => {
         // Sort Elite Fabworx products to the top
         if (a.brand === "Elite Fabworx" && b.brand !== "Elite Fabworx") return -1
@@ -390,15 +390,15 @@ export function ShopContent({ initialData }: ShopContentProps) {
                   {eliteCategories.map((category) => (
                     <div 
                       key={`elite-${category}`}
-                      className={`
-                        px-4 py-3 
-                        rounded-lg 
-                        cursor-pointer 
+                    className={`
+                      px-4 py-3 
+                      rounded-lg 
+                      cursor-pointer 
                         ${activeCategory === `elite-${category}` ? 'bg-orange-500/20 text-orange-400 font-medium' : 'text-white hover:bg-zinc-800/50'} 
-                        transition-colors
-                        border border-zinc-800/50 hover:border-orange-500/30
-                        flex items-center justify-between
-                      `}
+                      transition-colors
+                      border border-zinc-800/50 hover:border-orange-500/30
+                      flex items-center justify-between
+                    `}
                       onClick={() => handleCategoryClick(`elite-${category}`)}
                     >
                       <span className="select-none">{category}</span>
@@ -442,8 +442,8 @@ export function ShopContent({ initialData }: ShopContentProps) {
                       <span className="text-sm text-zinc-500">
                         {filteredProducts.zoo.filter(p => p.category === category).length}
                       </span>
-                    </div>
-                  ))}
+                  </div>
+                ))}
                 </div>
               </div>
             </div>
@@ -471,75 +471,75 @@ export function ShopContent({ initialData }: ShopContentProps) {
                     </h2>
                   </div>
                   <p className="text-zinc-400 max-w-2xl mx-auto">
-                    Quality in-house fabricated products designed and built by our team of experts.
+                    Quality in-house fabricated products designed and built by our team.
                   </p>
                 </div>
 
                 {eliteCategories.map((category) => (
-                  <div key={`elite-${category}`} id={`elite-${category}`} ref={setRef("elite", category)}>
+                  <div key={`elite-${category}`} id={`elite-${category}`} ref={setRef('elite', category)} className="mb-16">
                     <h3 className="text-2xl font-bold mb-6">{category}</h3>
                     <div className="grid grid-cols-2 gap-2 sm:gap-4 md:gap-6 lg:grid-cols-4">
                       {filteredProducts.elite
                         .filter(p => p.category === category)
                         .map((product) => (
-                          <button 
-                            key={product.id} 
-                            className="group text-left w-full"
-                            onClick={() => handleProductClick(product.id)}
-                          >
-                            <Card className="bg-zinc-900/50 border-zinc-800 backdrop-blur-sm overflow-hidden hover:border-orange-500/50 transition-colors h-full">
-                              <div className="aspect-square relative bg-zinc-800 overflow-hidden">
-                                {product.images && product.images[0] ? (
-                                  <>
-                                    <Image
-                                      src={product.images[0]}
-                                      alt={product.name}
-                                      fill
-                                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                                      className="object-cover transition-transform duration-300 group-hover:scale-105"
-                                      loading="lazy"
-                                      quality={75}
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:scale-105" />
-                                  </>
-                                ) : (
-                                  <div className="absolute inset-0 flex items-center justify-center text-zinc-600">
-                                    No Image
-                                  </div>
-                                )}
+                        <button 
+                          key={product.id} 
+                          className="group text-left w-full"
+                          onClick={() => handleProductClick(product.id)}
+                        >
+                          <Card className="bg-zinc-900/50 border-zinc-800 backdrop-blur-sm overflow-hidden hover:border-orange-500/50 transition-colors h-full">
+                            <div className="aspect-square relative bg-zinc-800 overflow-hidden">
+                              {product.images && product.images[0] ? (
+                                <>
+                                  <Image
+                                    src={product.images[0]}
+                                    alt={product.name}
+                                    fill
+                                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                    loading="lazy"
+                                    quality={75}
+                                  />
+                                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:scale-105" />
+                                </>
+                              ) : (
+                                <div className="absolute inset-0 flex items-center justify-center text-zinc-600">
+                                  No Image
+                                </div>
+                              )}
+                            </div>
+                            <CardContent className="p-2 sm:p-4">
+                              <div className="mb-1 sm:mb-2">
+                                <span className="text-[10px] sm:text-xs text-orange-400 font-medium block mb-0.5 sm:mb-1">
+                                    {product.brand || "Zoo Performance"}
+                                </span>
+                                <h3 className="font-semibold text-sm sm:text-lg line-clamp-2 group-hover:text-orange-400 transition-colors">
+                                  {product.name}
+                                </h3>
                               </div>
-                              <CardContent className="p-2 sm:p-4">
-                                <div className="mb-1 sm:mb-2">
-                                  <span className="text-[10px] sm:text-xs text-orange-400 font-medium block mb-0.5 sm:mb-1">
-                                    Zoo Performance
-                                  </span>
-                                  <h3 className="font-semibold text-sm sm:text-lg line-clamp-2 group-hover:text-orange-400 transition-colors">
-                                    {product.name}
-                                  </h3>
-                                </div>
-                                <p className="text-xs sm:text-sm text-zinc-400 line-clamp-2 mb-2 sm:mb-4">
-                                  {product.description}
-                                </p>
-                                <div className="mt-auto text-right">
-                                  <p className="text-base md:text-xl font-bold text-orange-400">
-                                    ${(() => {
-                                      // Ensure we have a valid number
-                                      let price = typeof product.price === 'number' ? product.price : Number(product.price);
-                                      if (isNaN(price)) return '0';
-                                      
+                              <p className="text-xs sm:text-sm text-zinc-400 line-clamp-2 mb-2 sm:mb-4">
+                                {product.description}
+                              </p>
+                              <div className="mt-auto text-right">
+                                <p className="text-base md:text-xl font-bold text-orange-400">
+                                  ${(() => {
+                                    // Ensure we have a valid number
+                                    let price = typeof product.price === 'number' ? product.price : Number(product.price);
+                                    if (isNaN(price)) return '0';
+                                    
                                       // Format the price properly
-                                      if (price % 1 === 0) {
-                                        return Math.round(price).toString();
-                                      } else {
-                                        return price.toFixed(2).replace(/\.?0+$/, '');
-                                      }
-                                    })()}
-                                  </p>
-                                </div>
-                              </CardContent>
-                            </Card>
-                          </button>
-                        ))}
+                                    if (price % 1 === 0) {
+                                      return Math.round(price).toString();
+                                    } else {
+                                      return price.toFixed(2).replace(/\.?0+$/, '');
+                                    }
+                                  })()}
+                                </p>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        </button>
+                      ))}
                     </div>
                   </div>
                 ))}
@@ -548,7 +548,7 @@ export function ShopContent({ initialData }: ShopContentProps) {
 
             {/* Zoo Performance Products */}
             {zooCategories.length > 0 && (
-              <div className="mt-20">
+              <div className="mt-24 mb-16">
                 <div className="relative flex flex-col items-center justify-center mb-10">
                   <div className="mb-6 w-full max-w-[300px]">
                     <Image 
@@ -565,7 +565,7 @@ export function ShopContent({ initialData }: ShopContentProps) {
                 </div>
 
                 {zooCategories.map((category) => (
-                  <div key={`zoo-${category}`} id={`zoo-${category}`} ref={setRef("zoo", category)}>
+                  <div key={`zoo-${category}`} id={`zoo-${category}`} ref={setRef('zoo', category)} className="mb-16">
                     <h3 className="text-2xl font-bold mb-6">{category}</h3>
                     <div className="grid grid-cols-2 gap-2 sm:gap-4 md:gap-6 lg:grid-cols-4">
                       {filteredProducts.zoo
@@ -594,13 +594,13 @@ export function ShopContent({ initialData }: ShopContentProps) {
                                 ) : (
                                   <div className="absolute inset-0 flex items-center justify-center text-zinc-600">
                                     No Image
-                                  </div>
-                                )}
+                      </div>
+                    )}
                               </div>
                               <CardContent className="p-2 sm:p-4">
                                 <div className="mb-1 sm:mb-2">
                                   <span className="text-[10px] sm:text-xs text-orange-400 font-medium block mb-0.5 sm:mb-1">
-                                    Zoo Performance
+                                    {product.brand || "Zoo Performance"}
                                   </span>
                                   <h3 className="font-semibold text-sm sm:text-lg line-clamp-2 group-hover:text-orange-400 transition-colors">
                                     {product.name}
@@ -632,7 +632,7 @@ export function ShopContent({ initialData }: ShopContentProps) {
                     </div>
                   </div>
                 ))}
-              </div>
+            </div>
             )}
           </div>
         </div>

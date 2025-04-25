@@ -13382,5 +13382,14 @@
         "option2": "SILVER"
       }
     ]
+  },
+  {
+    "id": "category-placeholder-1745567137178",
+    "name": "Elite Fabworx Custom Placeholder",
+    "description": "Category placeholder product - not visible in shop",
+    "category": "Elite Fabworx Custom",
+    "price": 0,
+    "images": [],
+    "hidden": true
   }
 ]

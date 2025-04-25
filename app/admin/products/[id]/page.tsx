@@ -19,8 +19,8 @@ export default function ProductForm({ params }: { params: { id: string } }) {
   const isEditing = params.id !== "new"
   const router = useRouter()
   const { toast } = useToast()
-  const [isLoading, setIsLoading] = useState(false)
-  const [isUploading, setIsUploading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const [isSaving, setIsSaving] = useState(false)
   const [categories, setCategories] = useState<string[]>([])
   const [newCategory, setNewCategory] = useState("")
   const [showNewCategory, setShowNewCategory] = useState(false)
@@ -37,55 +37,135 @@ export default function ProductForm({ params }: { params: { id: string } }) {
     brand: "Zoo Performance" // Default to Zoo Performance
   })
 
-  useEffect(() => {
-    fetchCategories()
-    if (isEditing) {
-      fetchProduct()
-    }
-  }, [isEditing])
-
-  const fetchCategories = async () => {
+  const refreshCategories = async () => {
     try {
-      const response = await fetch('/api/categories')
-      if (!response.ok) throw new Error('Failed to fetch categories')
-      const data = await response.json()
-      setCategories(data)
+      const response = await fetch('/api/categories', {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache'
+        }
+      })
+      if (response.ok) {
+        const data = await response.json()
+        setCategories(data)
+      }
     } catch (error) {
-      console.error('Error fetching categories:', error)
+      console.error('Error refreshing categories:', error)
     }
   }
 
-  const fetchProduct = async () => {
-    try {
-      const response = await fetch(`/api/products/${params.id}`)
-      if (!response.ok) throw new Error('Failed to fetch product')
-      const product = await response.json()
-      
-      if (product) {
-        // Extract unique option values from variants
-        const optionValues = new Set(product.variants?.map((v: ProductVariant) => v.option1).filter(Boolean) || [])
-        
-        // Create options structure if product has variants
-        const options = product.variants?.length ? [{
-          name: "Size", // Default name for existing variants
-          values: Array.from(optionValues)
-        }] : []
+  // Ensure we refresh categories whenever the page loads
+  useEffect(() => {
+    refreshCategories()
+  }, [])
 
-        setFormData({
-          ...product,
-          options: options || [],
-          variants: product.variants || [],
-          images: product.images || [],
-          brand: product.brand || "Zoo Performance"
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true)
+        const [categoriesResponse, productResponse] = await Promise.all([
+          fetch('/api/categories', {
+            cache: 'no-store',
+            headers: {
+              'Cache-Control': 'no-cache'
+            }
+          }),
+          params.id !== 'new' ? fetch(`/api/products/${params.id}`) : null
+        ])
+
+        if (!categoriesResponse.ok) {
+          throw new Error('Failed to fetch categories')
+        }
+
+        const categoriesData = await categoriesResponse.json()
+        setCategories(categoriesData)
+
+        if (productResponse) {
+          if (!productResponse.ok) {
+            throw new Error('Failed to fetch product')
+          }
+          const productData = await productResponse.json()
+          setFormData(productData)
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error)
+        toast({
+          title: "Error",
+          description: "Failed to load data",
+          variant: "destructive"
         })
+      } finally {
+        setIsLoading(false)
       }
+    }
+
+    fetchData()
+  }, [params.id])
+
+  const handleSave = async () => {
+    try {
+      setIsSaving(true)
+
+      // Validate required fields
+      if (!formData.name || !formData.category) {
+        toast({
+          title: "Validation Error",
+          description: "Please fill in all required fields",
+          variant: "destructive"
+        })
+        return
+      }
+
+      // If category doesn't exist, create it
+      if (!categories.includes(formData.category)) {
+        const categoryResponse = await fetch('/api/categories', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ category: formData.category })
+        })
+
+        if (categoryResponse.ok) {
+          // Refresh categories list after creating new category
+          await refreshCategories()
+          toast({
+            title: "Category Created",
+            description: `New category "${formData.category}" has been created`
+          })
+        }
+      }
+
+      // Save product
+      const response = await fetch(
+        params.id === 'new' ? '/api/products' : `/api/products/${params.id}`,
+        {
+          method: params.id === 'new' ? 'POST' : 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ...formData,
+            brand: formData.brand || "Zoo Performance"
+          })
+        }
+      )
+
+      if (!response.ok) {
+        throw new Error('Failed to save product')
+      }
+
+      toast({
+        title: params.id === 'new' ? "Product Created" : "Product Updated",
+        description: `${formData.name} has been ${params.id === 'new' ? 'created' : 'updated'}`
+      })
+
+      router.push('/admin/products')
     } catch (error) {
-      console.error('Error fetching product:', error)
+      console.error('Error saving product:', error)
       toast({
         title: "Error",
-        description: "Failed to load product",
+        description: "Failed to save product",
         variant: "destructive"
       })
+    } finally {
+      setIsSaving(false)
     }
   }
 
@@ -93,7 +173,7 @@ export default function ProductForm({ params }: { params: { id: string } }) {
     const files = e.target.files
     if (!files?.length) return
 
-    setIsUploading(true)
+    setIsLoading(true)
     const uploadedUrls: string[] = []
 
     try {
@@ -119,7 +199,7 @@ export default function ProductForm({ params }: { params: { id: string } }) {
         variant: "destructive"
       })
     } finally {
-      setIsUploading(false)
+      setIsLoading(false)
     }
   }
 
@@ -141,113 +221,6 @@ export default function ProductForm({ params }: { params: { id: string } }) {
       ...prev,
       images: (prev.images || []).filter((_, i) => i !== index)
     }))
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
-    // Validate required fields
-    if (!formData.name || !formData.category || formData.price <= 0) {
-      toast({
-        title: "Validation Error",
-        description: "Please fill in all required fields (name, category, price)",
-        variant: "destructive"
-      })
-      return
-    }
-    
-    // Validate that at least one image is uploaded
-    if (formData.images.length === 0) {
-      toast({
-        title: "Validation Error",
-        description: "Please upload at least one product image",
-        variant: "destructive"
-      })
-      return
-    }
-    
-    setIsLoading(true)
-
-    try {
-      // If adding a new category
-      if (showNewCategory && newCategory) {
-        const categoryResponse = await fetch('/api/categories', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ category: newCategory }),
-        })
-
-        if (!categoryResponse.ok) {
-          const errorData = await categoryResponse.json()
-          throw new Error(errorData.error || 'Failed to create category')
-        }
-        
-        // Fetch updated categories list
-        const updatedCategoriesResponse = await fetch('/api/categories')
-        if (updatedCategoriesResponse.ok) {
-          const updatedCategories = await updatedCategoriesResponse.json()
-          setCategories(updatedCategories)
-        }
-        
-        // Update formData with new category
-        setFormData(prev => ({ ...prev, category: newCategory }))
-      }
-
-      // Generate a unique ID for new products
-      if (!isEditing) {
-        formData.id = `product-${Date.now()}`
-      }
-
-      // Ensure options and variants are properly formatted
-      const productToSave = {
-        ...formData,
-        options: formData.options.filter(opt => opt.name && opt.values.length > 0),
-        variants: formData.variants.map(variant => ({
-          ...variant,
-          price: variant.price || formData.price,
-          inventory: variant.inventory || 0
-        }))
-      }
-
-      const method = isEditing ? 'PUT' : 'POST'
-      const url = isEditing ? `/api/products/${params.id}` : '/api/products'
-      
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...productToSave,
-          brand: productToSave.brand || "Zoo Performance"
-        }),
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Failed to save product')
-      }
-
-      const result = await response.json()
-      
-      toast({
-        title: "Success",
-        description: `Product ${isEditing ? 'updated' : 'created'} successfully`,
-      })
-
-      router.push('/admin/products')
-    } catch (error) {
-      console.error('Error saving product:', error)
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : `Failed to ${isEditing ? 'update' : 'create'} product`,
-        variant: "destructive"
-      })
-    } finally {
-      setIsLoading(false)
-    }
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -332,7 +305,7 @@ export default function ProductForm({ params }: { params: { id: string } }) {
         <h2 className="text-3xl font-bold tracking-tight">{isEditing ? "Edit Product" : "Add New Product"}</h2>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-8">
+      <form onSubmit={handleSave} className="space-y-8">
         <Card className="bg-zinc-900 border-zinc-800">
           <CardHeader>
             <CardTitle>Product Information</CardTitle>
@@ -365,78 +338,49 @@ export default function ProductForm({ params }: { params: { id: string } }) {
               />
             </div>
 
-            <div className="space-y-2">
+              <div className="space-y-2">
               <Label htmlFor="brand">Brand</Label>
-              <Select
+                      <Select
                 value={formData.brand}
                 onValueChange={handleSelectChange('brand')}
-              >
+                      >
                 <SelectTrigger className="bg-zinc-800 border-zinc-700">
                   <SelectValue placeholder="Select a brand" />
-                </SelectTrigger>
-                <SelectContent className="bg-zinc-900 border-zinc-800">
+                        </SelectTrigger>
+                        <SelectContent className="bg-zinc-900 border-zinc-800">
                   <SelectItem value="Zoo Performance">Zoo Performance</SelectItem>
                   <SelectItem value="Elite Fabworx">Elite Fabworx</SelectItem>
-                </SelectContent>
-              </Select>
+                        </SelectContent>
+                      </Select>
               <p className="text-sm text-zinc-500 mt-1">
                 Select which brand this product belongs to. This will determine where it appears in the shop.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="category">Category *</Label>
               <div className="space-y-2">
-                <Label htmlFor="category">Category *</Label>
-                <div className="flex gap-2">
-                  {showNewCategory ? (
-                    <div className="flex gap-2 w-full">
-                      <Input
-                        value={newCategory}
-                        onChange={(e) => setNewCategory(e.target.value)}
-                        placeholder="Enter new category name"
-                        className="flex-1 bg-zinc-800 border-zinc-700"
-                      />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => {
-                          setShowNewCategory(false)
-                          setNewCategory("")
-                        }}
-                      >
-                        Cancel
-                      </Button>
-                    </div>
-                  ) : (
-                    <>
-                      <Select
-                        value={formData.category}
-                        onValueChange={handleSelectChange('category')}
-                      >
-                        <SelectTrigger className="flex-1 bg-zinc-800 border-zinc-700">
-                          <SelectValue placeholder="Select a category" />
-                        </SelectTrigger>
-                        <SelectContent className="bg-zinc-900 border-zinc-800">
-                          {categories.map((category) => (
-                            <SelectItem key={category} value={category}>
-                              {category}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => setShowNewCategory(true)}
-                        className="whitespace-nowrap bg-zinc-800 border-zinc-700"
-                      >
-                        New Category
-                      </Button>
-                    </>
-                  )}
+                <Input
+                  id="category"
+                  value={formData.category}
+                  onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
+                  placeholder="Select or type new category"
+                  className="bg-zinc-800 border-zinc-700"
+                  list="category-options"
+                  required
+                />
+                <datalist id="category-options">
+                  {categories.map((category) => (
+                    <option key={category} value={category} />
+                  ))}
+                </datalist>
+                <p className="text-sm text-zinc-500">
+                  Select an existing category or type a new one to create it
+                </p>
                 </div>
               </div>
 
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="price">Base Price ($)</Label>
                 <Input
@@ -614,9 +558,9 @@ export default function ProductForm({ params }: { params: { id: string } }) {
                   variant="outline"
                   className="bg-zinc-800 border-zinc-700"
                   onClick={() => document.getElementById('image-upload')?.click()}
-                  disabled={isUploading}
+                  disabled={isLoading}
                 >
-                  {isUploading ? (
+                  {isLoading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Uploading...
@@ -699,8 +643,8 @@ export default function ProductForm({ params }: { params: { id: string } }) {
           >
             Cancel
           </Button>
-          <Button type="submit" disabled={isLoading}>
-            {isLoading ? (
+          <Button type="submit" disabled={isSaving}>
+            {isSaving ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Saving...
