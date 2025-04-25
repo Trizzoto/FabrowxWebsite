@@ -315,9 +315,36 @@ export function ShopContent({ initialData }: ShopContentProps) {
                   </h3>
                 </div>
                 <div className="w-full h-0.5 bg-zinc-800 my-2"></div>
-                <div className="text-zinc-400 text-xs text-center italic mb-4">
-                  Elite Fabworx categories coming soon
+                <div className="space-y-2 my-3">
+                  {eliteCategories.map((category) => (
+                    <div 
+                      key={`elite-mobile-${category}`}
+                      className={`
+                        px-4 py-3 
+                        rounded-xl
+                        cursor-pointer 
+                        ${activeCategory === `elite-${category}` ? 'bg-orange-500/20 text-orange-400 font-medium' : 'text-white hover:bg-zinc-800/50'} 
+                        transition-colors
+                        border border-zinc-800/50 hover:border-orange-500/30
+                        flex items-center justify-between
+                      `}
+                      onClick={() => {
+                        handleCategoryClick(`elite-${category}`);
+                        setShowMobileFilters(false);
+                      }}
+                    >
+                      <span className="select-none">{category}</span>
+                      <span className="text-sm text-zinc-500">
+                        {filteredProducts.elite.filter(p => p.category === category).length}
+                      </span>
+                    </div>
+                  ))}
                 </div>
+                {eliteCategories.length === 0 && (
+                  <div className="text-zinc-400 text-xs text-center italic mb-4">
+                    No Elite Fabworx categories available
+                  </div>
+                )}
               </div>
 
               {/* Zoo Performance Logo in Mobile Categories */}
@@ -332,31 +359,39 @@ export function ShopContent({ initialData }: ShopContentProps) {
                   />
                 </div>
                 <div className="w-full h-0.5 bg-zinc-800 my-2"></div>
+                <div className="space-y-2 my-3">
+                  {zooCategories.map((category) => (
+                    <div 
+                      key={`zoo-mobile-${category}`}
+                      className={`
+                        px-4 py-3 
+                        rounded-xl
+                        cursor-pointer 
+                        ${activeCategory === `zoo-${category}` ? 'bg-orange-500/20 text-orange-400 font-medium' : 'text-white hover:bg-zinc-800/50'} 
+                        transition-colors
+                        border border-zinc-800/50 hover:border-orange-500/30
+                        flex items-center justify-between
+                      `}
+                      onClick={() => {
+                        handleCategoryClick(`zoo-${category}`);
+                        setShowMobileFilters(false);
+                      }}
+                    >
+                      <span className="select-none">{category}</span>
+                      <span className="text-sm text-zinc-500">
+                        {filteredProducts.zoo.filter(p => p.category === category).length}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                {zooCategories.length === 0 && (
+                  <div className="text-zinc-400 text-xs text-center italic mb-4">
+                    No Zoo Performance categories available
+                  </div>
+                )}
               </div>
 
-              <div className="space-y-2">
-                {Array.from(categoryTree.entries()).map(([categoryName, category]) => (
-                  <div 
-                    key={categoryName}
-                    className={`
-                      px-4 py-3 
-                      rounded-xl
-                      cursor-pointer 
-                      ${activeCategory === categoryName ? 'bg-orange-500/20 text-orange-400 font-medium' : 'text-white hover:bg-zinc-800/50'} 
-                      transition-colors
-                      border border-zinc-800/50 hover:border-orange-500/30
-                      flex items-center justify-between
-                    `}
-                    onClick={() => {
-                      handleCategoryClick(categoryName);
-                      setShowMobileFilters(false);
-                    }}
-                  >
-                    <span className="select-none">{category.name}</span>
-                    <span className="text-sm text-zinc-500">{category.count}</span>
-                  </div>
-                ))}
-              </div>
+              {/* General Categories (removed legacy implementation) */}
             </div>
           </div>
 
