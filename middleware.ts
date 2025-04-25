@@ -14,16 +14,19 @@ export async function middleware(request: NextRequest) {
       try {
         const token = request.cookies.get("admin_token")?.value
         if (token) {
+          // Verify the token is valid
           await jose.jwtVerify(token, JWT_SECRET)
+          // If verification successful, redirect to admin dashboard
           return NextResponse.redirect(new URL("/admin", request.url))
         }
       } catch (error) {
-        // Token is invalid, continue to login page and clear the token
+        // Token is invalid, clear it and continue to login page
         const response = NextResponse.next()
         response.cookies.delete("admin_token")
         return response
       }
       
+      // No token found, proceed to login page
       return NextResponse.next()
     }
 
@@ -31,7 +34,7 @@ export async function middleware(request: NextRequest) {
     const token = request.cookies.get("admin_token")?.value
 
     if (!token) {
-      // Redirect to login if no token is present
+      // No token found, redirect to login
       return NextResponse.redirect(new URL("/admin/login", request.url))
     }
 
@@ -53,11 +56,34 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  // For API routes for admin operations, also check authentication
+  if (request.nextUrl.pathname.startsWith("/api/admin") && 
+      !request.nextUrl.pathname.includes("/login")) {
+    
+    const token = request.cookies.get("admin_token")?.value
+
+    if (!token) {
+      // No token found, return unauthorized
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
+    try {
+      // Verify the token
+      await jose.jwtVerify(token, JWT_SECRET)
+      
+      // Token valid, proceed with API request
+      return NextResponse.next()
+    } catch (error) {
+      // Token invalid, return unauthorized
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+  }
+
   // For non-admin routes, proceed normally
   return NextResponse.next()
 }
 
-// Configure the middleware to only run for admin routes
+// Configure the middleware to run for admin routes and admin API routes
 export const config = {
-  matcher: "/admin/:path*",
+  matcher: ["/admin/:path*", "/api/admin/:path*"]
 } 

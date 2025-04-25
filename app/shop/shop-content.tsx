@@ -306,7 +306,7 @@ export function ShopContent({ initialData }: ShopContentProps) {
                   className="bg-zinc-900/50 border-zinc-800 backdrop-blur-sm"
                 />
               </div>
-              
+
               {/* Elite Fabworx Engineered Section */}
               <div className="mb-4">
                 <div className="inline-flex items-center justify-center w-full mb-1">
@@ -317,22 +317,22 @@ export function ShopContent({ initialData }: ShopContentProps) {
                 <div className="w-full h-0.5 bg-zinc-800 my-2"></div>
                 <div className="space-y-2 my-3">
                   {eliteCategories.map((category) => (
-                    <div 
+                  <div 
                       key={`elite-mobile-${category}`}
-                      className={`
-                        px-4 py-3 
-                        rounded-xl
-                        cursor-pointer 
+                    className={`
+                      px-4 py-3 
+                      rounded-xl
+                      cursor-pointer 
                         ${activeCategory === `elite-${category}` ? 'bg-orange-500/20 text-orange-400 font-medium' : 'text-white hover:bg-zinc-800/50'} 
-                        transition-colors
-                        border border-zinc-800/50 hover:border-orange-500/30
-                        flex items-center justify-between
-                      `}
-                      onClick={() => {
+                      transition-colors
+                      border border-zinc-800/50 hover:border-orange-500/30
+                      flex items-center justify-between
+                    `}
+                    onClick={() => {
                         handleCategoryClick(`elite-${category}`);
-                        setShowMobileFilters(false);
-                      }}
-                    >
+                      setShowMobileFilters(false);
+                    }}
+                  >
                       <span className="select-none">{category}</span>
                       <span className="text-sm text-zinc-500">
                         {filteredProducts.elite.filter(p => p.category === category).length}
@@ -381,8 +381,8 @@ export function ShopContent({ initialData }: ShopContentProps) {
                       <span className="text-sm text-zinc-500">
                         {filteredProducts.zoo.filter(p => p.category === category).length}
                       </span>
-                    </div>
-                  ))}
+                  </div>
+                ))}
                 </div>
                 {zooCategories.length === 0 && (
                   <div className="text-zinc-400 text-xs text-center italic mb-4">
@@ -423,7 +423,7 @@ export function ShopContent({ initialData }: ShopContentProps) {
                 
                 <div className="space-y-3 mb-6">
                   {eliteCategories.map((category) => (
-                    <div 
+                  <div 
                       key={`elite-${category}`}
                     className={`
                       px-4 py-3 

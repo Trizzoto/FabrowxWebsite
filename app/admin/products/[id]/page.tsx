@@ -46,8 +46,8 @@ export default function ProductForm({ params }: { params: { id: string } }) {
         }
       })
       if (response.ok) {
-        const data = await response.json()
-        setCategories(data)
+      const data = await response.json()
+      setCategories(data)
       }
     } catch (error) {
       console.error('Error refreshing categories:', error)
@@ -61,7 +61,7 @@ export default function ProductForm({ params }: { params: { id: string } }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
+    try {
         setIsLoading(true)
         const [categoriesResponse, productResponse] = await Promise.all([
           fetch('/api/categories', {
