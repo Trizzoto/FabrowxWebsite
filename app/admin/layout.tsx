@@ -1,5 +1,6 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import type React from "react"
 import AdminSidebar from "@/components/admin/admin-sidebar"
 import { Toaster } from "@/components/ui/toaster"
@@ -9,6 +10,23 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode
 }) {
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-black text-white">
+        <div className="flex items-center justify-center h-screen">
+          <div className="text-2xl">Loading...</div>
+        </div>
+        <Toaster />
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-black text-white">
       <div className="grid min-h-screen w-full lg:grid-cols-[280px_1fr] bg-black text-white">

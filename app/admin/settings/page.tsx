@@ -6,11 +6,10 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { CloudinaryUpload } from '@/components/ui/cloudinary-upload'
 import { useToast } from '@/components/ui/use-toast'
-import { Loader2, Wrench, Car, Truck, Cog, Shield } from 'lucide-react'
+import { Loader2, Wrench, Car, Truck, Cog } from 'lucide-react'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import Link from 'next/link'
-import { Toaster } from '@/components/ui/toaster'
 
 interface Service {
   title: string
@@ -24,9 +23,9 @@ interface Service {
 interface Testimonial {
   id: string
   name: string
-  role: string
-  content: string
+  text: string
   rating: number
+  date: string
 }
 
 interface Settings {
@@ -176,9 +175,8 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="container-fluid max-w-full py-6">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Website Settings</h1>
+    <>
+      <div className="flex justify-end mb-6">
         <Button onClick={saveSettings} disabled={isLoading}>
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Save Changes
@@ -305,327 +303,7 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
 
-        {/* Website Images Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Website Images</CardTitle>
-            <CardDescription>
-              Update the main images on your website
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-6">
-              <div>
-                <Label>Hero Image</Label>
-                <div className="mt-2 relative w-full aspect-video rounded-md overflow-hidden border border-zinc-700 group">
-                  <img 
-                    src={settings.heroImage} 
-                    alt="Hero Image" 
-                    className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors"></div>
-                  <div className="absolute bottom-2 left-2 text-white text-sm font-medium">
-                    Hero Image
-                  </div>
-                </div>
-                <div className="mt-2">
-                  <CloudinaryUpload
-                    onUploadComplete={(url) => {
-                      setSettings({
-                        ...settings,
-                        heroImage: url
-                      });
-                      toast({
-                        title: "Success",
-                        description: "Hero image updated successfully",
-                      });
-                    }}
-                    section="hero"
-                    buttonText="Change Hero Image"
-                  />
-                </div>
-              </div>
-              
-              <div>
-                <Label>About Image</Label>
-                <div className="mt-2 relative w-full aspect-video rounded-md overflow-hidden border border-zinc-700 group">
-                  <img 
-                    src={settings.aboutImage} 
-                    alt="About Image" 
-                    className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors"></div>
-                  <div className="absolute bottom-2 left-2 text-white text-sm font-medium">
-                    About Image
-                  </div>
-                </div>
-                <div className="mt-2">
-                  <CloudinaryUpload
-                    onUploadComplete={(url) => {
-                      setSettings({
-                        ...settings,
-                        aboutImage: url
-                      });
-                      toast({
-                        title: "Success",
-                        description: "About image updated successfully",
-                      });
-                    }}
-                    section="about"
-                    buttonText="Change About Image"
-                  />
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Services Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Services</CardTitle>
-            <CardDescription>
-              Manage your services information
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-6">
-              {settings.services.map((service, index) => (
-                <div key={service.slug} className="space-y-4 pb-6 border-b border-zinc-200 dark:border-zinc-800 last:border-0">
-                  <div className="flex items-center space-x-4">
-                    <div className="w-10 h-10 rounded-full bg-orange-500/20 flex items-center justify-center">
-                      {service.icon === 'Wrench' && <Wrench className="h-6 w-6 text-orange-500" />}
-                      {service.icon === 'Car' && <Car className="h-6 w-6 text-orange-500" />}
-                      {service.icon === 'Truck' && <Truck className="h-6 w-6 text-orange-500" />}
-                      {service.icon === 'Cog' && <Cog className="h-6 w-6 text-orange-500" />}
-                      {service.icon === 'Shield' && <Shield className="h-6 w-6 text-orange-500" />}
-                    </div>
-                    <h3 className="text-lg font-semibold">{service.title}</h3>
-                  </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-4">
-                      <div>
-                        <Label>Description</Label>
-                        <Textarea
-                          value={service.description}
-                          onChange={(e) => {
-                            const newServices = [...settings.services]
-                            newServices[index] = {
-                              ...service,
-                              description: e.target.value
-                            }
-                            setSettings({
-                              ...settings,
-                              services: newServices
-                            })
-                          }}
-                          placeholder="Enter service description"
-                          className="mt-1"
-                        />
-                      </div>
-
-                      <div>
-                        <Label>What We Offer</Label>
-                        <div className="space-y-2 mt-2">
-                          {(service.offerings || []).map((offering, offeringIndex) => (
-                            <div key={offeringIndex} className="flex items-center space-x-2">
-                              <Input
-                                value={offering}
-                                onChange={(e) => {
-                                  const newServices = [...settings.services]
-                                  const newOfferings = [...(service.offerings || [])]
-                                  newOfferings[offeringIndex] = e.target.value
-                                  newServices[index] = {
-                                    ...service,
-                                    offerings: newOfferings
-                                  }
-                                  setSettings({
-                                    ...settings,
-                                    services: newServices
-                                  })
-                                }}
-                                placeholder={`Offering ${offeringIndex + 1}`}
-                                className="flex-1"
-                              />
-                              <Button
-                                variant="destructive"
-                                size="sm"
-                                onClick={() => {
-                                  const newServices = [...settings.services]
-                                  const newOfferings = [...(service.offerings || [])]
-                                  newOfferings.splice(offeringIndex, 1)
-                                  newServices[index] = {
-                                    ...service,
-                                    offerings: newOfferings
-                                  }
-                                  setSettings({
-                                    ...settings,
-                                    services: newServices
-                                  })
-                                }}
-                              >
-                                Remove
-                              </Button>
-                            </div>
-                          ))}
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              const newServices = [...settings.services]
-                              newServices[index] = {
-                                ...service,
-                                offerings: [...(service.offerings || []), ""]
-                              }
-                              setSettings({
-                                ...settings,
-                                services: newServices
-                              })
-                            }}
-                          >
-                            Add Offering
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div>
-                      <Label>Service Image</Label>
-                      <div className="mt-2 relative aspect-video rounded-lg overflow-hidden border border-zinc-700 group">
-                        <img 
-                          src={service.image} 
-                          alt={service.title} 
-                          className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-                        />
-                        <div className="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors"></div>
-                      </div>
-                      <div className="mt-2">
-                        <CloudinaryUpload
-                          onUploadComplete={(url) => {
-                            const newServices = [...settings.services]
-                            newServices[index] = {
-                              ...service,
-                              image: url
-                            }
-                            setSettings({
-                              ...settings,
-                              services: newServices
-                            })
-                            toast({
-                              title: "Success",
-                              description: "Service image updated successfully",
-                            })
-                          }}
-                          section={`service-${index}`}
-                          buttonText="Change Image"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Gallery Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Gallery</CardTitle>
-            <CardDescription>
-              Manage your gallery images
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {galleryImages.map((image, index) => (
-                  <div key={image.id || index} className="relative group">
-                    <div className="aspect-square rounded-md overflow-hidden border border-zinc-700">
-                      <img 
-                        src={image.url} 
-                        alt={image.caption || `Gallery Image ${index + 1}`} 
-                        className="object-cover w-full h-full"
-                      />
-                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <Button 
-                          variant="destructive" 
-                          size="sm"
-                          onClick={() => {
-                            const updatedGallery = [...galleryImages];
-                            updatedGallery.splice(index, 1);
-                            setGalleryImages(updatedGallery);
-                          }}
-                        >
-                          Remove
-                        </Button>
-                      </div>
-                    </div>
-                    <div className="mt-2">
-                      <Input
-                        value={image.caption || ""}
-                        onChange={(e) => {
-                          const updatedGallery = [...galleryImages];
-                          updatedGallery[index] = {
-                            ...updatedGallery[index],
-                            caption: e.target.value
-                          };
-                          setGalleryImages(updatedGallery);
-                        }}
-                        placeholder="Image caption"
-                        className="w-full"
-                      />
-                    </div>
-                    <div className="mt-2">
-                      <Input
-                        value={image.category || ""}
-                        onChange={(e) => {
-                          const updatedGallery = [...galleryImages];
-                          updatedGallery[index] = {
-                            ...updatedGallery[index],
-                            category: e.target.value
-                          };
-                          setGalleryImages(updatedGallery);
-                        }}
-                        placeholder="Image category"
-                        className="w-full"
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-              
-              <div>
-                <CloudinaryUpload
-                  onUploadComplete={(url) => {
-                    setGalleryImages([
-                      ...galleryImages,
-                      {
-                        id: `gallery-${Date.now()}`,
-                        url: url,
-                        caption: "New Gallery Image",
-                        category: "Uncategorized"
-                      }
-                    ]);
-                    toast({
-                      title: "Success",
-                      description: "Gallery image added successfully",
-                    });
-                  }}
-                  section="gallery"
-                  buttonText="Add Gallery Images"
-                  multiple={true}
-                />
-                <p className="text-sm text-zinc-400 mt-2">
-                  You can select multiple images at once to add to your gallery.
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Social Media Links Section */}
+        {/* Social Media Links */}
         <Card>
           <CardHeader>
             <CardTitle>Social Media Links</CardTitle>
@@ -692,8 +370,7 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
       </div>
-      <Toaster />
-    </div>
+    </>
   )
 }
 
