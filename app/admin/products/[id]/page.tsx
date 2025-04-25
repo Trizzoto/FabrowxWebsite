@@ -116,6 +116,24 @@ export default function ProductForm({ params }: { params: { id: string } }) {
         return
       }
 
+      // Ensure price is a number
+      if (typeof formData.price !== 'number' || isNaN(formData.price)) {
+        toast({
+          title: "Validation Error",
+          description: "Price must be a valid number",
+          variant: "destructive"
+        })
+        return
+      }
+
+      // Make sure the product has a valid ID
+      const productToSave = {
+        ...formData,
+        price: Number(formData.price), // Ensure price is a number
+        brand: formData.brand || "Zoo Performance",
+        id: formData.id || `product-${Date.now()}`
+      }
+
       // If category doesn't exist, create it
       if (!categories.includes(formData.category)) {
         const categoryResponse = await fetch('/api/categories', {
@@ -140,15 +158,14 @@ export default function ProductForm({ params }: { params: { id: string } }) {
         {
           method: params.id === 'new' ? 'POST' : 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            ...formData,
-            brand: formData.brand || "Zoo Performance"
-          })
+          body: JSON.stringify(productToSave)
         }
       )
 
       if (!response.ok) {
-        throw new Error('Failed to save product')
+        const errorData = await response.json().catch(() => ({}))
+        console.error('Product save error:', errorData)
+        throw new Error(errorData.error || 'Failed to save product')
       }
 
       toast({
@@ -161,7 +178,7 @@ export default function ProductForm({ params }: { params: { id: string } }) {
       console.error('Error saving product:', error)
       toast({
         title: "Error",
-        description: "Failed to save product",
+        description: "Failed to save product. Check console for details.",
         variant: "destructive"
       })
     } finally {

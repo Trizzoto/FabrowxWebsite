@@ -76,8 +76,33 @@ export async function POST(request: Request) {
     );
 
     if (!isValid) {
+      // Log detailed validation information
+      const validationErrors = newProducts.map(product => {
+        const errors = [];
+        if (!product.id) errors.push('Missing id');
+        if (!product.name) errors.push('Missing name');
+        if (!product.category) errors.push('Missing category');
+        if (typeof product.price !== 'number') errors.push('Price must be a number');
+        
+        return {
+          providedData: { 
+            id: product.id || 'MISSING', 
+            name: product.name || 'MISSING',
+            category: product.category || 'MISSING',
+            price: product.price,
+            priceType: typeof product.price
+          },
+          errors
+        };
+      });
+      
+      console.error('Product validation failed:', JSON.stringify(validationErrors, null, 2));
+      
       return NextResponse.json(
-        { error: 'Invalid product data. Missing required fields.' },
+        { 
+          error: 'Invalid product data. Missing required fields.',
+          validationErrors
+        },
         { status: 400 }
       );
     }
