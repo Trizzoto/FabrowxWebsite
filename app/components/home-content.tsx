@@ -170,33 +170,36 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    const loadInstagramScript = () => {
-      const existingScript = document.querySelector('script[src="https://www.instagram.com/embed.js"]');
-      if (existingScript) {
-        existingScript.remove();
-      }
+    // Set a timeout to defer loading of non-critical Instagram embeds
+    const timer = setTimeout(() => {
+      const loadInstagramScript = () => {
+        const existingScript = document.querySelector('script[src="https://www.instagram.com/embed.js"]');
+        if (existingScript) {
+          existingScript.remove();
+        }
 
-      const script = document.createElement('script');
-      script.src = 'https://www.instagram.com/embed.js';
-      script.async = true;
-      script.defer = true;
-      script.crossOrigin = 'anonymous';
+        const script = document.createElement('script');
+        script.src = 'https://www.instagram.com/embed.js';
+        script.async = true;
+        script.defer = true;
+        script.crossOrigin = 'anonymous';
 
-      script.onload = () => {
-        setInstagramLoaded(true);
-        // Add a small delay before processing embeds
-        setTimeout(processEmbeds, 1000);
+        script.onload = () => {
+          setInstagramLoaded(true);
+          // Add a small delay before processing embeds
+          setTimeout(processEmbeds, 1000);
+        };
+
+        script.onerror = (error) => {
+          console.error('Failed to load Instagram embed script:', error);
+          setInstagramLoaded(false);
+        };
+
+        document.body.appendChild(script);
       };
 
-      script.onerror = (error) => {
-        console.error('Failed to load Instagram embed script:', error);
-        setInstagramLoaded(false);
-      };
-
-      document.body.appendChild(script);
-    };
-
-    loadInstagramScript();
+      loadInstagramScript();
+    }, 3000); // Delay Instagram loading by 3 seconds after page load
 
     // Set up a retry mechanism
     const retryInterval = setInterval(() => {
@@ -206,6 +209,7 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
     }, 2000);
 
     return () => {
+      clearTimeout(timer);
       clearInterval(retryInterval);
     };
   }, [embedsProcessed, processEmbeds]);
@@ -241,11 +245,15 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
         <motion.div style={{ y, opacity }} className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-black/80"></div>
           <Image
-            src={settings.heroImage}
+            src={settings.heroImage.includes('cloudinary') 
+              ? settings.heroImage.replace('/upload/', '/upload/w_1600,q_auto,f_auto/') 
+              : settings.heroImage}
             alt="Elite FabWorx metal fabrication"
             fill
             className="object-cover object-center opacity-40"
             priority
+            sizes="100vw"
+            loading="eager"
           />
         </motion.div>
         <div className="container relative z-20 h-full flex flex-col justify-center items-center px-4 md:px-6">
@@ -310,12 +318,17 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
                 <Card className="bg-zinc-800 border-zinc-700 overflow-hidden h-full group hover:border-orange-500/50 transition-colors border-0">
                   <div className="h-48 md:h-64 relative">
                     <Image
-                      src={service.image || "/placeholder.svg"}
+                      src={service.image.includes('cloudinary') 
+                        ? service.image.replace('/upload/', '/upload/w_800,q_auto,f_auto/') 
+                        : service.image || "/placeholder.svg"}
                       alt={service.title}
                       fill
                       className="object-cover transition-transform duration-300 group-hover:scale-105"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                       priority={index < 3}
+                      loading={index < 3 ? "eager" : "lazy"}
+                      width={800}
+                      height={480}
                     />
                     <div className="absolute inset-0 bg-black/20 transition-transform duration-300 group-hover:scale-105"></div>
                   </div>
@@ -384,10 +397,21 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
                   <Link href={`/shop/${product.id}`}>
                     <div className="aspect-square bg-zinc-800 rounded-lg overflow-hidden">
                       {product.images && product.images[0] ? (
-                        <img
-                          src={product.images[0]}
+                        <Image
+                          src={product.images[0].includes('cloudinary')
+                            ? product.images[0].replace('/upload/', '/upload/w_600,q_auto,f_auto/')
+                            : product.images[0].includes('shopify')
+                              ? product.images[0].includes('?')
+                                ? `${product.images[0]}&width=600&height=600&crop=center`
+                                : `${product.images[0]}?width=600&height=600&crop=center`
+                              : product.images[0]
+                          }
                           alt={product.name}
-                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                          className="object-cover transition-transform duration-300 group-hover:scale-110"
+                          width={300}
+                          height={300}
+                          loading="lazy"
+                          sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-zinc-600">
@@ -495,10 +519,14 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
               className="relative h-[400px] lg:h-[500px]"
             >
               <Image
-                src={settings.aboutImage || "/workshop.jpg"}
+                src={settings.aboutImage && settings.aboutImage.includes('cloudinary')
+                  ? settings.aboutImage.replace('/upload/', '/upload/w_1000,q_auto,f_auto/')
+                  : settings.aboutImage || "/workshop.jpg"}
                 alt="Elite FabWorx Workshop"
                 fill
                 className="object-cover rounded-lg"
+                sizes="(max-width: 768px) 100vw, 50vw"
+                loading="lazy"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent rounded-lg"></div>
             </motion.div>
@@ -507,65 +535,44 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
       </section>
 
       {/* Gallery Section */}
-      <section className="py-20 bg-black overflow-x-hidden">
+      <section className="py-20 bg-black">
         <div className="container px-4 md:px-6">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
-              className="text-3xl md:text-4xl font-bold mb-4"
-            >
-              Our <span className="text-orange-500">Gallery</span>
-            </motion.h2>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              viewport={{ once: true }}
-              className="text-zinc-400"
-            >
-              Browse through our portfolio of custom fabrication work and completed projects
-            </motion.p>
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Project <span className="text-orange-500">Gallery</span>
+            </h2>
+            <p className="text-zinc-400 max-w-2xl mx-auto">
+              Check out our recent projects and custom fabrication work.
+            </p>
           </div>
 
-          <AnimatePresence mode="wait">
-            <div key={randomGalleryImages.map(img => img.id).join('-')} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-full">
-              {randomGalleryImages.map((image, index) => (
-                <motion.div
-                  key={image.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="relative w-full"
-                >
-                  <Card className="bg-zinc-800 border-zinc-700 overflow-hidden group hover:border-orange-500/50 transition-colors">
-                    <div className="h-64 relative">
-                      <Image
-                        src={image.url}
-                        alt={image.caption || 'Gallery image'}
-                        fill
-                        className="object-cover transition-transform duration-300 group-hover:scale-105"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      />
-                      <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-opacity"></div>
-                    </div>
-                    {image.caption && (
-                      <CardContent className="p-4">
-                        <p className="text-zinc-300">{image.caption}</p>
-                        {image.category && (
-                          <span className="text-sm text-orange-400 mt-2 inline-block">
-                            {image.category}
-                          </span>
-                        )}
-                      </CardContent>
-                    )}
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
-          </AnimatePresence>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+            {randomGalleryImages.map((image, index) => (
+              <motion.div
+                key={image.id}
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4, delay: index * 0.05 }}
+                viewport={{ once: true, margin: "100px" }}
+                className="relative aspect-square overflow-hidden rounded-lg"
+              >
+                <Image
+                  src={image.url.includes('cloudinary') 
+                    ? image.url.replace('/upload/', '/upload/w_800,q_auto,f_auto/') 
+                    : image.url}
+                  alt={image.caption || "Gallery image"}
+                  fill
+                  className="object-cover transition-transform duration-300 hover:scale-105"
+                  sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
+                  loading="lazy"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+                  <p className="text-white font-medium">{image.caption}</p>
+                  <p className="text-zinc-300 text-sm">{image.category}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
 
           <div className="mt-12 text-center">
             <Link href="/gallery">
@@ -772,137 +779,170 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
           </div>
         </section>
       )}
+
+      {/* Shop by Category Section */}
+      <section className="py-20 bg-zinc-900">
+        <div className="container px-4 md:px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Shop by <span className="text-orange-500">Category</span>
+            </h2>
+            <p className="text-zinc-400 max-w-2xl mx-auto">
+              Browse our products by category to find exactly what you need.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+            {/* Example categories - Replace with your actual categories */}
+            {['Performance Parts', '4WD Accessories', 'Exhaust Systems', 'Custom Solutions'].map((category, index) => (
+              <motion.div
+                key={category}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: index * 0.1 }}
+                viewport={{ once: true, margin: "100px" }}
+                className="relative h-40 md:h-60 rounded-lg overflow-hidden"
+              >
+                <Link href={`/shop?category=${encodeURIComponent(category)}`} className="block h-full">
+                  <div className="absolute inset-0 bg-zinc-800"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <h3 className="text-xl md:text-2xl font-bold text-white">{category}</h3>
+                  </div>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
     </div>
   )
 }
 
 function TestimonialSlider() {
-  const [testimonials, setTestimonials] = useState<Testimonial[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [mounted, setMounted] = useState(false)
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
+  // Fetch testimonials with caching
   useEffect(() => {
     const fetchTestimonials = async () => {
       try {
-        const response = await fetch('/api/testimonials')
-        if (!response.ok) throw new Error('Failed to fetch testimonials')
-        const data = await response.json()
-        setTestimonials(data)
-      } catch (err) {
-        setError('Failed to load reviews')
-        console.error('Error fetching testimonials:', err)
+        const cachedTestimonials = sessionStorage.getItem('testimonials');
+        if (cachedTestimonials) {
+          setTestimonials(JSON.parse(cachedTestimonials));
+          setIsLoading(false);
+          return;
+        }
+
+        const response = await fetch('/api/testimonials');
+        if (!response.ok) throw new Error('Failed to fetch testimonials');
+        const data = await response.json();
+        
+        setTestimonials(data);
+        sessionStorage.setItem('testimonials', JSON.stringify(data));
+      } catch (error) {
+        console.error('Error fetching testimonials:', error);
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
-    }
+    };
 
-    if (mounted) {
-      fetchTestimonials()
-    }
-  }, [mounted])
+    // Defer testimonial loading until after core content
+    const timer = setTimeout(() => {
+      fetchTestimonials();
+    }, 1500);
+    
+    return () => clearTimeout(timer);
+  }, []);
 
-  if (!mounted) return null
-
-  if (isLoading) {
+  if (!isLoading) {
     return (
-      <div className="flex justify-center items-center h-40">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-orange-500"></div>
-      </div>
-    )
-  }
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8 relative">
+        {testimonials.map((testimonial, index) => (
+          <motion.div
+            key={`testimonial-${testimonial.id || index}`}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: index * 0.1 }}
+            viewport={{ once: true }}
+            className="relative"
+          >
+            <Card className="bg-zinc-800 border-zinc-700 h-full hover:border-blue-500/20 transition-colors">
+              <CardContent className="p-3 sm:p-4 md:p-6">
+                <div className="flex flex-col h-full">
+                  {/* Header with name and date */}
+                  <div className="flex items-center justify-between mb-2 sm:mb-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 sm:w-10 h-8 sm:h-10 rounded-full overflow-hidden bg-zinc-700">
+                        <div className="w-full h-full flex items-center justify-center text-zinc-400">
+                          <svg className="w-4 sm:w-6 h-4 sm:h-6" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" />
+                          </svg>
+                        </div>
+                      </div>
+                      <div>
+                        <div className="font-semibold text-xs sm:text-sm">{testimonial.name}</div>
+                        <div className="text-[10px] sm:text-xs text-zinc-400">{testimonial.date}</div>
+                      </div>
+                    </div>
+                    <a 
+                      href="https://www.facebook.com/ELITEFABWORX/reviews"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-zinc-400 hover:text-blue-500 transition-colors"
+                    >
+                      <Facebook className="h-3 sm:h-4 w-3 sm:w-4" />
+                    </a>
+                  </div>
 
-  if (error) {
-    return (
-      <div className="text-center text-zinc-400">
-        <p>{error}</p>
+                  {/* Review content */}
+                  <p className="text-xs sm:text-sm mb-3 sm:mb-4 flex-grow">{testimonial.content}</p>
+
+                  {/* Footer with likes and comments */}
+                  <div className="mt-auto pt-2 sm:pt-4 border-t border-zinc-700">
+                    <div className="flex items-center justify-between text-[10px] sm:text-xs text-zinc-400">
+                      <div className="flex items-center gap-1">
+                        <div className="flex -space-x-1">
+                          <div className="w-3 sm:w-4 h-3 sm:h-4 rounded-full bg-blue-500 flex items-center justify-center">
+                            <ThumbsUp className="w-1.5 sm:w-2 h-1.5 sm:h-2 text-white" />
+                          </div>
+                        </div>
+                        <span>{testimonial.likes}</span>
+                      </div>
+                      {testimonial.comments > 0 && (
+                        <div>{testimonial.comments} comment{testimonial.comments > 1 ? 's' : ''}</div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Action buttons */}
+                  <div className="flex items-center justify-between mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-zinc-700">
+                    <button className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-zinc-400 hover:text-blue-500 transition-colors">
+                      <ThumbsUp className="w-3 sm:w-4 h-3 sm:h-4" />
+                      Like
+                    </button>
+                    <button className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-zinc-400 hover:text-blue-500 transition-colors">
+                      <MessageSquare className="w-3 sm:w-4 h-3 sm:h-4" />
+                      Comment
+                    </button>
+                    <button className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-zinc-400 hover:text-blue-500 transition-colors">
+                      <Share className="w-3 sm:w-4 h-3 sm:h-4" />
+                      Share
+                    </button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        ))}
       </div>
     )
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8 relative">
-      {testimonials.map((testimonial, index) => (
-        <motion.div
-          key={`testimonial-${testimonial.id || index}`}
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: index * 0.1 }}
-          viewport={{ once: true }}
-          className="relative"
-        >
-          <Card className="bg-zinc-800 border-zinc-700 h-full hover:border-blue-500/20 transition-colors">
-            <CardContent className="p-3 sm:p-4 md:p-6">
-              <div className="flex flex-col h-full">
-                {/* Header with name and date */}
-                <div className="flex items-center justify-between mb-2 sm:mb-3">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 sm:w-10 h-8 sm:h-10 rounded-full overflow-hidden bg-zinc-700">
-                      <div className="w-full h-full flex items-center justify-center text-zinc-400">
-                        <svg className="w-4 sm:w-6 h-4 sm:h-6" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" />
-                        </svg>
-                      </div>
-                    </div>
-                    <div>
-                      <div className="font-semibold text-xs sm:text-sm">{testimonial.name}</div>
-                      <div className="text-[10px] sm:text-xs text-zinc-400">{testimonial.date}</div>
-                    </div>
-                  </div>
-                  <a 
-                    href="https://www.facebook.com/ELITEFABWORX/reviews"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-zinc-400 hover:text-blue-500 transition-colors"
-                  >
-                    <Facebook className="h-3 sm:h-4 w-3 sm:w-4" />
-                  </a>
-                </div>
-
-                {/* Review content */}
-                <p className="text-xs sm:text-sm mb-3 sm:mb-4 flex-grow">{testimonial.content}</p>
-
-                {/* Footer with likes and comments */}
-                <div className="mt-auto pt-2 sm:pt-4 border-t border-zinc-700">
-                  <div className="flex items-center justify-between text-[10px] sm:text-xs text-zinc-400">
-                    <div className="flex items-center gap-1">
-                      <div className="flex -space-x-1">
-                        <div className="w-3 sm:w-4 h-3 sm:h-4 rounded-full bg-blue-500 flex items-center justify-center">
-                          <ThumbsUp className="w-1.5 sm:w-2 h-1.5 sm:h-2 text-white" />
-                        </div>
-                      </div>
-                      <span>{testimonial.likes}</span>
-                    </div>
-                    {testimonial.comments > 0 && (
-                      <div>{testimonial.comments} comment{testimonial.comments > 1 ? 's' : ''}</div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Action buttons */}
-                <div className="flex items-center justify-between mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-zinc-700">
-                  <button className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-zinc-400 hover:text-blue-500 transition-colors">
-                    <ThumbsUp className="w-3 sm:w-4 h-3 sm:h-4" />
-                    Like
-                  </button>
-                  <button className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-zinc-400 hover:text-blue-500 transition-colors">
-                    <MessageSquare className="w-3 sm:w-4 h-3 sm:h-4" />
-                    Comment
-                  </button>
-                  <button className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-zinc-400 hover:text-blue-500 transition-colors">
-                    <Share className="w-3 sm:w-4 h-3 sm:h-4" />
-                    Share
-                  </button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-      ))}
+    <div className="flex justify-center items-center h-40">
+      <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-orange-500"></div>
     </div>
   )
 } 
