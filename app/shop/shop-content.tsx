@@ -560,13 +560,21 @@ export function ShopContent({ initialData }: ShopContentProps) {
                                 {product.images && product.images[0] ? (
                                   <>
                                     <Image
-                                      src={product.images[0]}
+                                      src={product.images && product.images[0] ? (
+                                        product.images[0].includes('cloudinary')
+                                          ? product.images[0].replace('/upload/', '/upload/w_400,q_auto,f_auto/')
+                                          : product.images[0].includes('shopify')
+                                            ? product.images[0].includes('?')
+                                              ? `${product.images[0]}&width=400&height=400&crop=center&format=webp&quality=80`
+                                              : `${product.images[0]}?width=400&height=400&crop=center&format=webp&quality=80`
+                                            : product.images[0]
+                                      ) : "/placeholder.svg"}
                                       alt={product.name}
-                                      fill
-                                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                                      className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                      className="object-cover transition-transform duration-300 group-hover:scale-110"
+                                      width={400}
+                                      height={400}
                                       loading="lazy"
-                                      quality={75}
+                                      sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:scale-105" />
                                   </>
@@ -612,13 +620,12 @@ export function ShopContent({ initialData }: ShopContentProps) {
                       
                       {/* Load More Button */}
                       {hasMore[categoryKey] && (
-                        <div className="flex justify-center mt-8">
+                        <div className="flex justify-center mt-8" ref={categoryKey === `elite-${category}` ? loadMoreRef : undefined}>
                           <Button 
                             onClick={() => loadMoreProducts('elite', category)}
                             variant="outline" 
                             className="border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white"
                             data-category={`elite-${category}`}
-                            ref={categoryKey === `elite-${category}` ? loadMoreRef : undefined}
                           >
                             Load More
                           </Button>
@@ -668,13 +675,21 @@ export function ShopContent({ initialData }: ShopContentProps) {
                                   {product.images && product.images[0] ? (
                                     <>
                                       <Image
-                                        src={product.images[0]}
+                                        src={product.images && product.images[0] ? (
+                                          product.images[0].includes('cloudinary')
+                                            ? product.images[0].replace('/upload/', '/upload/w_400,q_auto,f_auto/')
+                                            : product.images[0].includes('shopify')
+                                              ? product.images[0].includes('?')
+                                                ? `${product.images[0]}&width=400&height=400&crop=center&format=webp&quality=80`
+                                                : `${product.images[0]}?width=400&height=400&crop=center&format=webp&quality=80`
+                                              : product.images[0]
+                                        ) : "/placeholder.svg"}
                                         alt={product.name}
-                                        fill
-                                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                        className="object-cover transition-transform duration-300 group-hover:scale-110"
+                                        width={400}
+                                        height={400}
                                         loading="lazy"
-                                        quality={75}
+                                        sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
                                       />
                                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:scale-105" />
                                     </>
@@ -720,13 +735,12 @@ export function ShopContent({ initialData }: ShopContentProps) {
                       
                       {/* Load More Button */}
                       {hasMore[categoryKey] && (
-                        <div className="flex justify-center mt-8">
+                        <div className="flex justify-center mt-8" ref={categoryKey === `zoo-${category}` ? loadMoreRef : undefined}>
                           <Button 
                             onClick={() => loadMoreProducts('zoo', category)}
                             variant="outline" 
                             className="border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white"
                             data-category={`zoo-${category}`}
-                            ref={categoryKey === `zoo-${category}` ? loadMoreRef : undefined}
                           >
                             Load More
                           </Button>

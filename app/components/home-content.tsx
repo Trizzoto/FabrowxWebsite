@@ -246,7 +246,7 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
           <div className="absolute inset-0 bg-black/80"></div>
           <Image
             src={settings.heroImage.includes('cloudinary') 
-              ? settings.heroImage.replace('/upload/', '/upload/w_1600,q_auto,f_auto/') 
+              ? settings.heroImage.replace('/upload/', '/upload/w_1200,q_auto,f_auto/') 
               : settings.heroImage}
             alt="Elite FabWorx metal fabrication"
             fill
@@ -319,7 +319,7 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
                   <div className="h-48 md:h-64 relative">
                     <Image
                       src={service.image.includes('cloudinary') 
-                        ? service.image.replace('/upload/', '/upload/w_800,q_auto,f_auto/') 
+                        ? service.image.replace('/upload/', '/upload/w_600,q_auto,f_auto/') 
                         : service.image || "/placeholder.svg"}
                       alt={service.title}
                       fill
@@ -327,8 +327,6 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
                       sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                       priority={index < 3}
                       loading={index < 3 ? "eager" : "lazy"}
-                      width={800}
-                      height={480}
                     />
                     <div className="absolute inset-0 bg-black/20 transition-transform duration-300 group-hover:scale-105"></div>
                   </div>
@@ -520,7 +518,7 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
             >
               <Image
                 src={settings.aboutImage && settings.aboutImage.includes('cloudinary')
-                  ? settings.aboutImage.replace('/upload/', '/upload/w_1000,q_auto,f_auto/')
+                  ? settings.aboutImage.replace('/upload/', '/upload/w_800,q_auto,f_auto/')
                   : settings.aboutImage || "/workshop.jpg"}
                 alt="Elite FabWorx Workshop"
                 fill
@@ -558,7 +556,7 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
               >
                 <Image
                   src={image.url.includes('cloudinary') 
-                    ? image.url.replace('/upload/', '/upload/w_800,q_auto,f_auto/') 
+                    ? image.url.replace('/upload/', '/upload/w_600,q_auto,f_auto/') 
                     : image.url}
                   alt={image.caption || "Gallery image"}
                   fill
@@ -779,42 +777,6 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
           </div>
         </section>
       )}
-
-      {/* Shop by Category Section */}
-      <section className="py-20 bg-zinc-900">
-        <div className="container px-4 md:px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Shop by <span className="text-orange-500">Category</span>
-            </h2>
-            <p className="text-zinc-400 max-w-2xl mx-auto">
-              Browse our products by category to find exactly what you need.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-            {/* Example categories - Replace with your actual categories */}
-            {['Performance Parts', '4WD Accessories', 'Exhaust Systems', 'Custom Solutions'].map((category, index) => (
-              <motion.div
-                key={category}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: index * 0.1 }}
-                viewport={{ once: true, margin: "100px" }}
-                className="relative h-40 md:h-60 rounded-lg overflow-hidden"
-              >
-                <Link href={`/shop?category=${encodeURIComponent(category)}`} className="block h-full">
-                  <div className="absolute inset-0 bg-zinc-800"></div>
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <h3 className="text-xl md:text-2xl font-bold text-white">{category}</h3>
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
     </div>
   )
 }
