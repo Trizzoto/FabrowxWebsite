@@ -98,6 +98,16 @@ const ContactForm = dynamic(() => import('@/app/contact/contact-form').then(mod 
   ssr: false 
 })
 
+// Helper to generate optimized Cloudinary URLs
+function getOptimizedCloudinaryUrl(url: string, width: number = 800, quality: number = 70): string {
+  if (!url) return "/placeholder.png";
+  if (url.includes("res.cloudinary.com")) {
+    // Insert width and quality transformation
+    return url.replace(/\/upload\//, `/upload/w_${width},q_${quality}/`);
+  }
+  return url;
+}
+
 export function HomeContent({ settings, galleryImages }: HomeContentProps) {
   const ref = useRef(null)
   const { scrollYProgress } = useScroll({
@@ -241,11 +251,12 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
         <motion.div style={{ y, opacity }} className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-black/80"></div>
           <Image
-            src={settings.heroImage}
+            src={getOptimizedCloudinaryUrl(settings.heroImage, 800, 70)}
             alt="Elite FabWorx metal fabrication"
             fill
             className="object-cover object-center opacity-40"
             priority
+            sizes="(max-width: 640px) 100vw, (max-width: 1200px) 100vw, 1920px"
           />
         </motion.div>
         <div className="container relative z-20 h-full flex flex-col justify-center items-center px-4 md:px-6">
@@ -300,7 +311,7 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
           <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8 max-w-full">
             {settings.services.map((service, index) => (
               <motion.div
-                key={index}
+                key={service.title}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
@@ -310,12 +321,12 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
                 <Card className="bg-zinc-800 border-zinc-700 overflow-hidden h-full group hover:border-orange-500/50 transition-colors border-0">
                   <div className="h-48 md:h-64 relative">
                     <Image
-                      src={service.image || "/placeholder.svg"}
+                      src={getOptimizedCloudinaryUrl(service.image, 600, 70)}
                       alt={service.title}
                       fill
                       className="object-cover transition-transform duration-300 group-hover:scale-105"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      priority={index < 3}
+                      loading="lazy"
                     />
                     <div className="absolute inset-0 bg-black/20 transition-transform duration-300 group-hover:scale-105"></div>
                   </div>
@@ -495,10 +506,12 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
               className="relative h-[400px] lg:h-[500px]"
             >
               <Image
-                src={settings.aboutImage || "/workshop.jpg"}
+                src={getOptimizedCloudinaryUrl(settings.aboutImage, 800, 70)}
                 alt="Elite FabWorx Workshop"
                 fill
                 className="object-cover rounded-lg"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 800px"
+                loading="lazy"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent rounded-lg"></div>
             </motion.div>
@@ -543,11 +556,12 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
                   <Card className="bg-zinc-800 border-zinc-700 overflow-hidden group hover:border-orange-500/50 transition-colors">
                     <div className="h-64 relative">
                       <Image
-                        src={image.url}
+                        src={getOptimizedCloudinaryUrl(image.url, 600, 70)}
                         alt={image.caption || 'Gallery image'}
                         fill
                         className="object-cover transition-transform duration-300 group-hover:scale-105"
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        loading="lazy"
                       />
                       <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-opacity"></div>
                     </div>
