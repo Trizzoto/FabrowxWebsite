@@ -75,6 +75,10 @@ const getIcon = (iconName: string) => {
   return icons[iconName] || <Wrench className="h-6 w-6 text-orange-400" />
 }
 
+function getCloudinaryUrl(url: string, width: number) {
+  return url.replace('/upload/', `/upload/w_${width},q_auto,f_auto/`);
+}
+
 export function ServicesContent({ services }: ServicesContentProps) {
   const router = useRouter()
 
@@ -104,27 +108,21 @@ export function ServicesContent({ services }: ServicesContentProps) {
 
   return (
     <main className="bg-black min-h-screen" role="main">
-      {/* Home Button */}
-      <div className="fixed top-4 left-4 z-50 hidden md:block">
-        <Button
-          variant="outline"
-          className="border-orange-500/30 bg-black/20 backdrop-blur-sm hover:bg-black/40 hover:border-orange-500/50 transition-all duration-300"
-          onClick={() => router.push("/")}
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Home
-        </Button>
-      </div>
-
       {/* Hero Section */}
       <section className="relative py-20 overflow-hidden">
         <div className="absolute inset-0">
           <Image
-            src="https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741783803/lc03gne4mnc77za4awxa.jpg"
+            src={
+              "https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741783803/lc03gne4mnc77za4awxa.jpg".includes('cloudinary')
+                ? getCloudinaryUrl("https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741783803/lc03gne4mnc77za4awxa.jpg", 1200)
+                : "https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741783803/lc03gne4mnc77za4awxa.jpg"
+            }
             alt="Elite FabWorx Services"
             fill
             className="object-cover object-center opacity-40"
             priority
+            loading="eager"
+            sizes="100vw"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black"></div>
         </div>
@@ -155,11 +153,14 @@ export function ServicesContent({ services }: ServicesContentProps) {
                 <Card className="bg-zinc-800 border-zinc-700 overflow-hidden h-full hover:border-orange-500/50 transition-colors shadow-lg">
                   <div className="relative h-64">
                     <Image
-                      src={service.image || "/placeholder.svg"}
+                      src={service.image && service.image.includes('cloudinary')
+                        ? getCloudinaryUrl(service.image, 800)
+                        : service.image || "/placeholder.svg"}
                       alt={service.title}
                       fill
                       className="object-cover"
-                      sizes="(max-width: 768px) 100vw, 50vw"
+                      sizes="(max-width: 640px) 90vw, (max-width: 1024px) 50vw, 33vw"
+                      loading="lazy"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
                     <div className="absolute bottom-4 left-4 right-4">

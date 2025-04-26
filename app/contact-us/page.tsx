@@ -20,6 +20,10 @@ interface Settings {
   }
 }
 
+function getCloudinaryUrl(url: string, width: number) {
+  return url.replace('/upload/', `/upload/w_${width},q_auto,f_auto/`);
+}
+
 export default function ContactPage() {
   const [settings, setSettings] = useState<Settings>({
     contactInfo: {
@@ -50,11 +54,14 @@ export default function ContactPage() {
       <section className="relative py-20 overflow-hidden">
         <div className="absolute inset-0">
           <Image
-            src="https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741783803/lc03gne4mnc77za4awxa.jpg"
+            src={"https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741783803/lc03gne4mnc77za4awxa.jpg".includes('cloudinary')
+              ? getCloudinaryUrl("https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741783803/lc03gne4mnc77za4awxa.jpg", 1200)
+              : "https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741783803/lc03gne4mnc77za4awxa.jpg"}
             alt="Contact Elite FabWorx"
             fill
             className="object-cover object-center opacity-40"
             priority
+            sizes="100vw"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black"></div>
         </div>

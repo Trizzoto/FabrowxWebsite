@@ -98,6 +98,10 @@ const ContactForm = dynamic(() => import('@/app/contact/contact-form').then(mod 
   ssr: false 
 })
 
+function getCloudinaryUrl(url: string, width: number) {
+  return url.replace('/upload/', `/upload/w_${width},q_auto,f_auto/`);
+}
+
 export function HomeContent({ settings, galleryImages }: HomeContentProps) {
   const ref = useRef(null)
   const { scrollYProgress } = useScroll({
@@ -245,8 +249,8 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
         <motion.div style={{ y, opacity }} className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-black/80"></div>
           <Image
-            src={settings.heroImage.includes('cloudinary') 
-              ? settings.heroImage.replace('/upload/', '/upload/w_1200,q_auto,f_auto/') 
+            src={settings.heroImage && settings.heroImage.includes('cloudinary')
+              ? getCloudinaryUrl(settings.heroImage, 1200)
               : settings.heroImage}
             alt="Elite FabWorx metal fabrication"
             fill
@@ -318,13 +322,13 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
                 <Card className="bg-zinc-800 border-zinc-700 overflow-hidden h-full group hover:border-orange-500/50 transition-colors border-0">
                   <div className="h-48 md:h-64 relative">
                     <Image
-                      src={service.image.includes('cloudinary') 
-                        ? service.image.replace('/upload/', '/upload/w_600,q_auto,f_auto/') 
+                      src={service.image.includes('cloudinary')
+                        ? getCloudinaryUrl(service.image, 800)
                         : service.image || "/placeholder.svg"}
                       alt={service.title}
                       fill
                       className="object-cover transition-transform duration-300 group-hover:scale-105"
-                      sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                      sizes="(max-width: 640px) 90vw, (max-width: 1024px) 50vw, 33vw"
                       priority={index < 3}
                       loading={index < 3 ? "eager" : "lazy"}
                     />
@@ -518,12 +522,12 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
             >
               <Image
                 src={settings.aboutImage && settings.aboutImage.includes('cloudinary')
-                  ? settings.aboutImage.replace('/upload/', '/upload/w_800,q_auto,f_auto/')
+                  ? getCloudinaryUrl(settings.aboutImage, 800)
                   : settings.aboutImage || "/workshop.jpg"}
                 alt="Elite FabWorx Workshop"
                 fill
                 className="object-cover rounded-lg"
-                sizes="(max-width: 768px) 100vw, 50vw"
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 loading="lazy"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent rounded-lg"></div>
@@ -555,13 +559,13 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
                 className="relative aspect-square overflow-hidden rounded-lg"
               >
                 <Image
-                  src={image.url.includes('cloudinary') 
-                    ? image.url.replace('/upload/', '/upload/w_600,q_auto,f_auto/') 
+                  src={image.url.includes('cloudinary')
+                    ? getCloudinaryUrl(image.url, 800)
                     : image.url}
                   alt={image.caption || "Gallery image"}
                   fill
                   className="object-cover transition-transform duration-300 hover:scale-105"
-                  sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
+                  sizes="(max-width: 640px) 90vw, (max-width: 1024px) 33vw, 25vw"
                   loading="lazy"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">

@@ -21,6 +21,10 @@ interface GalleryContentProps {
   galleryImages: GalleryImage[]
 }
 
+function getCloudinaryUrl(url: string, width: number) {
+  return url.replace('/upload/', `/upload/w_${width},q_auto,f_auto/`);
+}
+
 export function GalleryContent({ galleryImages }: GalleryContentProps) {
   const router = useRouter()
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null)
@@ -71,25 +75,31 @@ export function GalleryContent({ galleryImages }: GalleryContentProps) {
       </div>
 
       {/* Hero Section */}
-      <div className="relative h-[300px] overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black z-10"></div>
-        <Image
-          src="https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741783803/lc03gne4mnc77za4awxa.jpg"
-          alt="Gallery header"
-          fill
-          className="object-cover object-center"
-          priority
-        />
-        <div className="relative z-20 container h-full flex flex-col justify-center items-center text-center">
-          <h1 className="text-4xl md:text-7xl font-bold mb-4">
-            <span className="text-orange-500 font-extrabold tracking-wider">OUR</span>
-            <span className="font-light tracking-widest ml-2">GALLERY</span>
-          </h1>
-          <p className="text-lg md:text-xl text-zinc-300 max-w-2xl font-light tracking-wide">
-            Browse through our portfolio of custom fabrication work and completed projects
-          </p>
+      <section className="relative py-20 overflow-hidden">
+        <div className="absolute inset-0">
+          <Image
+            src={"https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741783803/lc03gne4mnc77za4awxa.jpg".includes('cloudinary')
+              ? getCloudinaryUrl("https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741783803/lc03gne4mnc77za4awxa.jpg", 1200)
+              : "https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741783803/lc03gne4mnc77za4awxa.jpg"}
+            alt="Gallery header"
+            fill
+            className="object-cover object-center opacity-40"
+            priority
+            sizes="100vw"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black"></div>
         </div>
-      </div>
+        <div className="container relative z-10 px-4 md:px-6">
+          <div className="max-w-4xl mx-auto text-center">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6">
+              Our <span className="text-orange-500">Gallery</span>
+            </h1>
+            <p className="text-lg text-zinc-300 max-w-2xl mx-auto">
+              Browse through our portfolio of custom fabrication work and completed projects
+            </p>
+          </div>
+        </div>
+      </section>
 
       {/* Gallery Section */}
       <section className="py-12 bg-zinc-900">
@@ -110,7 +120,9 @@ export function GalleryContent({ galleryImages }: GalleryContentProps) {
                 >
                   <div className="aspect-square relative overflow-hidden">
                     <Image
-                      src={image.url}
+                      src={image.url && image.url.includes('cloudinary')
+                        ? getCloudinaryUrl(image.url, 800)
+                        : image.url}
                       alt={image.caption || 'Gallery image'}
                       fill
                       className="object-cover transition-transform duration-300 group-hover:scale-105"
@@ -167,7 +179,9 @@ export function GalleryContent({ galleryImages }: GalleryContentProps) {
               </DialogHeader>
               <div className="relative aspect-[4/3] w-full overflow-hidden rounded-md">
                 <Image
-                  src={selectedImage.url}
+                  src={selectedImage.url && selectedImage.url.includes('cloudinary')
+                    ? getCloudinaryUrl(selectedImage.url, 1200)
+                    : selectedImage.url}
                   alt={selectedImage.caption || 'Gallery image'}
                   fill
                   className="object-contain"

@@ -282,11 +282,15 @@ export function ShopContent({ initialData }: ShopContentProps) {
       <section className="relative py-20 overflow-hidden">
         <div className="absolute inset-0">
           <Image
-            src={settings?.heroImage ?? DEFAULT_HERO_IMAGE}
+            src={settings?.heroImage && settings?.heroImage.includes('cloudinary')
+              ? settings.heroImage.replace('/upload/', '/upload/w_1200,q_auto,f_auto/')
+              : settings?.heroImage ?? DEFAULT_HERO_IMAGE}
             alt="Elite FabWorx Shop"
             fill
             className="object-cover object-center opacity-40"
             priority
+            loading="eager"
+            sizes="100vw"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black"></div>
         </div>
@@ -574,7 +578,7 @@ export function ShopContent({ initialData }: ShopContentProps) {
                                       width={400}
                                       height={400}
                                       loading="lazy"
-                                      sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
+                                      sizes="(max-width: 640px) 90vw, (max-width: 1024px) 33vw, 25vw"
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:scale-105" />
                                   </>
@@ -689,7 +693,7 @@ export function ShopContent({ initialData }: ShopContentProps) {
                                         width={400}
                                         height={400}
                                         loading="lazy"
-                                        sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
+                                        sizes="(max-width: 640px) 90vw, (max-width: 1024px) 33vw, 25vw"
                                       />
                                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:scale-105" />
                                     </>

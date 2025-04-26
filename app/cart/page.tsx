@@ -9,6 +9,10 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Trash, Plus, Minus, ShoppingCart, ArrowRight } from "lucide-react"
 
+function getCloudinaryUrl(url: string, width: number) {
+  return url.replace('/upload/', `/upload/w_${width},q_auto,f_auto/`);
+}
+
 export default function CartPage() {
   const { cart, removeFromCart, updateQuantity, clearCart, totalItems, totalPrice } = useCart()
   const router = useRouter()
@@ -56,10 +60,13 @@ export default function CartPage() {
                     <div className="col-span-2 flex items-center gap-4">
                       <div className="w-16 h-16 relative flex-shrink-0">
                         <Image
-                          src={item.image || "/placeholder.svg"}
+                          src={item.image && item.image.includes('cloudinary')
+                            ? getCloudinaryUrl(item.image, 400)
+                            : item.image || "/placeholder.svg"}
                           alt={item.name}
                           fill
                           className="object-cover rounded-md"
+                          sizes="(max-width: 640px) 90vw, (max-width: 1024px) 33vw, 25vw"
                         />
                       </div>
                       <div>
@@ -153,10 +160,13 @@ export default function CartPage() {
                   <div key={item._id} className="flex items-center gap-4">
                     <div className="w-12 h-12 relative flex-shrink-0">
                       <Image
-                        src={item.image || "/placeholder.svg"}
+                        src={item.image && item.image.includes('cloudinary')
+                          ? getCloudinaryUrl(item.image, 400)
+                          : item.image || "/placeholder.svg"}
                         alt={item.name}
                         fill
                         className="object-cover rounded-md"
+                        sizes="(max-width: 640px) 90vw, (max-width: 1024px) 33vw, 25vw"
                       />
                     </div>
                     <div className="flex-1">

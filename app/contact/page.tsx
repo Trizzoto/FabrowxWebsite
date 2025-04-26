@@ -11,6 +11,10 @@ export const metadata: Metadata = {
   description: 'Get in touch with Elite Fabworx for all your metal fabrication needs. We\'re here to help with your custom projects.',
 };
 
+function getCloudinaryUrl(url: string, width: number) {
+  return url.replace('/upload/', `/upload/w_${width},q_auto,f_auto/`);
+}
+
 export default function ContactPage() {
   return (
     <div className="bg-black min-h-screen">
@@ -18,11 +22,14 @@ export default function ContactPage() {
         {/* Hero Image */}
         <div className="absolute inset-0">
           <Image
-            src="https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741783803/lc03gne4mnc77za4awxa.jpg"
+            src={"https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741783803/lc03gne4mnc77za4awxa.jpg".includes('cloudinary')
+              ? getCloudinaryUrl("https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741783803/lc03gne4mnc77za4awxa.jpg", 1200)
+              : "https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741783803/lc03gne4mnc77za4awxa.jpg"}
             alt="Elite FabWorx metal fabrication"
             fill
             className="object-cover object-center opacity-40"
             priority
+            sizes="100vw"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black"></div>
         </div>

@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: ['/admin/', '/api/'],
     },
-    sitemap: 'https://elitefabworx.com/sitemap.xml',
+    sitemap: 'https://www.elitefabworx.com.au/sitemap.xml',
   }
 } 
