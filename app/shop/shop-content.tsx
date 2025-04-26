@@ -22,21 +22,6 @@ interface ShopContentProps {
   }
 }
 
-// Helper to generate optimized thumbnail URLs
-function getOptimizedImageUrl(url: string, width: number = 400): string {
-  if (!url) return "/placeholder.png";
-  // Cloudinary
-  if (url.includes("res.cloudinary.com")) {
-    return url.replace(/\/upload\//, `/upload/w_${width}/`);
-  }
-  // Shopify
-  if (url.includes("cdn.shopify.com")) {
-    const [base, query] = url.split("?");
-    return `${base}?width=${width}`;
-  }
-  return url;
-}
-
 export function ShopContent({ initialData }: ShopContentProps) {
   const router = useRouter()
   const [searchQuery, setSearchQuery] = useState("")
@@ -52,6 +37,11 @@ export function ShopContent({ initialData }: ShopContentProps) {
       zoo: initialData.products.filter(p => p.brand !== "Elite Fabworx")
     }
   })
+  
+  // Move these inside useEffect to avoid infinite re-renders
+  const [eliteCategories, setEliteCategories] = useState<string[]>([])
+  const [zooCategories, setZooCategories] = useState<string[]>([])
+  
   const [categoryTree, setCategoryTree] = useState<Map<string, CategoryLevel>>(() => {
     const tree = buildCategoryTree(initialData.categories)
     tree.forEach((category, categoryName) => {
@@ -70,9 +60,7 @@ export function ShopContent({ initialData }: ShopContentProps) {
   const searchParams = useSearchParams()
   const scrollPositionRef = useRef<number | null>(null)
 
-  // Detect mobile device for pagination
-  // const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
-  const ITEMS_PER_PAGE = 12;
+  const ITEMS_PER_PAGE = 12
 
   // Store scroll position before navigation
   const handleProductClick = (productId: string) => {
@@ -122,25 +110,45 @@ export function ShopContent({ initialData }: ShopContentProps) {
     }
   }, [searchQuery, products])
 
+  // Update categories when filteredProducts changes
+  useEffect(() => {
+    const newEliteCategories = Array.from(new Set(filteredProducts.elite.map(p => p.category)))
+    const newZooCategories = Array.from(new Set(filteredProducts.zoo.map(p => p.category)))
+    
+    setEliteCategories(newEliteCategories)
+    setZooCategories(newZooCategories)
+  }, [filteredProducts]);
+
   // Initialize visible products for each category
   useEffect(() => {
-    if (categoryTree.size === 0) return
+    if (categoryTree.size === 0 || eliteCategories.length === 0 && zooCategories.length === 0) return
 
     const initialVisibleProducts: { [key: string]: Product[] } = {}
     const initialPage: { [key: string]: number } = {}
     const initialHasMore: { [key: string]: boolean } = {}
 
-    categoryTree.forEach((_, categoryName) => {
-      const categoryProducts = getFilteredProductsByCategory(categoryName)
-      initialVisibleProducts[categoryName] = categoryProducts.slice(0, ITEMS_PER_PAGE)
-      initialPage[categoryName] = 1
-      initialHasMore[categoryName] = categoryProducts.length > ITEMS_PER_PAGE
-    })
+    // Elite categories
+    eliteCategories.forEach((categoryName) => {
+      const categoryKey = `elite-${categoryName}`;
+      const categoryProducts = getFilteredProductsByCategory(categoryName, 'elite');
+      initialVisibleProducts[categoryKey] = categoryProducts.slice(0, ITEMS_PER_PAGE)
+      initialPage[categoryKey] = 1
+      initialHasMore[categoryKey] = categoryProducts.length > ITEMS_PER_PAGE
+    });
+
+    // Zoo categories
+    zooCategories.forEach((categoryName) => {
+      const categoryKey = `zoo-${categoryName}`;
+      const categoryProducts = getFilteredProductsByCategory(categoryName, 'zoo');
+      initialVisibleProducts[categoryKey] = categoryProducts.slice(0, ITEMS_PER_PAGE)
+      initialPage[categoryKey] = 1
+      initialHasMore[categoryKey] = categoryProducts.length > ITEMS_PER_PAGE
+    });
 
     setVisibleProducts(initialVisibleProducts)
     setPage(initialPage)
     setHasMore(initialHasMore)
-  }, [categoryTree, searchQuery])
+  }, [eliteCategories, zooCategories, categoryTree, searchQuery]);
 
   // Set up intersection observer for infinite scrolling
   useEffect(() => {
@@ -150,9 +158,12 @@ export function ShopContent({ initialData }: ShopContentProps) {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            const categoryName = entry.target.getAttribute('data-category')
-            if (categoryName && hasMore[categoryName]) {
-              loadMoreProducts(categoryName)
+            const categoryInfo = entry.target.getAttribute('data-category')
+            if (categoryInfo) {
+              const [brand, category] = categoryInfo.split('-', 2)
+              if (hasMore[`${brand}-${category}`]) {
+                loadMoreProducts(brand, category)
+              }
             }
           }
         })
@@ -172,15 +183,26 @@ export function ShopContent({ initialData }: ShopContentProps) {
     }
   }, [hasMore, visibleProducts])
 
-  const loadMoreProducts = (categoryName: string) => {
-    const categoryProducts = getFilteredProductsByCategory(categoryName);
+  const loadMoreProducts = (brand: string, categoryName: string) => {
+    const categoryKey = `${brand}-${categoryName}`;
+    let categoryProducts;
+    
+    if (brand === 'elite') {
+      categoryProducts = filteredProducts.elite.filter(p => p.category === categoryName);
+    } else {
+      categoryProducts = filteredProducts.zoo.filter(p => p.category === categoryName);
+    }
+    
+    // Load all remaining products
     setVisibleProducts(prev => ({
       ...prev,
-      [categoryName]: categoryProducts
+      [categoryKey]: categoryProducts
     }));
+
+    // Set hasMore to false since we've loaded all products
     setHasMore(prev => ({
       ...prev,
-      [categoryName]: false
+      [categoryKey]: false
     }));
   }
 
@@ -222,15 +244,21 @@ export function ShopContent({ initialData }: ShopContentProps) {
     }
   }
 
-  const getFilteredProductsByCategory = (category: string) => {
-    return products
+  const getFilteredProductsByCategory = (category: string, brand?: string) => {
+    const productsToFilter = brand === 'elite' 
+      ? filteredProducts.elite 
+      : brand === 'zoo' 
+        ? filteredProducts.zoo 
+        : products;
+        
+    return productsToFilter
       .filter(product => {
-      const matchesCategory = product.category === category
-      const matchesSearch = searchQuery === "" || 
-        product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        product.description.toLowerCase().includes(searchQuery.toLowerCase())
-      return matchesCategory && matchesSearch
-    })
+        const matchesCategory = product.category === category
+        const matchesSearch = searchQuery === "" || 
+          product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          product.description.toLowerCase().includes(searchQuery.toLowerCase())
+        return matchesCategory && matchesSearch
+      })
       .sort((a, b) => {
         // Sort Elite Fabworx products to the top
         if (a.brand === "Elite Fabworx" && b.brand !== "Elite Fabworx") return -1
@@ -238,10 +266,6 @@ export function ShopContent({ initialData }: ShopContentProps) {
         return 0
       })
   }
-
-  // Get unique categories for each brand
-  const eliteCategories = Array.from(new Set(filteredProducts.elite.map(p => p.category)))
-  const zooCategories = Array.from(new Set(filteredProducts.zoo.map(p => p.category)))
 
   const setRef = (brand: string, category: string) => (el: HTMLDivElement | null) => {
     if (el) {
@@ -516,77 +540,93 @@ export function ShopContent({ initialData }: ShopContentProps) {
                   </p>
                 </div>
 
-                {eliteCategories.map((category) => (
-                  <div key={`elite-${category}`} id={`elite-${category}`} ref={setRef('elite', category)} className="mb-16">
-                    <h3 className="text-2xl font-bold mb-6">{category}</h3>
-                    <div className="grid grid-cols-2 gap-2 sm:gap-4 md:gap-6 lg:grid-cols-4">
-                      {(visibleProducts[category] || []).map((product) => (
-                        <button 
-                          key={product.id} 
-                          className="group text-left w-full"
-                          onClick={() => handleProductClick(product.id)}
-                        >
-                          <Card className="bg-zinc-900/50 border-zinc-800 backdrop-blur-sm overflow-hidden hover:border-orange-500/50 transition-colors h-full">
-                            <div className="aspect-square relative bg-zinc-800 overflow-hidden">
-                              {product.images && product.images[0] ? (
-                                <>
-                                  <Image
-                                    src={getOptimizedImageUrl(product.images[0], 400)}
-                                    alt={product.name}
-                                    width={400}
-                                    height={400}
-                                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                                    className="object-cover transition-transform duration-300 group-hover:scale-105"
-                                    loading="lazy"
-                                    quality={75}
-                                  />
-                                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:scale-105" />
-                                </>
-                              ) : (
-                                <div className="absolute inset-0 flex items-center justify-center text-zinc-600">
-                                  No Image
+                {eliteCategories.map((category) => {
+                  const categoryKey = `elite-${category}`;
+                  return (
+                    <div key={categoryKey} id={categoryKey} ref={setRef('elite', category)} className="mb-16">
+                      <h3 className="text-2xl font-bold mb-6">{category}</h3>
+                      <div className="grid grid-cols-2 gap-2 sm:gap-4 md:gap-6 lg:grid-cols-4">
+                        {filteredProducts.elite
+                          .filter(p => p.category === category)
+                          .slice(0, visibleProducts[categoryKey]?.length || ITEMS_PER_PAGE)
+                          .map((product) => (
+                          <button 
+                            key={product.id} 
+                            className="group text-left w-full"
+                            onClick={() => handleProductClick(product.id)}
+                          >
+                            <Card className="bg-zinc-900/50 border-zinc-800 backdrop-blur-sm overflow-hidden hover:border-orange-500/50 transition-colors h-full">
+                              <div className="aspect-square relative bg-zinc-800 overflow-hidden">
+                                {product.images && product.images[0] ? (
+                                  <>
+                                    <Image
+                                      src={product.images[0]}
+                                      alt={product.name}
+                                      fill
+                                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                                      className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                      loading="lazy"
+                                      quality={75}
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:scale-105" />
+                                  </>
+                                ) : (
+                                  <div className="absolute inset-0 flex items-center justify-center text-zinc-600">
+                                    No Image
+                                  </div>
+                                )}
+                              </div>
+                              <CardContent className="p-2 sm:p-4">
+                                <div className="mb-1 sm:mb-2">
+                                  <span className="text-[10px] sm:text-xs text-orange-400 font-medium block mb-0.5 sm:mb-1">
+                                      {product.brand || "Zoo Performance"}
+                                  </span>
+                                  <h3 className="font-semibold text-sm sm:text-lg line-clamp-2 group-hover:text-orange-400 transition-colors">
+                                    {product.name}
+                                  </h3>
                                 </div>
-                              )}
-                            </div>
-                            <CardContent className="p-2 sm:p-4">
-                              <div className="mb-1 sm:mb-2">
-                                <span className="text-[10px] sm:text-xs text-orange-400 font-medium block mb-0.5 sm:mb-1">
-                                    {product.brand || "Zoo Performance"}
-                                </span>
-                                <h3 className="font-semibold text-sm sm:text-lg line-clamp-2 group-hover:text-orange-400 transition-colors">
-                                  {product.name}
-                                </h3>
-                              </div>
-                              <p className="text-xs sm:text-sm text-zinc-400 line-clamp-2 mb-2 sm:mb-4">
-                                {product.description}
-                              </p>
-                              <div className="mt-auto text-right">
-                                <p className="text-base md:text-xl font-bold text-orange-400">
-                                  ${(() => {
-                                    let price = typeof product.price === 'number' ? product.price : Number(product.price);
-                                    if (isNaN(price)) return '0';
-                                    if (price % 1 === 0) {
-                                      return Math.round(price).toString();
-                                    } else {
-                                      return price.toFixed(2).replace(/\.?0+$/, '');
-                                    }
-                                  })()}
+                                <p className="text-xs sm:text-sm text-zinc-400 line-clamp-2 mb-2 sm:mb-4">
+                                  {product.description}
                                 </p>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        </button>
-                      ))}
-                    </div>
-                    {hasMore[category] && (
-                      <div className="flex justify-center mt-6">
-                        <Button onClick={() => loadMoreProducts(category)} variant="outline" className="border-orange-500 text-orange-400 hover:bg-orange-500/10">
-                          Load More
-                        </Button>
+                                <div className="mt-auto text-right">
+                                  <p className="text-base md:text-xl font-bold text-orange-400">
+                                    ${(() => {
+                                      // Ensure we have a valid number
+                                      let price = typeof product.price === 'number' ? product.price : Number(product.price);
+                                      if (isNaN(price)) return '0';
+                                      
+                                      // Format the price properly
+                                      if (price % 1 === 0) {
+                                        return Math.round(price).toString();
+                                      } else {
+                                        return price.toFixed(2).replace(/\.?0+$/, '');
+                                      }
+                                    })()}
+                                  </p>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          </button>
+                        ))}
                       </div>
-                    )}
-                  </div>
-                ))}
+                      
+                      {/* Load More Button */}
+                      {hasMore[categoryKey] && (
+                        <div className="flex justify-center mt-8">
+                          <Button 
+                            onClick={() => loadMoreProducts('elite', category)}
+                            variant="outline" 
+                            className="border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white"
+                            data-category={`elite-${category}`}
+                            ref={categoryKey === `elite-${category}` ? loadMoreRef : undefined}
+                          >
+                            Load More
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             )}
 
@@ -608,77 +648,93 @@ export function ShopContent({ initialData }: ShopContentProps) {
                   </p>
                 </div>
 
-                {zooCategories.map((category) => (
-                  <div key={`zoo-${category}`} id={`zoo-${category}`} ref={setRef('zoo', category)} className="mb-16">
-                    <h3 className="text-2xl font-bold mb-6">{category}</h3>
-                    <div className="grid grid-cols-2 gap-2 sm:gap-4 md:gap-6 lg:grid-cols-4">
-                      {(visibleProducts[category] || []).map((product) => (
-                        <button 
-                          key={product.id} 
-                          className="group text-left w-full"
-                          onClick={() => handleProductClick(product.id)}
-                        >
-                          <Card className="bg-zinc-900/50 border-zinc-800 backdrop-blur-sm overflow-hidden hover:border-orange-500/50 transition-colors h-full">
-                            <div className="aspect-square relative bg-zinc-800 overflow-hidden">
-                              {product.images && product.images[0] ? (
-                                <>
-                                  <Image
-                                    src={getOptimizedImageUrl(product.images[0], 400)}
-                                    alt={product.name}
-                                    width={400}
-                                    height={400}
-                                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                                    className="object-cover transition-transform duration-300 group-hover:scale-105"
-                                    loading="lazy"
-                                    quality={75}
-                                  />
-                                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:scale-105" />
-                                </>
-                              ) : (
-                                <div className="absolute inset-0 flex items-center justify-center text-zinc-600">
-                                  No Image
+                {zooCategories.map((category) => {
+                  const categoryKey = `zoo-${category}`;
+                  return (
+                    <div key={categoryKey} id={categoryKey} ref={setRef('zoo', category)} className="mb-16">
+                      <h3 className="text-2xl font-bold mb-6">{category}</h3>
+                      <div className="grid grid-cols-2 gap-2 sm:gap-4 md:gap-6 lg:grid-cols-4">
+                        {filteredProducts.zoo
+                          .filter(p => p.category === category)
+                          .slice(0, visibleProducts[categoryKey]?.length || ITEMS_PER_PAGE)
+                          .map((product) => (
+                            <button 
+                              key={product.id} 
+                              className="group text-left w-full"
+                              onClick={() => handleProductClick(product.id)}
+                            >
+                              <Card className="bg-zinc-900/50 border-zinc-800 backdrop-blur-sm overflow-hidden hover:border-orange-500/50 transition-colors h-full">
+                                <div className="aspect-square relative bg-zinc-800 overflow-hidden">
+                                  {product.images && product.images[0] ? (
+                                    <>
+                                      <Image
+                                        src={product.images[0]}
+                                        alt={product.name}
+                                        fill
+                                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                        loading="lazy"
+                                        quality={75}
+                                      />
+                                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:scale-105" />
+                                    </>
+                                  ) : (
+                                    <div className="absolute inset-0 flex items-center justify-center text-zinc-600">
+                                      No Image
+                                    </div>
+                                  )}
                                 </div>
-                              )}
-                            </div>
-                            <CardContent className="p-2 sm:p-4">
-                              <div className="mb-1 sm:mb-2">
-                                <span className="text-[10px] sm:text-xs text-orange-400 font-medium block mb-0.5 sm:mb-1">
-                                    {product.brand || "Zoo Performance"}
-                                </span>
-                                <h3 className="font-semibold text-sm sm:text-lg line-clamp-2 group-hover:text-orange-400 transition-colors">
-                                  {product.name}
-                                </h3>
-                              </div>
-                              <p className="text-xs sm:text-sm text-zinc-400 line-clamp-2 mb-2 sm:mb-4">
-                                {product.description}
-                              </p>
-                              <div className="mt-auto text-right">
-                                <p className="text-base md:text-xl font-bold text-orange-400">
-                                  ${(() => {
-                                    let price = typeof product.price === 'number' ? product.price : Number(product.price);
-                                    if (isNaN(price)) return '0';
-                                    if (price % 1 === 0) {
-                                      return Math.round(price).toString();
-                                    } else {
-                                      return price.toFixed(2).replace(/\.?0+$/, '');
-                                    }
-                                  })()}
-                                </p>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        </button>
-                      ))}
-                    </div>
-                    {hasMore[category] && (
-                      <div className="flex justify-center mt-6">
-                        <Button onClick={() => loadMoreProducts(category)} variant="outline" className="border-orange-500 text-orange-400 hover:bg-orange-500/10">
-                          Load More
-                        </Button>
+                                <CardContent className="p-2 sm:p-4">
+                                  <div className="mb-1 sm:mb-2">
+                                    <span className="text-[10px] sm:text-xs text-orange-400 font-medium block mb-0.5 sm:mb-1">
+                                      {product.brand || "Zoo Performance"}
+                                    </span>
+                                    <h3 className="font-semibold text-sm sm:text-lg line-clamp-2 group-hover:text-orange-400 transition-colors">
+                                      {product.name}
+                                    </h3>
+                                  </div>
+                                  <p className="text-xs sm:text-sm text-zinc-400 line-clamp-2 mb-2 sm:mb-4">
+                                    {product.description}
+                                  </p>
+                                  <div className="mt-auto text-right">
+                                    <p className="text-base md:text-xl font-bold text-orange-400">
+                                      ${(() => {
+                                        // Ensure we have a valid number
+                                        let price = typeof product.price === 'number' ? product.price : Number(product.price);
+                                        if (isNaN(price)) return '0';
+                                        
+                                        // Format the price properly
+                                        if (price % 1 === 0) {
+                                          return Math.round(price).toString();
+                                        } else {
+                                          return price.toFixed(2).replace(/\.?0+$/, '');
+                                        }
+                                      })()}
+                                    </p>
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            </button>
+                          ))}
                       </div>
-                    )}
-                  </div>
-                ))}
+                      
+                      {/* Load More Button */}
+                      {hasMore[categoryKey] && (
+                        <div className="flex justify-center mt-8">
+                          <Button 
+                            onClick={() => loadMoreProducts('zoo', category)}
+                            variant="outline" 
+                            className="border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white"
+                            data-category={`zoo-${category}`}
+                            ref={categoryKey === `zoo-${category}` ? loadMoreRef : undefined}
+                          >
+                            Load More
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>
