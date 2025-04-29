@@ -22,6 +22,14 @@ interface ShopContentProps {
   }
 }
 
+const ProductSkeleton = () => (
+  <div className="animate-pulse">
+    <div className="aspect-square bg-zinc-800 rounded-lg mb-4"></div>
+    <div className="h-4 bg-zinc-800 rounded w-3/4 mb-2"></div>
+    <div className="h-4 bg-zinc-800 rounded w-1/2"></div>
+  </div>
+)
+
 export function ShopContent({ initialData }: ShopContentProps) {
   const router = useRouter()
   const [searchQuery, setSearchQuery] = useState("")
@@ -54,11 +62,13 @@ export function ShopContent({ initialData }: ShopContentProps) {
   const [visibleProducts, setVisibleProducts] = useState<{ [key: string]: Product[] }>({})
   const [page, setPage] = useState<{ [key: string]: number }>({})
   const [hasMore, setHasMore] = useState<{ [key: string]: boolean }>({})
+  const [isLoadingMore, setIsLoadingMore] = useState<{ [key: string]: boolean }>({})
   const categoryRefs = useRef<{ [key: string]: HTMLDivElement | null }>({})
   const observerRef = useRef<IntersectionObserver | null>(null)
   const loadMoreRef = useRef<HTMLDivElement | null>(null)
   const searchParams = useSearchParams()
   const scrollPositionRef = useRef<number | null>(null)
+  const [isInitialLoad, setIsInitialLoad] = useState(true)
 
   const ITEMS_PER_PAGE = 12
 
@@ -121,11 +131,10 @@ export function ShopContent({ initialData }: ShopContentProps) {
 
   // Initialize visible products for each category
   useEffect(() => {
-    if (categoryTree.size === 0 || eliteCategories.length === 0 && zooCategories.length === 0) return
-
     const initialVisibleProducts: { [key: string]: Product[] } = {}
     const initialPage: { [key: string]: number } = {}
     const initialHasMore: { [key: string]: boolean } = {}
+    const initialLoadingMore: { [key: string]: boolean } = {}
 
     // Elite categories
     eliteCategories.forEach((categoryName) => {
@@ -134,6 +143,7 @@ export function ShopContent({ initialData }: ShopContentProps) {
       initialVisibleProducts[categoryKey] = categoryProducts.slice(0, ITEMS_PER_PAGE)
       initialPage[categoryKey] = 1
       initialHasMore[categoryKey] = categoryProducts.length > ITEMS_PER_PAGE
+      initialLoadingMore[categoryKey] = false
     });
 
     // Zoo categories
@@ -143,17 +153,17 @@ export function ShopContent({ initialData }: ShopContentProps) {
       initialVisibleProducts[categoryKey] = categoryProducts.slice(0, ITEMS_PER_PAGE)
       initialPage[categoryKey] = 1
       initialHasMore[categoryKey] = categoryProducts.length > ITEMS_PER_PAGE
+      initialLoadingMore[categoryKey] = false
     });
 
     setVisibleProducts(initialVisibleProducts)
     setPage(initialPage)
     setHasMore(initialHasMore)
-  }, [eliteCategories, zooCategories, categoryTree, searchQuery]);
+    setIsLoadingMore(initialLoadingMore)
+  }, [eliteCategories, zooCategories, filteredProducts]);
 
   // Set up intersection observer for infinite scrolling
   useEffect(() => {
-    if (typeof window === 'undefined') return
-
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -161,7 +171,7 @@ export function ShopContent({ initialData }: ShopContentProps) {
             const categoryInfo = entry.target.getAttribute('data-category')
             if (categoryInfo) {
               const [brand, category] = categoryInfo.split('-', 2)
-              if (hasMore[`${brand}-${category}`]) {
+              if (hasMore[`${brand}-${category}`] && !isLoadingMore[`${brand}-${category}`]) {
                 loadMoreProducts(brand, category)
               }
             }
@@ -181,29 +191,39 @@ export function ShopContent({ initialData }: ShopContentProps) {
     return () => {
       observer.disconnect()
     }
-  }, [hasMore, visibleProducts])
+  }, [hasMore, isLoadingMore])
 
   const loadMoreProducts = (brand: string, categoryName: string) => {
     const categoryKey = `${brand}-${categoryName}`;
-    let categoryProducts;
+    const currentPage = page[categoryKey] || 1;
+    const nextPage = currentPage + 1;
     
-    if (brand === 'elite') {
-      categoryProducts = filteredProducts.elite.filter(p => p.category === categoryName);
-    } else {
-      categoryProducts = filteredProducts.zoo.filter(p => p.category === categoryName);
-    }
+    setIsLoadingMore(prev => ({ ...prev, [categoryKey]: true }));
     
-    // Load all remaining products
-    setVisibleProducts(prev => ({
-      ...prev,
-      [categoryKey]: categoryProducts
-    }));
-
-    // Set hasMore to false since we've loaded all products
-    setHasMore(prev => ({
-      ...prev,
-      [categoryKey]: false
-    }));
+    // Simulate loading delay
+    setTimeout(() => {
+      const categoryProducts = getFilteredProductsByCategory(categoryName, brand);
+      const startIndex = 0;
+      const endIndex = nextPage * ITEMS_PER_PAGE;
+      const newProducts = categoryProducts.slice(startIndex, endIndex);
+      
+      setVisibleProducts(prev => ({
+        ...prev,
+        [categoryKey]: newProducts
+      }));
+      
+      setPage(prev => ({
+        ...prev,
+        [categoryKey]: nextPage
+      }));
+      
+      setHasMore(prev => ({
+        ...prev,
+        [categoryKey]: endIndex < categoryProducts.length
+      }));
+      
+      setIsLoadingMore(prev => ({ ...prev, [categoryKey]: false }));
+    }, 500); // Simulated delay
   }
 
   // Set up intersection observer for category sections
@@ -273,6 +293,15 @@ export function ShopContent({ initialData }: ShopContentProps) {
     }
   }
 
+  // Update the initial load effect
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsInitialLoad(false)
+    }, 1000) // Show skeleton for 1 second
+
+    return () => clearTimeout(timer)
+  }, [])
+
   return (
     <div className={cn(
       "min-h-screen bg-black text-white transition-opacity duration-300",
@@ -283,14 +312,16 @@ export function ShopContent({ initialData }: ShopContentProps) {
         <div className="absolute inset-0">
           <Image
             src={settings?.heroImage && settings?.heroImage.includes('cloudinary')
-              ? settings.heroImage.replace('/upload/', '/upload/w_1200,q_auto,f_auto/')
+              ? settings.heroImage.replace('/upload/', '/upload/w_1200,q_auto,f_auto,dpr_auto/')
               : settings?.heroImage ?? DEFAULT_HERO_IMAGE}
             alt="Elite FabWorx Shop"
             fill
             className="object-cover object-center opacity-40"
             priority
             loading="eager"
-            sizes="100vw"
+            decoding="async"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 1200px"
+            quality={75}
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black"></div>
         </div>
@@ -530,230 +561,249 @@ export function ShopContent({ initialData }: ShopContentProps) {
               />
             </div>
 
-            {/* Elite Fabworx Products */}
-            {eliteCategories.length > 0 && (
-              <div className="mb-16">
-                <div className="border-b border-zinc-800 pb-4 mb-8 text-center">
-                  <div className="inline-flex items-center justify-center mb-4">
-                    <h2 className="text-4xl font-bold tracking-wide">
-                      <span className="text-orange-500">ELITE</span> <span className="text-white">FABWORX</span> <span className="text-orange-500">ENGINEERED</span>
-                    </h2>
-                  </div>
-                  <p className="text-zinc-400 max-w-2xl mx-auto">
-                    Quality in-house fabricated products designed and built by our team.
-                  </p>
-                </div>
-
-                {eliteCategories.map((category) => {
-                  const categoryKey = `elite-${category}`;
-                  return (
-                    <div key={categoryKey} id={categoryKey} ref={setRef('elite', category)} className="mb-16">
-                      <h3 className="text-2xl font-bold mb-6">{category}</h3>
-                      <div className="grid grid-cols-2 gap-2 sm:gap-4 md:gap-6 lg:grid-cols-4">
-                        {filteredProducts.elite
-                          .filter(p => p.category === category)
-                          .slice(0, visibleProducts[categoryKey]?.length || ITEMS_PER_PAGE)
-                          .map((product) => (
-                          <button 
-                            key={product.id} 
-                            className="group text-left w-full"
-                            onClick={() => handleProductClick(product.id)}
-                          >
-                            <Card className="bg-zinc-900/50 border-zinc-800 backdrop-blur-sm overflow-hidden hover:border-orange-500/50 transition-colors h-full">
-                              <div className="aspect-square relative bg-zinc-800 overflow-hidden">
-                                {product.images && product.images[0] ? (
-                                  <>
-                                    <Image
-                                      src={product.images && product.images[0] ? (
-                                        product.images[0].includes('cloudinary')
-                                          ? product.images[0].replace('/upload/', '/upload/w_400,q_auto,f_auto/')
-                                          : product.images[0].includes('shopify')
-                                            ? product.images[0].includes('?')
-                                              ? `${product.images[0]}&width=400&height=400&crop=center&format=webp&quality=80`
-                                              : `${product.images[0]}?width=400&height=400&crop=center&format=webp&quality=80`
-                                            : product.images[0]
-                                      ) : "/placeholder.svg"}
-                                      alt={product.name}
-                                      className="object-cover transition-transform duration-300 group-hover:scale-110"
-                                      width={400}
-                                      height={400}
-                                      loading="lazy"
-                                      sizes="(max-width: 640px) 90vw, (max-width: 1024px) 33vw, 25vw"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:scale-105" />
-                                  </>
-                                ) : (
-                                  <div className="absolute inset-0 flex items-center justify-center text-zinc-600">
-                                    No Image
-                                  </div>
-                                )}
-                              </div>
-                              <CardContent className="p-2 sm:p-4">
-                                <div className="mb-1 sm:mb-2">
-                                  <span className="text-[10px] sm:text-xs text-orange-400 font-medium block mb-0.5 sm:mb-1">
-                                      {product.brand || "Zoo Performance"}
-                                  </span>
-                                  <h3 className="font-semibold text-sm sm:text-lg line-clamp-2 group-hover:text-orange-400 transition-colors">
-                                    {product.name}
-                                  </h3>
-                                </div>
-                                <p className="text-xs sm:text-sm text-zinc-400 line-clamp-2 mb-2 sm:mb-4">
-                                  {product.description}
-                                </p>
-                                <div className="mt-auto text-right">
-                                  <p className="text-base md:text-xl font-bold text-orange-400">
-                                    ${(() => {
-                                      // Ensure we have a valid number
-                                      let price = typeof product.price === 'number' ? product.price : Number(product.price);
-                                      if (isNaN(price)) return '0';
-                                      
-                                      // Format the price properly
-                                      if (price % 1 === 0) {
-                                        return Math.round(price).toString();
-                                      } else {
-                                        return price.toFixed(2).replace(/\.?0+$/, '');
-                                      }
-                                    })()}
-                                  </p>
-                                </div>
-                              </CardContent>
-                            </Card>
-                          </button>
-                        ))}
-                      </div>
-                      
-                      {/* Load More Button */}
-                      {hasMore[categoryKey] && (
-                        <div className="flex justify-center mt-8" ref={categoryKey === `elite-${category}` ? loadMoreRef : undefined}>
-                          <Button 
-                            onClick={() => loadMoreProducts('elite', category)}
-                            variant="outline" 
-                            className="border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white"
-                            data-category={`elite-${category}`}
-                          >
-                            Load More
-                          </Button>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
+            {isInitialLoad ? (
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                {[...Array(8)].map((_, i) => (
+                  <ProductSkeleton key={i} />
+                ))}
               </div>
-            )}
+            ) : (
+              <>
+                {/* Elite Fabworx Products */}
+                {eliteCategories.length > 0 && (
+                  <div className="mb-16">
+                    <div className="border-b border-zinc-800 pb-4 mb-8 text-center">
+                      <div className="inline-flex items-center justify-center mb-4">
+                        <h2 className="text-4xl font-bold tracking-wide">
+                          <span className="text-orange-500">ELITE</span> <span className="text-white">FABWORX</span> <span className="text-orange-500">ENGINEERED</span>
+                        </h2>
+                      </div>
+                      <p className="text-zinc-400 max-w-2xl mx-auto">
+                        Quality in-house fabricated products designed and built by our team.
+                      </p>
+                    </div>
 
-            {/* Zoo Performance Products */}
-            {zooCategories.length > 0 && (
-              <div className="mt-24 mb-16">
-                <div className="relative flex flex-col items-center justify-center mb-10">
-                  <div className="mb-6 w-full max-w-[300px]">
-                    <Image 
-                      src="/Zoo-logo.png" 
-                      alt="Zoo Performance" 
-                      width={300} 
-                      height={150} 
-                      className="w-full h-auto"
-                    />
-                  </div>
-                  <p className="text-zinc-400 text-center max-w-2xl mb-8">
-                    High-quality performance products from Zoo Performance, a trusted brand in the automotive industry.
-                  </p>
-                </div>
-
-                {zooCategories.map((category) => {
-                  const categoryKey = `zoo-${category}`;
-                  return (
-                    <div key={categoryKey} id={categoryKey} ref={setRef('zoo', category)} className="mb-16">
-                      <h3 className="text-2xl font-bold mb-6">{category}</h3>
-                      <div className="grid grid-cols-2 gap-2 sm:gap-4 md:gap-6 lg:grid-cols-4">
-                        {filteredProducts.zoo
-                          .filter(p => p.category === category)
-                          .slice(0, visibleProducts[categoryKey]?.length || ITEMS_PER_PAGE)
-                          .map((product) => (
-                            <button 
-                              key={product.id} 
-                              className="group text-left w-full"
-                              onClick={() => handleProductClick(product.id)}
-                            >
-                              <Card className="bg-zinc-900/50 border-zinc-800 backdrop-blur-sm overflow-hidden hover:border-orange-500/50 transition-colors h-full">
-                                <div className="aspect-square relative bg-zinc-800 overflow-hidden">
-                                  {product.images && product.images[0] ? (
-                                    <>
-                                      <Image
-                                        src={product.images && product.images[0] ? (
-                                          product.images[0].includes('cloudinary')
-                                            ? product.images[0].replace('/upload/', '/upload/w_400,q_auto,f_auto/')
-                                            : product.images[0].includes('shopify')
-                                              ? product.images[0].includes('?')
-                                                ? `${product.images[0]}&width=400&height=400&crop=center&format=webp&quality=80`
-                                                : `${product.images[0]}?width=400&height=400&crop=center&format=webp&quality=80`
-                                              : product.images[0]
-                                        ) : "/placeholder.svg"}
-                                        alt={product.name}
-                                        className="object-cover transition-transform duration-300 group-hover:scale-110"
-                                        width={400}
-                                        height={400}
-                                        loading="lazy"
-                                        sizes="(max-width: 640px) 90vw, (max-width: 1024px) 33vw, 25vw"
-                                      />
-                                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:scale-105" />
-                                    </>
-                                  ) : (
-                                    <div className="absolute inset-0 flex items-center justify-center text-zinc-600">
-                                      No Image
+                    {eliteCategories.map((category) => {
+                      const categoryKey = `elite-${category}`;
+                      return (
+                        <div key={categoryKey} id={categoryKey} ref={setRef('elite', category)} className="mb-16">
+                          <h3 className="text-2xl font-bold mb-6">{category}</h3>
+                          <div className="grid grid-cols-2 gap-2 sm:gap-4 md:gap-6 lg:grid-cols-4">
+                            {filteredProducts.elite
+                              .filter(p => p.category === category)
+                              .slice(0, visibleProducts[categoryKey]?.length || ITEMS_PER_PAGE)
+                              .map((product) => (
+                              <button 
+                                key={product.id} 
+                                className="group text-left w-full"
+                                onClick={() => handleProductClick(product.id)}
+                              >
+                                <Card className="bg-zinc-900/50 border-zinc-800 backdrop-blur-sm overflow-hidden hover:border-orange-500/50 transition-colors h-full">
+                                  <div className="aspect-square relative bg-zinc-800 overflow-hidden">
+                                    {product.images && product.images[0] ? (
+                                      <>
+                                        <Image
+                                          src={product.images && product.images[0] ? (
+                                            product.images[0].includes('cloudinary')
+                                              ? product.images[0].replace('/upload/', '/upload/w_400,q_auto,f_auto,dpr_auto/')
+                                              : product.images[0].includes('shopify')
+                                                ? product.images[0].includes('?')
+                                                  ? `${product.images[0]}&width=400&height=400&crop=center&format=webp&quality=75`
+                                                  : `${product.images[0]}?width=400&height=400&crop=center&format=webp&quality=75`
+                                                : product.images[0]
+                                          ) : "/placeholder.svg"}
+                                          alt={product.name}
+                                          className="object-cover transition-transform duration-300 group-hover:scale-110"
+                                          width={400}
+                                          height={400}
+                                          loading="lazy"
+                                          decoding="async"
+                                          sizes="(max-width: 640px) 90vw, (max-width: 1024px) 33vw, 25vw"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:scale-105" />
+                                      </>
+                                    ) : (
+                                      <div className="absolute inset-0 flex items-center justify-center text-zinc-600">
+                                        No Image
+                                      </div>
+                                    )}
+                                  </div>
+                                  <CardContent className="p-2 sm:p-4">
+                                    <div className="mb-1 sm:mb-2">
+                                      <span className="text-[10px] sm:text-xs text-orange-400 font-medium block mb-0.5 sm:mb-1">
+                                          {product.brand || "Zoo Performance"}
+                                      </span>
+                                      <h3 className="font-semibold text-sm sm:text-lg line-clamp-2 group-hover:text-orange-400 transition-colors">
+                                        {product.name}
+                                      </h3>
                                     </div>
-                                  )}
-                                </div>
-                                <CardContent className="p-2 sm:p-4">
-                                  <div className="mb-1 sm:mb-2">
-                                    <span className="text-[10px] sm:text-xs text-orange-400 font-medium block mb-0.5 sm:mb-1">
-                                      {product.brand || "Zoo Performance"}
-                                    </span>
-                                    <h3 className="font-semibold text-sm sm:text-lg line-clamp-2 group-hover:text-orange-400 transition-colors">
-                                      {product.name}
-                                    </h3>
-                                  </div>
-                                  <p className="text-xs sm:text-sm text-zinc-400 line-clamp-2 mb-2 sm:mb-4">
-                                    {product.description}
-                                  </p>
-                                  <div className="mt-auto text-right">
-                                    <p className="text-base md:text-xl font-bold text-orange-400">
-                                      ${(() => {
-                                        // Ensure we have a valid number
-                                        let price = typeof product.price === 'number' ? product.price : Number(product.price);
-                                        if (isNaN(price)) return '0';
-                                        
-                                        // Format the price properly
-                                        if (price % 1 === 0) {
-                                          return Math.round(price).toString();
-                                        } else {
-                                          return price.toFixed(2).replace(/\.?0+$/, '');
-                                        }
-                                      })()}
+                                    <p className="text-xs sm:text-sm text-zinc-400 line-clamp-2 mb-2 sm:mb-4">
+                                      {product.description}
                                     </p>
-                                  </div>
-                                </CardContent>
-                              </Card>
-                            </button>
-                          ))}
-                      </div>
-                      
-                      {/* Load More Button */}
-                      {hasMore[categoryKey] && (
-                        <div className="flex justify-center mt-8" ref={categoryKey === `zoo-${category}` ? loadMoreRef : undefined}>
-                          <Button 
-                            onClick={() => loadMoreProducts('zoo', category)}
-                            variant="outline" 
-                            className="border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white"
-                            data-category={`zoo-${category}`}
-                          >
-                            Load More
-                          </Button>
+                                    <div className="mt-auto text-right">
+                                      <p className="text-base md:text-xl font-bold text-orange-400">
+                                        ${(() => {
+                                          // Ensure we have a valid number
+                                          let price = typeof product.price === 'number' ? product.price : Number(product.price);
+                                          if (isNaN(price)) return '0';
+                                          
+                                          // Format the price properly
+                                          if (price % 1 === 0) {
+                                            return Math.round(price).toString();
+                                          } else {
+                                            return price.toFixed(2).replace(/\.?0+$/, '');
+                                          }
+                                        })()}
+                                      </p>
+                                    </div>
+                                  </CardContent>
+                                </Card>
+                              </button>
+                            ))}
+                          </div>
+                          
+                          {/* Load More Button */}
+                          {hasMore[categoryKey] && (
+                            <div 
+                              ref={loadMoreRef} 
+                              data-category={`elite-${category}`}
+                              className="flex justify-center mt-8"
+                            >
+                              {isLoadingMore[categoryKey] ? (
+                                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-orange-500"></div>
+                              ) : (
+                                <Button
+                                  variant="outline"
+                                  className="border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white"
+                                  onClick={() => loadMoreProducts('elite', category)}
+                                >
+                                  Load More
+                                </Button>
+                              )}
+                            </div>
+                          )}
                         </div>
-                      )}
+                      );
+                    })}
+                  </div>
+                )}
+
+                {/* Zoo Performance Products */}
+                {zooCategories.length > 0 && (
+                  <div className="mt-24 mb-16">
+                    <div className="relative flex flex-col items-center justify-center mb-10">
+                      <div className="mb-6 w-full max-w-[300px]">
+                        <Image 
+                          src="/Zoo-logo.png" 
+                          alt="Zoo Performance" 
+                          width={300} 
+                          height={150} 
+                          className="w-full h-auto"
+                        />
+                      </div>
+                      <p className="text-zinc-400 text-center max-w-2xl mb-8">
+                        High-quality performance products from Zoo Performance, a trusted brand in the automotive industry.
+                      </p>
                     </div>
-                  );
-                })}
-              </div>
+
+                    {zooCategories.map((category) => {
+                      const categoryKey = `zoo-${category}`;
+                      return (
+                        <div key={categoryKey} id={categoryKey} ref={setRef('zoo', category)} className="mb-16">
+                          <h3 className="text-2xl font-bold mb-6">{category}</h3>
+                          <div className="grid grid-cols-2 gap-2 sm:gap-4 md:gap-6 lg:grid-cols-4">
+                            {filteredProducts.zoo
+                              .filter(p => p.category === category)
+                              .slice(0, visibleProducts[categoryKey]?.length || ITEMS_PER_PAGE)
+                              .map((product) => (
+                                <button 
+                                  key={product.id} 
+                                  className="group text-left w-full"
+                                  onClick={() => handleProductClick(product.id)}
+                                >
+                                  <Card className="bg-zinc-900/50 border-zinc-800 backdrop-blur-sm overflow-hidden hover:border-orange-500/50 transition-colors h-full">
+                                    <div className="aspect-square relative bg-zinc-800 overflow-hidden">
+                                      {product.images && product.images[0] ? (
+                                        <>
+                                          <Image
+                                            src={product.images && product.images[0] ? (
+                                              product.images[0].includes('cloudinary')
+                                                ? product.images[0].replace('/upload/', '/upload/w_400,q_auto,f_auto,dpr_auto/')
+                                                : product.images[0].includes('shopify')
+                                                  ? product.images[0].includes('?')
+                                                    ? `${product.images[0]}&width=400&height=400&crop=center&format=webp&quality=75`
+                                                    : `${product.images[0]}?width=400&height=400&crop=center&format=webp&quality=75`
+                                                  : product.images[0]
+                                            ) : "/placeholder.svg"}
+                                            alt={product.name}
+                                            className="object-cover transition-transform duration-300 group-hover:scale-110"
+                                            width={400}
+                                            height={400}
+                                            loading="lazy"
+                                            decoding="async"
+                                            sizes="(max-width: 640px) 90vw, (max-width: 1024px) 33vw, 25vw"
+                                          />
+                                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:scale-105" />
+                                        </>
+                                      ) : (
+                                        <div className="absolute inset-0 flex items-center justify-center text-zinc-600">
+                                          No Image
+                                        </div>
+                                      )}
+                                    </div>
+                                    <CardContent className="p-2 sm:p-4">
+                                      <div className="mb-1 sm:mb-2">
+                                        <span className="text-[10px] sm:text-xs text-orange-400 font-medium block mb-0.5 sm:mb-1">
+                                          {product.brand || "Zoo Performance"}
+                                        </span>
+                                        <h3 className="font-semibold text-sm sm:text-lg line-clamp-2 group-hover:text-orange-400 transition-colors">
+                                          {product.name}
+                                        </h3>
+                                      </div>
+                                      <p className="text-xs sm:text-sm text-zinc-400 line-clamp-2 mb-2 sm:mb-4">
+                                        {product.description}
+                                      </p>
+                                      <div className="mt-auto text-right">
+                                        <p className="text-base md:text-xl font-bold text-orange-400">
+                                          ${(() => {
+                                            // Ensure we have a valid number
+                                            let price = typeof product.price === 'number' ? product.price : Number(product.price);
+                                            if (isNaN(price)) return '0';
+                                            
+                                            // Format the price properly
+                                            if (price % 1 === 0) {
+                                              return Math.round(price).toString();
+                                            } else {
+                                              return price.toFixed(2).replace(/\.?0+$/, '');
+                                            }
+                                          })()}
+                                        </p>
+                                      </div>
+                                    </CardContent>
+                                  </Card>
+                                </button>
+                              ))}
+                          </div>
+                          
+                          {/* Load More Button */}
+                          {hasMore[categoryKey] && (
+                            <div className="flex justify-center mt-8" ref={categoryKey === `zoo-${category}` ? loadMoreRef : undefined}>
+                              <Button 
+                                onClick={() => loadMoreProducts('zoo', category)}
+                                variant="outline" 
+                                className="border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white"
+                                data-category={`zoo-${category}`}
+                              >
+                                Load More
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
