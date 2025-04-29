@@ -1,17 +1,17 @@
 {
   "heroImage": "https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741783803/lc03gne4mnc77za4awxa.jpg",
-  "heroTagline": "Premium Metal Fabrication in Adelaide & Tailem Bend | Custom Exhausts, Roll Cages & 4x4 Accessories",
-  "aboutText": "Based in Adelaide with service to Tailem Bend, Elite Fabworx delivers premium automotive fabrication solutions for enthusiasts and motorsport competitors across South Australia. Our skilled team specializes in custom exhausts, roll cages, chassis modifications, and 4x4 accessories built to the highest standards. With a focus on quality materials and precision craftsmanship, we transform your automotive vision into reality.",
+  "heroTagline": "Custom Automotive Fabrication – Tailem Bend & Adelaide | Performance Exhausts, Roll Cages & 4x4 Modifications",
+  "aboutText": "Located in Tailem Bend, just over an hour from Adelaide, Elite Fabworx delivers premium automotive fabrication solutions for enthusiasts and motorsport competitors across South Australia. Our Tailem Bend workshop specializes in custom exhausts, roll cages, chassis modifications, and 4x4 accessories for clients in Adelaide and throughout SA. With our strategic location near The Bend Motorsport Park, we proudly service both Adelaide metropolitan customers and regional South Australia with quality workmanship and attention to detail.",
   "aboutImage": "https://res.cloudinary.com/dz8iqfdvf/image/upload/v1744180674/elite-fabworx/about/dduadbjmux3bgakakynm.jpg",
   "contactInfo": {
     "phone": "0499 638 046",
     "email": "Elitefabworx@outlook.com",
-    "location": "Adelaide & Tailem Bend, South Australia"
+    "location": "Tailem Bend, South Australia"
   },
   "services": [
     {
       "title": "Custom Fabrication",
-      "description": "Expert metal fabrication solutions in Adelaide and Tailem Bend for your unique requirements",
+      "description": "Expert metal fabrication solutions from our Tailem Bend workshop, servicing clients across Adelaide and South Australia",
       "image": "https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741819492/elite-fabworx/service-1/tbypybcrwyihe5wxezsp.jpg",
       "icon": "Wrench",
       "slug": "custom-fabrication",
@@ -23,7 +23,7 @@
     },
     {
       "title": "Performance Exhausts",
-      "description": "Custom exhaust systems for performance vehicles in Adelaide and Tailem Bend",
+      "description": "Custom exhaust systems for performance vehicles in Adelaide, Tailem Bend and across South Australia",
       "image": "https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741818971/elite-fabworx/service-2/lftf9v2h31iynhtg7ygm.jpg",
       "icon": "Car",
       "slug": "performance-upgrades",

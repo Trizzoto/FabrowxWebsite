@@ -11,14 +11,14 @@ const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: {
-    default: "Elite FabWorx | Custom Automotive Fabrication Adelaide & Tailem Bend",
-    template: "%s | Elite FabWorx"
+    default: "Elite Fabworx | Custom Automotive Fabrication - Servicing Adelaide & Tailem Bend",
+    template: "%s | Elite Fabworx"
   },
-  description: "Custom metal fabrication, exhausts, roll cages, 4x4 accessories, and chassis upgrades — servicing Adelaide and Tailem Bend, South Australia.",
-  keywords: ["metal fabrication Adelaide", "custom exhaust Adelaide", "roll cage fabrication Adelaide", "4x4 fabrication Adelaide", "metal fabrication Tailem Bend", "custom exhaust Tailem Bend", "roll cage fabrication Tailem Bend", "4x4 fabrication Tailem Bend"],
-  authors: [{ name: "Elite FabWorx" }],
-  creator: "Elite FabWorx",
-  publisher: "Elite FabWorx",
+  description: "Elite Fabworx specializes in custom automotive fabrication, exhausts, roll cages, and 4x4 accessories. Based in Tailem Bend, proudly servicing Adelaide, The Bend Motorsport Park, and all of South Australia.",
+  keywords: ["metal fabrication Adelaide", "custom exhaust Adelaide", "roll cage fabrication Adelaide", "4x4 fabrication Adelaide", "metal fabrication Tailem Bend", "4x4 fabrication South Australia", "The Bend Motorsport Park fabrication"],
+  authors: [{ name: "Elite Fabworx" }],
+  creator: "Elite Fabworx",
+  publisher: "Elite Fabworx",
   formatDetection: {
     email: false,
     address: false,
@@ -32,14 +32,14 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_AU',
     url: 'https://elitefabworx.com.au',
-    title: 'Elite FabWorx | Custom Automotive Fabrication Adelaide & Tailem Bend',
-    description: 'Custom metal fabrication, exhausts, roll cages, 4x4 accessories, and chassis upgrades — servicing Adelaide and Tailem Bend, South Australia.',
-    siteName: 'Elite FabWorx',
+    title: 'Elite Fabworx | Custom Automotive Fabrication - Servicing Adelaide & Tailem Bend',
+    description: 'Elite Fabworx specializes in custom automotive fabrication, exhausts, roll cages, and 4x4 accessories. Based in Tailem Bend, proudly servicing Adelaide, The Bend Motorsport Park, and all of South Australia.',
+    siteName: 'Elite Fabworx',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Elite FabWorx | Custom Automotive Fabrication Adelaide & Tailem Bend',
-    description: 'Custom metal fabrication, exhausts, roll cages, 4x4 accessories, and chassis upgrades — servicing Adelaide and Tailem Bend, South Australia.',
+    title: 'Elite Fabworx | Custom Automotive Fabrication - Servicing Adelaide & Tailem Bend',
+    description: 'Elite Fabworx specializes in custom automotive fabrication, exhausts, roll cages, and 4x4 accessories. Based in Tailem Bend, proudly servicing Adelaide, The Bend Motorsport Park, and all of South Australia.',
     creator: '@elitefabworx',
   },
   robots: {
