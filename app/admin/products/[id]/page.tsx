@@ -34,7 +34,8 @@ export default function ProductForm({ params }: { params: { id: string } }) {
     images: [],
     options: [],
     variants: [],
-    brand: "Zoo Performance" // Default to Zoo Performance
+    brand: "Zoo Performance", // Default to Zoo Performance
+    weight: 0
   })
 
   const refreshCategories = async () => {
@@ -126,10 +127,21 @@ export default function ProductForm({ params }: { params: { id: string } }) {
         return
       }
 
+      // Ensure weight is a number
+      if (typeof formData.weight !== 'number' || isNaN(formData.weight)) {
+        toast({
+          title: "Validation Error",
+          description: "Weight must be a valid number",
+          variant: "destructive"
+        })
+        return
+      }
+
       // Make sure the product has a valid ID
       const productToSave = {
         ...formData,
         price: Number(formData.price), // Ensure price is a number
+        weight: Number(formData.weight), // Ensure weight is a number
         brand: formData.brand || "Zoo Performance",
         id: formData.id || `product-${Date.now()}`
       }
@@ -307,7 +319,8 @@ export default function ProductForm({ params }: { params: { id: string } }) {
       option1: combo[0],
       option2: combo[1],
       option3: combo[2],
-      inventory: 0
+      inventory: 0,
+      weight: formData.weight
     }))
 
     setFormData(prev => ({ ...prev, variants: newVariants }))
@@ -413,6 +426,23 @@ export default function ProductForm({ params }: { params: { id: string } }) {
                   required
                 />
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="weight">Weight (kg)</Label>
+                <Input
+                  id="weight"
+                  name="weight"
+                  type="number"
+                  min="0"
+                  step="0.1"
+                  value={formData.weight}
+                  onChange={handleNumberChange}
+                  placeholder="0.0"
+                  className="bg-zinc-800 border-zinc-700"
+                />
+                <p className="text-sm text-zinc-500">
+                  Product weight in kilograms. Used for shipping calculations.
+                </p>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -500,6 +530,7 @@ export default function ProductForm({ params }: { params: { id: string } }) {
                         <th className="text-left py-2 px-4">Option</th>
                         <th className="text-left py-2 px-4">SKU</th>
                         <th className="text-left py-2 px-4">Price ($)</th>
+                        <th className="text-left py-2 px-4">Weight (kg)</th>
                         <th className="text-left py-2 px-4">Inventory</th>
                       </tr>
                     </thead>
@@ -534,6 +565,19 @@ export default function ProductForm({ params }: { params: { id: string } }) {
                               onChange={(e) => {
                                 const newVariants = [...formData.variants]
                                 newVariants[index] = { ...variant, price: parseFloat(e.target.value) || 0 }
+                                setFormData(prev => ({ ...prev, variants: newVariants }))
+                              }}
+                              className="bg-zinc-800 border-zinc-700"
+                            />
+                          </td>
+                          <td className="py-2 px-4">
+                            <Input
+                              type="number"
+                              min="0"
+                              value={variant.weight}
+                              onChange={(e) => {
+                                const newVariants = [...formData.variants]
+                                newVariants[index] = { ...variant, weight: parseFloat(e.target.value) || 0 }
                                 setFormData(prev => ({ ...prev, variants: newVariants }))
                               }}
                               className="bg-zinc-800 border-zinc-700"

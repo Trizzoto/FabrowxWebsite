@@ -24,6 +24,7 @@ export interface Product {
   variants?: ProductVariant[]
   options?: ProductOption[]
   brand?: string // 'Zoo Performance' or 'Elite Fabworx'
+  weight?: number // Weight in kilograms for shipping calculations
 }
 
 export interface ProductOptions {
