@@ -422,15 +422,18 @@
       {
         "sku": "ZOO-RUBBERFASTENERS",
         "price": 26.99,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 0.2
       },
       {
         "sku": "rubber-replacements-for-quick-release-fasteners-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 0.2
       }
-    ]
+    ],
+    "weight": 0.2
   },
   {
     "id": "free-turbo-beanie",
@@ -467,58 +470,67 @@
         "price": 134.99,
         "inventory": 0,
         "option1": "T3",
-        "option2": "KEVLAR"
+        "option2": "KEVLAR",
+        "weight": 1
       },
       {
         "sku": "ZOO-TB-T3CFB",
         "price": 139.99,
         "inventory": 0,
         "option1": "T3",
-        "option2": "CARBON FIBRE"
+        "option2": "CARBON FIBRE",
+        "weight": 1
       },
       {
         "sku": "ZOO-TB-T4BFN",
         "price": 143.99,
         "inventory": 0,
         "option1": "T4",
-        "option2": "KEVLAR"
+        "option2": "KEVLAR",
+        "weight": 1
       },
       {
         "sku": "ZOO-TB-T4CFB",
         "price": 149.99,
         "inventory": 0,
         "option1": "T4",
-        "option2": "CARBON FIBRE"
+        "option2": "CARBON FIBRE",
+        "weight": 1
       },
       {
         "sku": "ZOO-TB-T6BFN",
         "price": 159.99,
         "inventory": 0,
         "option1": "T6",
-        "option2": "KEVLAR"
+        "option2": "KEVLAR",
+        "weight": 1
       },
       {
         "sku": "ZOO-TB-T6CFB",
         "price": 164.99,
         "inventory": 0,
         "option1": "T6",
-        "option2": "CARBON FIBRE"
+        "option2": "CARBON FIBRE",
+        "weight": 1
       },
       {
         "sku": "ZOO-TB-T28BFN",
         "price": 119,
         "inventory": 0,
         "option1": "T28",
-        "option2": "KEVLAR"
+        "option2": "KEVLAR",
+        "weight": 1
       },
       {
         "sku": "ZOO-TB-T28CFB",
         "price": 129.99,
         "inventory": 0,
         "option1": "T28",
-        "option2": "CARBON FIBRE"
+        "option2": "CARBON FIBRE",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "g50-1900-hp-series-88mm-turbo",
@@ -539,15 +551,18 @@
       {
         "sku": "ZOO-G50-1900-1.31",
         "price": 3799,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       },
       {
         "sku": "g50-1900-hp-series-88mm-turbo-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "priority-processing",
@@ -564,9 +579,11 @@
       {
         "sku": "priority-processing-1",
         "price": 0,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 0
       }
-    ]
+    ],
+    "weight": 0
   },
   {
     "id": "shipping-insurance",
@@ -583,9 +600,11 @@
       {
         "sku": "shipping-insurance-1",
         "price": 4.99,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 0
       }
-    ]
+    ],
+    "weight": 0
   },
   {
     "id": "108mm-ls-throttle-body",
@@ -624,21 +643,25 @@
         "sku": "ZOO-LSTB108B",
         "price": 1199,
         "inventory": 0,
-        "option1": "black"
+        "option1": "black",
+        "weight": 1
       },
       {
         "sku": "ZOO-LSTB108S",
         "price": 1199,
         "inventory": 0,
-        "option1": "silver"
+        "option1": "silver",
+        "weight": 1
       },
       {
         "sku": "108mm-ls-throttle-body-3",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "gtr-rear-wheel-bearing-hub-assembly",
@@ -1669,15 +1692,18 @@
       {
         "sku": "ls-manifold-turbo-kit-1",
         "price": 2999,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       },
       {
         "sku": "ls-manifold-turbo-kit-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "2-litre-aluminium-catch-cans-with-drain-tap",
@@ -1712,22 +1738,26 @@
         "price": 185.49,
         "inventory": 0,
         "option1": "2 LITRE",
-        "option2": "BLACK"
+        "option2": "BLACK",
+        "weight": 1
       },
       {
         "sku": "ZOO-VP-02707S",
         "price": 185.49,
         "inventory": 0,
         "option1": "2 LITRE",
-        "option2": "SILVER"
+        "option2": "SILVER",
+        "weight": 1
       },
       {
         "sku": "2-litre-aluminium-catch-cans-with-drain-tap-3",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "custom-performance-axles-made-to-your-specs",
@@ -1751,15 +1781,18 @@
       {
         "sku": "custom-performance-axles-made-to-your-specs-1",
         "price": 0,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       },
       {
         "sku": "custom-performance-axles-made-to-your-specs-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "zoo-performance-stickers",
@@ -1921,15 +1954,18 @@
       {
         "sku": "ZOO-SF00101-02S",
         "price": 129.99,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 2
       },
       {
         "sku": "universal-billet-oil-cooler-sandwich-plate-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 2
       }
-    ]
+    ],
+    "weight": 2
   },
   {
     "id": "zoo-performance-untamed-t-shirts",
@@ -2089,15 +2125,18 @@
       {
         "sku": "gtx5533r-series-94mm-turbo-1",
         "price": 4799,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       },
       {
         "sku": "gtx5533r-series-94mm-turbo-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "gtx5533r-series-91mm-turbo",
@@ -2124,15 +2163,18 @@
       {
         "sku": "gtx5533r-series-91mm-turbo-1",
         "price": 4799,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       },
       {
         "sku": "gtx5533r-series-91mm-turbo-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "g57-2000hp-series-88mm-turbo",
@@ -2158,15 +2200,18 @@
       {
         "sku": "g57-2000hp-series-88mm-turbo-1",
         "price": 4999,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       },
       {
         "sku": "g57-2000hp-series-88mm-turbo-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "gtx5533r-series-85mm-turbo",
@@ -2193,15 +2238,18 @@
       {
         "sku": "ZOO-GTX5533R",
         "price": 4799,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       },
       {
         "sku": "gtx5533r-series-85mm-turbo-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "stainless-steel-ptfe-hose-ends",
@@ -2319,15 +2367,18 @@
       {
         "sku": "ZOO-BK2022",
         "price": 119,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 0.2
       },
       {
         "sku": "fire-extinguisher-bracket-mount-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 0.2
       }
-    ]
+    ],
+    "weight": 0.2
   },
   {
     "id": "2-8-litre-triple-internal-pump-surge-tank",
@@ -2353,15 +2404,18 @@
         "sku": "2-8-litre-triple-internal-pump-surge-tank-1",
         "price": 499,
         "inventory": 0,
-        "option1": "Black"
+        "option1": "Black",
+        "weight": 1.5
       },
       {
         "sku": "2-8-litre-triple-internal-pump-surge-tank-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1.5
       }
-    ]
+    ],
+    "weight": 1.5
   },
   {
     "id": "triple-pump-hanger",
@@ -2382,15 +2436,18 @@
       {
         "sku": "triple-pump-hanger-1",
         "price": 396.27,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1.5
       },
       {
         "sku": "triple-pump-hanger-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1.5
       }
-    ]
+    ],
+    "weight": 1.5
   },
   {
     "id": "g25-660hp-series-54mm-turbo",
@@ -2418,15 +2475,18 @@
       {
         "sku": "g25-660hp-series-54mm-turbo-1",
         "price": 2100,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       },
       {
         "sku": "g25-660hp-series-54mm-turbo-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "g25-550hp-series-48mm-turbo",
@@ -2453,15 +2513,18 @@
       {
         "sku": "g25-550hp-series-48mm-turbo-1",
         "price": 2100,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       },
       {
         "sku": "g25-550hp-series-48mm-turbo-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "power-steering-adaptor-m16-x-1-5-o-ring-style-to-6an",
@@ -2575,21 +2638,25 @@
         "sku": "ZOO-VP01507B",
         "price": 619,
         "inventory": 0,
-        "option1": "Black"
+        "option1": "Black",
+        "weight": 1
       },
       {
         "sku": "ZOO-VP01507",
         "price": 619,
         "inventory": 0,
-        "option1": "Raw"
+        "option1": "Raw",
+        "weight": 1
       },
       {
         "sku": "4-barrel-throttle-body-4150-4500-3",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "winters-gear-sets",
@@ -2842,15 +2909,18 @@
       {
         "sku": "ZOO-HEADDRAINKIT",
         "price": 279,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       },
       {
         "sku": "rb-head-drain-kit-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "45-deg-push-lock-hose-end",
@@ -2934,33 +3004,39 @@
         "sku": "300mm-straight-aluminium-bend-1",
         "price": 23.1,
         "inventory": 0,
-        "option1": "2\" / 51mm"
+        "option1": "2\" / 51mm",
+        "weight": 1
       },
       {
         "sku": "300mm-straight-aluminium-bend-2",
         "price": 28.97,
         "inventory": 0,
-        "option1": "2.5\" / 63mm"
+        "option1": "2.5\" / 63mm",
+        "weight": 1
       },
       {
         "sku": "300mm-straight-aluminium-bend-3",
         "price": 33.16,
         "inventory": 0,
-        "option1": "3\" / 76mm"
+        "option1": "3\" / 76mm",
+        "weight": 1
       },
       {
         "sku": "300mm-straight-aluminium-bend-4",
         "price": 36.78,
         "inventory": 0,
-        "option1": "3.5\" / 89mm"
+        "option1": "3.5\" / 89mm",
+        "weight": 1
       },
       {
         "sku": "300mm-straight-aluminium-bend-5",
         "price": 52.38,
         "inventory": 0,
-        "option1": "4\" / 102mm"
+        "option1": "4\" / 102mm",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "90-deg-elbow-aluminium-bend",
@@ -2988,33 +3064,39 @@
         "sku": "90-deg-elbow-aluminium-bend-1",
         "price": 36.78,
         "inventory": 0,
-        "option1": "2\" / 51mm"
+        "option1": "2\" / 51mm",
+        "weight": 1
       },
       {
         "sku": "90-deg-elbow-aluminium-bend-2",
         "price": 39.37,
         "inventory": 0,
-        "option1": "2.5\" / 63mm"
+        "option1": "2.5\" / 63mm",
+        "weight": 1
       },
       {
         "sku": "90-deg-elbow-aluminium-bend-3",
         "price": 39.37,
         "inventory": 0,
-        "option1": "3\" / 76mm"
+        "option1": "3\" / 76mm",
+        "weight": 1
       },
       {
         "sku": "90-deg-elbow-aluminium-bend-4",
         "price": 60.17,
         "inventory": 0,
-        "option1": "3.5\" / 89mm"
+        "option1": "3.5\" / 89mm",
+        "weight": 1
       },
       {
         "sku": "90-deg-elbow-aluminium-bend-5",
         "price": 73.2,
         "inventory": 0,
-        "option1": "4\" / 102mm"
+        "option1": "4\" / 102mm",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "45-deg-elbow-aluminium-bend",
@@ -3094,15 +3176,18 @@
       {
         "sku": "mirror-set-gen-ii-gtx3582r-series-66mm-turbo-1",
         "price": 4398,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       },
       {
         "sku": "mirror-set-gen-ii-gtx3582r-series-66mm-turbo-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "gen-ii-gtx3582r-series-66mm-turbo",
@@ -3127,15 +3212,18 @@
       {
         "sku": "gen-ii-gtx3582r-series-66mm-turbo-1",
         "price": 2199,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       },
       {
         "sku": "gen-ii-gtx3582r-series-66mm-turbo-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "mirror-set-gen-ii-gtx3584rs-series-67mm-turbo",
@@ -3161,15 +3249,18 @@
       {
         "sku": "mirror-set-gen-ii-gtx3584rs-series-67mm-turbo-1",
         "price": 4398,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       },
       {
         "sku": "mirror-set-gen-ii-gtx3584rs-series-67mm-turbo-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "mirror-set-gen-ii-gtx3576r-series-58mm-turbo",
@@ -3194,15 +3285,18 @@
       {
         "sku": "mirror-set-gen-ii-gtx3576r-series-58mm-turbo-1",
         "price": 4398,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       },
       {
         "sku": "mirror-set-gen-ii-gtx3576r-series-58mm-turbo-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "mirror-set-gen-ii-gtx3076r-series-58mm-turbo",
@@ -3226,15 +3320,18 @@
       {
         "sku": "mirror-set-gen-ii-gtx3076r-series-58mm-turbo-1",
         "price": 3598,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       },
       {
         "sku": "mirror-set-gen-ii-gtx3076r-series-58mm-turbo-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "gen-ii-gtx3576r-series-58mm-turbo",
@@ -3257,15 +3354,18 @@
       {
         "sku": "gen-ii-gtx3576r-series-58mm-turbo-1",
         "price": 2199,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       },
       {
         "sku": "gen-ii-gtx3576r-series-58mm-turbo-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "female-an-to-male-ad-extension-adaptors",
@@ -3347,33 +3447,39 @@
         "sku": "ZOO-AD-2",
         "price": 107.49,
         "inventory": 0,
-        "option1": "2\" / 51mm"
+        "option1": "2\" / 51mm",
+        "weight": 1
       },
       {
         "sku": "ZOO-AD-2.5",
         "price": 112.99,
         "inventory": 0,
-        "option1": "2.5\" / 63mm"
+        "option1": "2.5\" / 63mm",
+        "weight": 1
       },
       {
         "sku": "ZOO-AD-3",
         "price": 117.99,
         "inventory": 0,
-        "option1": "3\" / 76mm"
+        "option1": "3\" / 76mm",
+        "weight": 1
       },
       {
         "sku": "ZOO-AD-3.5",
         "price": 123.99,
         "inventory": 0,
-        "option1": "3.5\" / 89mm"
+        "option1": "3.5\" / 89mm",
+        "weight": 1
       },
       {
         "sku": "ZOO-AD-4",
         "price": 134.99,
         "inventory": 0,
-        "option1": "4\" / 102mm"
+        "option1": "4\" / 102mm",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "100-series-hose-installation-kit",
@@ -3435,21 +3541,25 @@
         "sku": "twin-turbo-intercooler-1",
         "price": 1099,
         "inventory": 0,
-        "option1": "Black"
+        "option1": "Black",
+        "weight": 1
       },
       {
         "sku": "twin-turbo-intercooler-2",
         "price": 1099,
         "inventory": 0,
-        "option1": "Silver"
+        "option1": "Silver",
+        "weight": 1
       },
       {
         "sku": "twin-turbo-intercooler-3",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "mirror-set-g42-1450hp-series-73mm-turbo",
@@ -3480,15 +3590,18 @@
       {
         "sku": "ZOO-MG42-1450",
         "price": 5798,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       },
       {
         "sku": "mirror-set-g42-1450hp-series-73mm-turbo-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "mirror-set-g42-1200hp-series-73mm-turbo",
@@ -3517,15 +3630,18 @@
       {
         "sku": "ZOO-MG42-1200",
         "price": 5798,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       },
       {
         "sku": "mirror-set-g42-1200hp-series-73mm-turbo-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "g57-2350hp-series-94mm-turbo",
@@ -3551,15 +3667,18 @@
       {
         "sku": "ZOO-G57-2350",
         "price": 4999,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       },
       {
         "sku": "g57-2350hp-series-94mm-turbo-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "g45-1500-hp-series-76mm-turbo",
@@ -3579,15 +3698,18 @@
       {
         "sku": "ZOO-G45-1500",
         "price": 2999,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       },
       {
         "sku": "g45-1500-hp-series-76mm-turbo-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "g45-1350-hp-series-72mm-turbo",
@@ -3607,15 +3729,18 @@
       {
         "sku": "ZOO-G45-1350",
         "price": 2999,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       },
       {
         "sku": "g45-1350-hp-series-72mm-turbo-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "g45-1125hp-series-67mm-turbo",
@@ -3635,15 +3760,18 @@
       {
         "sku": "ZOO-G45-1125",
         "price": 2999,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       },
       {
         "sku": "g45-1125hp-series-67mm-turbo-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "gtx5544r-series-106mm-turbo",
@@ -3671,15 +3799,18 @@
       {
         "sku": "ZOO-GTX5544R106",
         "price": 4999,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       },
       {
         "sku": "gtx5544r-series-106mm-turbo-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "gtx5544r-series-102mm-turbo",
@@ -3707,15 +3838,18 @@
       {
         "sku": "ZOO-GTX5544R102",
         "price": 4899,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       },
       {
         "sku": "gtx5544r-series-102mm-turbo-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "gtx5533r-series-98mm-turbo",
@@ -3743,15 +3877,18 @@
       {
         "sku": "ZOO-GTX5533R",
         "price": 4799,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       },
       {
         "sku": "gtx5533r-series-98mm-turbo-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "gtx5020r-series-88mm-turbo",
@@ -3779,15 +3916,18 @@
       {
         "sku": "ZOO-GTX5020R",
         "price": 3999,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       },
       {
         "sku": "gtx5020r-series-88mm-turbo-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "gtx4508r-series-80mm-turbo",
@@ -3810,15 +3950,18 @@
       {
         "sku": "ZOO-GTX4508",
         "price": 2899,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       },
       {
         "sku": "gtx4508r-series-80mm-turbo-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "gtx4294r-series-70mm-turbo",
@@ -3842,15 +3985,18 @@
       {
         "sku": "ZOO-GTX4294R",
         "price": 2690,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       },
       {
         "sku": "gtx4294r-series-70mm-turbo-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "gtx4202r-series-76mm-turbo",
@@ -3873,15 +4019,18 @@
       {
         "sku": "ZOO-GTX4202R",
         "price": 2690,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       },
       {
         "sku": "gtx4202r-series-76mm-turbo-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "gen-ii-gtx3584rs-series-67mm-turbo",
@@ -3904,15 +4053,18 @@
       {
         "sku": "ZOO-GTX3584RS",
         "price": 2199,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       },
       {
         "sku": "gen-ii-gtx3584rs-series-67mm-turbo-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "gen-ii-gtx3076-series-58mm-turbo",
@@ -3935,15 +4087,18 @@
       {
         "sku": "ZOO-GTX3076R",
         "price": 1799,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       },
       {
         "sku": "gen-ii-gtx3076-series-58mm-turbo-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "g30-900hp-series-62mm-turbo",
@@ -3969,15 +4124,18 @@
       {
         "sku": "ZOO-G30-900",
         "price": 2100,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       },
       {
         "sku": "g30-900hp-series-62mm-turbo-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "g30-770hp-series-58mm-turbo",
@@ -4004,15 +4162,18 @@
       {
         "sku": "ZOO-G30-770",
         "price": 2100,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       },
       {
         "sku": "g30-770hp-series-58mm-turbo-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "g57-3000hp-series-106mm-turbo",
@@ -4038,15 +4199,18 @@
       {
         "sku": "ZOO-G57-3000",
         "price": 4999,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       },
       {
         "sku": "g57-3000hp-series-106mm-turbo-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "g42-1450hp-series-79mm-turbo",
@@ -4070,15 +4234,18 @@
       {
         "sku": "ZOO-G42-1450",
         "price": 2899,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       },
       {
         "sku": "g42-1450hp-series-79mm-turbo-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "g42-1200hp-series-73mm-turbo",
@@ -4103,15 +4270,18 @@
       {
         "sku": "ZOO-G42-1200",
         "price": 2899,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       },
       {
         "sku": "g42-1200hp-series-73mm-turbo-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "g35-1050hp-series-68mm-turbo-1",
@@ -4135,15 +4305,18 @@
       {
         "sku": "ZOO-G35-1050",
         "price": 2399,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       },
       {
         "sku": "g35-1050hp-series-68mm-turbo-1-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "g35-900hp-series-62mm-turbo",
@@ -4167,15 +4340,18 @@
       {
         "sku": "ZOO-G35-900",
         "price": 2399,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       },
       {
         "sku": "g35-900hp-series-62mm-turbo-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "g30-series-turbo",
@@ -4203,15 +4379,18 @@
       {
         "sku": "ZOO-G30-6601",
         "price": 2100,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       },
       {
         "sku": "g30-series-turbo-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "competition-series-intercooler-150mm",
@@ -4251,15 +4430,18 @@
         "price": 1299,
         "inventory": 0,
         "option1": "560*320*150",
-        "option2": "RAW"
+        "option2": "RAW",
+        "weight": 2
       },
       {
         "sku": "competition-series-intercooler-150mm-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 2
       }
-    ]
+    ],
+    "weight": 2
   },
   {
     "id": "rb-billet-spline-driven-oil-pump-gears-oem",
@@ -4282,15 +4464,18 @@
         "sku": "rb-billet-spline-driven-oil-pump-gears-oem-1",
         "price": 599,
         "inventory": 0,
-        "option1": "OIL PUMP GEAR - SPLINE"
+        "option1": "OIL PUMP GEAR - SPLINE",
+        "weight": 1.5
       },
       {
         "sku": "rb-billet-spline-driven-oil-pump-gears-oem-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1.5
       }
-    ]
+    ],
+    "weight": 1.5
   },
   {
     "id": "e-throttle-body-102mm",
@@ -4314,15 +4499,18 @@
       {
         "sku": "ZOO-ETHROTTLE",
         "price": 695,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 2.5
       },
       {
         "sku": "e-throttle-body-102mm-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 2.5
       }
-    ]
+    ],
+    "weight": 2.5
   },
   {
     "id": "rb-gears",
@@ -4345,15 +4533,18 @@
         "sku": "rb-gears-1",
         "price": 599,
         "inventory": 0,
-        "option1": "OIL PUMP GEAR - SPLINE"
+        "option1": "OIL PUMP GEAR - SPLINE",
+        "weight": 1.5
       },
       {
         "sku": "rb-gears-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1.5
       }
-    ]
+    ],
+    "weight": 1.5
   },
   {
     "id": "winters-gearset-box",
@@ -4370,9 +4561,11 @@
       {
         "sku": "ZOO-GEARSETBOX",
         "price": 34.99,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "turbo-oil-drain-adapter-with-o-ring-seal",
@@ -4402,27 +4595,32 @@
         "sku": "ZOO-463-01",
         "price": 23.99,
         "inventory": 0,
-        "option1": "AN8 38-44mm"
+        "option1": "AN8 38-44mm",
+        "weight": 1
       },
       {
         "sku": "ZOO-463-02",
         "price": 26.99,
         "inventory": 0,
-        "option1": "AN10 50.8mm"
+        "option1": "AN10 50.8mm",
+        "weight": 1
       },
       {
         "sku": "ZOO-463-03",
         "price": 29.18,
         "inventory": 0,
-        "option1": "AN10 52.4mm"
+        "option1": "AN10 52.4mm",
+        "weight": 1
       },
       {
         "sku": "turbo-oil-drain-adapter-with-o-ring-seal-4",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "door-banner-decals",
@@ -4881,72 +5079,83 @@
         "price": 69.93,
         "inventory": 0,
         "option1": "1/2\" 7m Roll",
-        "option2": "Natural (Silver)"
+        "option2": "Natural (Silver)",
+        "weight": 1.5
       },
       {
         "sku": "ZOO-AL12B",
         "price": 76.93,
         "inventory": 0,
         "option1": "1/2\" 7m Roll",
-        "option2": "Black"
+        "option2": "Black",
+        "weight": 1.5
       },
       {
         "sku": "ZOO-AL14",
         "price": 61.53,
         "inventory": 0,
         "option1": "1/4\" 7m Roll",
-        "option2": "Natural (Silver)"
+        "option2": "Natural (Silver)",
+        "weight": 1.5
       },
       {
         "sku": "ZOO-AL14B",
         "price": 62.93,
         "inventory": 0,
         "option1": "1/4\" 7m Roll",
-        "option2": "Black"
+        "option2": "Black",
+        "weight": 1.5
       },
       {
         "sku": "ZOO-AL38",
         "price": 61.53,
         "inventory": 0,
         "option1": "3/8\" 7m Roll",
-        "option2": "Natural (Silver)"
+        "option2": "Natural (Silver)",
+        "weight": 1.5
       },
       {
         "sku": "ZOO-AL38B",
         "price": 62.93,
         "inventory": 0,
         "option1": "3/8\" 7m Roll",
-        "option2": "Black"
+        "option2": "Black",
+        "weight": 1.5
       },
       {
         "sku": "ZOO-AL516",
         "price": 67.13,
         "inventory": 0,
         "option1": "5/16\" 7m Roll",
-        "option2": "Natural (Silver)"
+        "option2": "Natural (Silver)",
+        "weight": 1.5
       },
       {
         "sku": "ZOO-AL516B",
         "price": 69.93,
         "inventory": 0,
         "option1": "5/16\" 7m Roll",
-        "option2": "Black"
+        "option2": "Black",
+        "weight": 1.5
       },
       {
         "sku": "ZOO-AL58",
         "price": 76.93,
         "inventory": 0,
         "option1": "5/8\" 7m Roll",
-        "option2": "Natural (Silver)"
+        "option2": "Natural (Silver)",
+        "weight": 1.5
       },
       {
         "sku": "ZOO-AL58B",
         "price": 83.93,
         "inventory": 0,
         "option1": "5/8\" 7m Roll",
-        "option2": "Black"
+        "option2": "Black",
+        "weight": 1.5
       }
-    ]
+    ],
+    "weight": 1.5
   },
   {
     "id": "an-male-male-adaptor-with-o-ring",
@@ -5285,128 +5494,147 @@
         "price": 158.2,
         "inventory": 0,
         "option1": "2\" (51mm)",
-        "option2": "Black"
+        "option2": "Black",
+        "weight": 0.3
       },
       {
         "sku": "ZOO-1771-200G",
         "price": 158.2,
         "inventory": 0,
         "option1": "2\" (51mm)",
-        "option2": "Gold"
+        "option2": "Gold",
+        "weight": 0.3
       },
       {
         "sku": "ZOO-1771-200S",
         "price": 158.2,
         "inventory": 0,
         "option1": "2\" (51mm)",
-        "option2": "Silver"
+        "option2": "Silver",
+        "weight": 0.3
       },
       {
         "sku": "ZOO-1771-250B",
         "price": 161.5,
         "inventory": 0,
         "option1": "2.5\" (63.5mm)",
-        "option2": "Black"
+        "option2": "Black",
+        "weight": 0.3
       },
       {
         "sku": "ZOO-1771-250G",
         "price": 161.5,
         "inventory": 0,
         "option1": "2.5\" (63.5mm)",
-        "option2": "Gold"
+        "option2": "Gold",
+        "weight": 0.3
       },
       {
         "sku": "ZOO-1771-250S",
         "price": 161.5,
         "inventory": 0,
         "option1": "2.5\" (63.5mm)",
-        "option2": "Silver"
+        "option2": "Silver",
+        "weight": 0.3
       },
       {
         "sku": "ZOO-1771-300B",
         "price": 178.2,
         "inventory": 0,
         "option1": "3\" (76.2mm)",
-        "option2": "Black"
+        "option2": "Black",
+        "weight": 0.3
       },
       {
         "sku": "ZOO-1771-300G",
         "price": 178.2,
         "inventory": 0,
         "option1": "3\" (76.2mm)",
-        "option2": "Gold"
+        "option2": "Gold",
+        "weight": 0.3
       },
       {
         "sku": "ZOO-1771-300S",
         "price": 178.2,
         "inventory": 0,
         "option1": "3\" (76.2mm)",
-        "option2": "Silver"
+        "option2": "Silver",
+        "weight": 0.3
       },
       {
         "sku": "ZOO-1771-300T",
         "price": 178.2,
         "inventory": 0,
         "option1": "3\" (76.2mm)",
-        "option2": "Teal"
+        "option2": "Teal",
+        "weight": 0.3
       },
       {
         "sku": "ZOO-1771-350B",
         "price": 197.7,
         "inventory": 0,
         "option1": "3.5\" (88.9mm)",
-        "option2": "Black"
+        "option2": "Black",
+        "weight": 0.3
       },
       {
         "sku": "ZOO-1771-350G",
         "price": 197.7,
         "inventory": 0,
         "option1": "3.5\" (88.9mm)",
-        "option2": "Gold"
+        "option2": "Gold",
+        "weight": 0.3
       },
       {
         "sku": "ZOO-1771-350S",
         "price": 197.7,
         "inventory": 0,
         "option1": "3.5\" (88.9mm)",
-        "option2": "Silver"
+        "option2": "Silver",
+        "weight": 0.3
       },
       {
         "sku": "ZOO-1771-350T",
         "price": 197.7,
         "inventory": 0,
         "option1": "3.5\" (88.9mm)",
-        "option2": "Teal"
+        "option2": "Teal",
+        "weight": 0.3
       },
       {
         "sku": "ZOO-1771-400B",
         "price": 217.7,
         "inventory": 0,
         "option1": "4\" (101.6mm)",
-        "option2": "Black"
+        "option2": "Black",
+        "weight": 0.3
       },
       {
         "sku": "ZOO-1771-400G",
         "price": 217.7,
         "inventory": 0,
         "option1": "4\" (101.6mm)",
-        "option2": "Gold"
+        "option2": "Gold",
+        "weight": 0.3
       },
       {
         "sku": "ZOO-1771-400S",
         "price": 217.7,
         "inventory": 0,
         "option1": "4\" (101.6mm)",
-        "option2": "Silver"
+        "option2": "Silver",
+        "weight": 0.3
       },
       {
         "sku": "ZOO-1771-400T",
         "price": 217.7,
         "inventory": 0,
         "option1": "4\" (101.6mm)",
-        "option2": "Teal"
+        "option2": "Teal",
+        "weight": 0.3
       }
-    ]
+    ],
+    "weight": 0.3
   },
   {
     "id": "copy-of-nissan-press-in-breather-adaptor-rb25-rb26-sr20",
@@ -5527,29 +5755,34 @@
         "price": 199.99,
         "inventory": 0,
         "option1": "LS3",
-        "option2": "Black"
+        "option2": "Black",
+        "weight": 1.5
       },
       {
         "sku": "ZOO-VP00110G",
         "price": 199.99,
         "inventory": 0,
         "option1": "LS3",
-        "option2": "Gold"
+        "option2": "Gold",
+        "weight": 1.5
       },
       {
         "sku": "ZOO-VP00110S",
         "price": 199.99,
         "inventory": 0,
         "option1": "LS3",
-        "option2": "Silver"
+        "option2": "Silver",
+        "weight": 1.5
       },
       {
         "sku": "ls3-fuel-rails-4",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1.5
       }
-    ]
+    ],
+    "weight": 1.5
   },
   {
     "id": "ls2-fuel-rails",
@@ -5590,29 +5823,34 @@
         "price": 199.99,
         "inventory": 0,
         "option1": "LS2",
-        "option2": "Black"
+        "option2": "Black",
+        "weight": 1.5
       },
       {
         "sku": "ZOO-VP00106G",
         "price": 199.99,
         "inventory": 0,
         "option1": "LS2",
-        "option2": "Gold"
+        "option2": "Gold",
+        "weight": 1.5
       },
       {
         "sku": "ZOO-VP00106S",
         "price": 199.99,
         "inventory": 0,
         "option1": "LS2",
-        "option2": "Silver"
+        "option2": "Silver",
+        "weight": 1.5
       },
       {
         "sku": "ls2-fuel-rails-4",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1.5
       }
-    ]
+    ],
+    "weight": 1.5
   },
   {
     "id": "ls1-fuel-rails",
@@ -5653,29 +5891,34 @@
         "price": 199.99,
         "inventory": 0,
         "option1": "LS1",
-        "option2": "Black"
+        "option2": "Black",
+        "weight": 1.5
       },
       {
         "sku": "ZOO-VP00105G",
         "price": 199.99,
         "inventory": 0,
         "option1": "LS1",
-        "option2": "Gold"
+        "option2": "Gold",
+        "weight": 1.5
       },
       {
         "sku": "ZOO-VP00105S",
         "price": 199.99,
         "inventory": 0,
         "option1": "LS1",
-        "option2": "Silver"
+        "option2": "Silver",
+        "weight": 1.5
       },
       {
         "sku": "ls1-fuel-rails-4",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1.5
       }
-    ]
+    ],
+    "weight": 1.5
   },
   {
     "id": "toyota-2jz-fuel-rails",
@@ -5717,29 +5960,34 @@
         "price": 199.99,
         "inventory": 0,
         "option1": "TOYOTA 2JZ SUIT 14MM INJ",
-        "option2": "Black"
+        "option2": "Black",
+        "weight": 1.8
       },
       {
         "sku": "ZOO-VP00114G",
         "price": 199.99,
         "inventory": 0,
         "option1": "TOYOTA 2JZ SUIT 14MM INJ",
-        "option2": "Gold"
+        "option2": "Gold",
+        "weight": 1.8
       },
       {
         "sku": "ZOO-VP00114S",
         "price": 199.99,
         "inventory": 0,
         "option1": "TOYOTA 2JZ SUIT 14MM INJ",
-        "option2": "Silver"
+        "option2": "Silver",
+        "weight": 1.8
       },
       {
         "sku": "toyota-2jz-fuel-rails-4",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1.8
       }
-    ]
+    ],
+    "weight": 1.8
   },
   {
     "id": "nissan-sr20-fuel-rail",
@@ -5779,29 +6027,34 @@
         "price": 199.99,
         "inventory": 0,
         "option1": "NISSAN SR20",
-        "option2": "Black"
+        "option2": "Black",
+        "weight": 1.4
       },
       {
         "sku": "ZOO-VP00112G",
         "price": 199.99,
         "inventory": 0,
         "option1": "NISSAN SR20",
-        "option2": "Gold"
+        "option2": "Gold",
+        "weight": 1.4
       },
       {
         "sku": "ZOO-VP00112S",
         "price": 199.99,
         "inventory": 0,
         "option1": "NISSAN SR20",
-        "option2": "Silver"
+        "option2": "Silver",
+        "weight": 1.4
       },
       {
         "sku": "nissan-sr20-fuel-rail-4",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1.4
       }
-    ]
+    ],
+    "weight": 1.4
   },
   {
     "id": "rb25-fuel-rail",
@@ -5845,29 +6098,34 @@
         "price": 199.99,
         "inventory": 0,
         "option1": "NISSAN RB25",
-        "option2": "Black"
+        "option2": "Black",
+        "weight": 1.6
       },
       {
         "sku": "ZOO-VP00107G",
         "price": 199.99,
         "inventory": 0,
         "option1": "NISSAN RB25",
-        "option2": "Gold"
+        "option2": "Gold",
+        "weight": 1.6
       },
       {
         "sku": "ZOO-VP00107S",
         "price": 199.99,
         "inventory": 0,
         "option1": "NISSAN RB25",
-        "option2": "Silver"
+        "option2": "Silver",
+        "weight": 1.6
       },
       {
         "sku": "rb25-fuel-rail-4",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1.6
       }
-    ]
+    ],
+    "weight": 1.6
   },
   {
     "id": "flexi-pipe",
@@ -5896,27 +6154,32 @@
         "sku": "ZOO-FJ-300",
         "price": 57.99,
         "inventory": 0,
-        "option1": "3\"/ 76mm"
+        "option1": "3\"/ 76mm",
+        "weight": 1
       },
       {
         "sku": "ZOO-FJ-350",
         "price": 64.99,
         "inventory": 0,
-        "option1": "3.5\" / 89mm"
+        "option1": "3.5\" / 89mm",
+        "weight": 1
       },
       {
         "sku": "ZOO-FJ-400",
         "price": 74.99,
         "inventory": 0,
-        "option1": "4\" / 102mm"
+        "option1": "4\" / 102mm",
+        "weight": 1
       },
       {
         "sku": "flexi-pipe-4",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "304ss-turbo-flanges",
@@ -5959,7 +6222,8 @@
         "inventory": 0,
         "option1": "T3",
         "option2": "Single Scroll",
-        "option3": "Threaded"
+        "option3": "Threaded",
+        "weight": 1
       },
       {
         "sku": "304ss-turbo-flanges-2",
@@ -5967,7 +6231,8 @@
         "inventory": 0,
         "option1": "T3",
         "option2": "Single Scroll",
-        "option3": "Non-Threaded"
+        "option3": "Non-Threaded",
+        "weight": 1
       },
       {
         "sku": "304ss-turbo-flanges-3",
@@ -5975,7 +6240,8 @@
         "inventory": 0,
         "option1": "T3",
         "option2": "Twin Scroll",
-        "option3": "Threaded"
+        "option3": "Threaded",
+        "weight": 1
       },
       {
         "sku": "304ss-turbo-flanges-4",
@@ -5983,7 +6249,8 @@
         "inventory": 0,
         "option1": "T3",
         "option2": "Twin Scroll",
-        "option3": "Non-Threaded"
+        "option3": "Non-Threaded",
+        "weight": 1
       },
       {
         "sku": "304ss-turbo-flanges-5",
@@ -5991,7 +6258,8 @@
         "inventory": 0,
         "option1": "T4",
         "option2": "Single Scroll",
-        "option3": "Threaded"
+        "option3": "Threaded",
+        "weight": 1
       },
       {
         "sku": "304ss-turbo-flanges-6",
@@ -5999,7 +6267,8 @@
         "inventory": 0,
         "option1": "T4",
         "option2": "Single Scroll",
-        "option3": "Non-Threaded"
+        "option3": "Non-Threaded",
+        "weight": 1
       },
       {
         "sku": "304ss-turbo-flanges-7",
@@ -6007,7 +6276,8 @@
         "inventory": 0,
         "option1": "T4",
         "option2": "Twin Scroll",
-        "option3": "Threaded"
+        "option3": "Threaded",
+        "weight": 1
       },
       {
         "sku": "304ss-turbo-flanges-8",
@@ -6015,7 +6285,8 @@
         "inventory": 0,
         "option1": "T4",
         "option2": "Twin Scroll",
-        "option3": "Non-Threaded"
+        "option3": "Non-Threaded",
+        "weight": 1
       },
       {
         "sku": "304ss-turbo-flanges-9",
@@ -6023,7 +6294,8 @@
         "inventory": 0,
         "option1": "T6",
         "option2": "Single Scroll",
-        "option3": "Threaded"
+        "option3": "Threaded",
+        "weight": 1
       },
       {
         "sku": "304ss-turbo-flanges-10",
@@ -6031,7 +6303,8 @@
         "inventory": 0,
         "option1": "T6",
         "option2": "Single Scroll",
-        "option3": "Non-Threaded"
+        "option3": "Non-Threaded",
+        "weight": 1
       },
       {
         "sku": "304ss-turbo-flanges-11",
@@ -6039,7 +6312,8 @@
         "inventory": 0,
         "option1": "T6",
         "option2": "Twin Scroll",
-        "option3": "Threaded"
+        "option3": "Threaded",
+        "weight": 1
       },
       {
         "sku": "304ss-turbo-flanges-12",
@@ -6047,9 +6321,11 @@
         "inventory": 0,
         "option1": "T6",
         "option2": "Twin Scroll",
-        "option3": "Non-Threaded"
+        "option3": "Non-Threaded",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "3-fia-approved-zoo-performance-harness",
@@ -6102,57 +6378,66 @@
         "price": 306.9,
         "inventory": 0,
         "option1": "3\"",
-        "option2": "KNIGHT RIDER BLACK"
+        "option2": "KNIGHT RIDER BLACK",
+        "weight": 1
       },
       {
         "sku": "ZOO-64009",
         "price": 306.9,
         "inventory": 0,
         "option1": "3\"",
-        "option2": "TIFFANY TEAL"
+        "option2": "TIFFANY TEAL",
+        "weight": 1
       },
       {
         "sku": "ZOO-64007",
         "price": 306.9,
         "inventory": 0,
         "option1": "3\"",
-        "option2": "LIPSTICK PINK"
+        "option2": "LIPSTICK PINK",
+        "weight": 1
       },
       {
         "sku": "ZOO-64006",
         "price": 306.9,
         "inventory": 0,
         "option1": "3\"",
-        "option2": "PLUM PURPLE"
+        "option2": "PLUM PURPLE",
+        "weight": 1
       },
       {
         "sku": "ZOO-64011",
         "price": 306.9,
         "inventory": 0,
         "option1": "3\"",
-        "option2": "URBAN CAMO"
+        "option2": "URBAN CAMO",
+        "weight": 1
       },
       {
         "sku": "ZOO-64003",
         "price": 306.9,
         "inventory": 0,
         "option1": "3\"",
-        "option2": "OCEAN BLUE"
+        "option2": "OCEAN BLUE",
+        "weight": 1
       },
       {
         "sku": "ZOO-64002",
         "price": 306.9,
         "inventory": 0,
         "option1": "3\"",
-        "option2": "RACE RED"
+        "option2": "RACE RED",
+        "weight": 1
       },
       {
         "sku": "3-fia-approved-zoo-performance-harness-8",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "gold-adhesive-heat-relective-tape",
@@ -6171,15 +6456,18 @@
       {
         "sku": "ZOO-GOLDTAPE5M",
         "price": 37.99,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       },
       {
         "sku": "gold-adhesive-heat-relective-tape-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "50mm-blow-off-valve",
@@ -6199,15 +6487,18 @@
       {
         "sku": "ZOO-BOV50MM",
         "price": 399,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       },
       {
         "sku": "50mm-blow-off-valve-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "wastegates",
@@ -6237,27 +6528,32 @@
         "sku": "ZOO-WG44mm",
         "price": 499,
         "inventory": 0,
-        "option1": "44mm"
+        "option1": "44mm",
+        "weight": 1
       },
       {
         "sku": "ZOO-WG50mm",
         "price": 579,
         "inventory": 0,
-        "option1": "50mm"
+        "option1": "50mm",
+        "weight": 1
       },
       {
         "sku": "ZOO-WG60mm",
         "price": 619,
         "inventory": 0,
-        "option1": "60mm"
+        "option1": "60mm",
+        "weight": 1
       },
       {
         "sku": "wastegates-4",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "zoo-winters-6-bolt-gear-cover",
@@ -6276,15 +6572,18 @@
       {
         "sku": "ZOO-6BOLTCOVER",
         "price": 549,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       },
       {
         "sku": "zoo-winters-6-bolt-gear-cover-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "zoo-winters-10-bolt-gear-cover",
@@ -6305,15 +6604,18 @@
       {
         "sku": "ZOO-GEARCOVER10",
         "price": 599,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       },
       {
         "sku": "zoo-winters-10-bolt-gear-cover-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "zoo-performance",
@@ -6473,15 +6775,18 @@
         "sku": "ZOO-BARRAGEARSET",
         "price": 599,
         "inventory": 0,
-        "option1": "GEAR & BACKPLATE COMBO"
+        "option1": "GEAR & BACKPLATE COMBO",
+        "weight": 1.5
       },
       {
         "sku": "billet-barra-gear-set-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1.5
       }
-    ]
+    ],
+    "weight": 1.5
   },
   {
     "id": "street-comp-cooler",
@@ -6521,36 +6826,42 @@
         "price": 749,
         "inventory": 0,
         "option1": "600x300x75",
-        "option2": "BLACK"
+        "option2": "BLACK",
+        "weight": 2
       },
       {
         "sku": "ZOO-ITC600/300/75S",
         "price": 739,
         "inventory": 0,
         "option1": "600x300x75",
-        "option2": "SILVER"
+        "option2": "SILVER",
+        "weight": 2
       },
       {
         "sku": "ZOO-ITC450/300/75B",
         "price": 699,
         "inventory": 0,
         "option1": "450x300x75",
-        "option2": "BLACK"
+        "option2": "BLACK",
+        "weight": 2
       },
       {
         "sku": "ZOO-ITC450/300/75S",
         "price": 689,
         "inventory": 0,
         "option1": "450x300x75",
-        "option2": "SILVER"
+        "option2": "SILVER",
+        "weight": 2
       },
       {
         "sku": "street-comp-cooler-5",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 2
       }
-    ]
+    ],
+    "weight": 2
   },
   {
     "id": "pro-comp-cooler",
@@ -6590,36 +6901,42 @@
         "price": 849,
         "inventory": 0,
         "option1": "600x300x100",
-        "option2": "BLACK"
+        "option2": "BLACK",
+        "weight": 2
       },
       {
         "sku": "ZOO-ITC600/300/100S",
         "price": 839,
         "inventory": 0,
         "option1": "600x300x100",
-        "option2": "SILVER"
+        "option2": "SILVER",
+        "weight": 2
       },
       {
         "sku": "ZOO-ITC450/300/100B",
         "price": 799,
         "inventory": 0,
         "option1": "450x300x100",
-        "option2": "BLACK"
+        "option2": "BLACK",
+        "weight": 2
       },
       {
         "sku": "ZOO-ITC450/300/100S",
         "price": 789,
         "inventory": 0,
         "option1": "450x300x100",
-        "option2": "SILVER"
+        "option2": "SILVER",
+        "weight": 2
       },
       {
         "sku": "pro-comp-cooler-5",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 2
       }
-    ]
+    ],
+    "weight": 2
   },
   {
     "id": "adhesive-heat-sheet-50cm-x-50cm",
@@ -6651,9 +6968,11 @@
         "price": 59.99,
         "inventory": 0,
         "option1": "50X50",
-        "option2": "BLACK"
+        "option2": "BLACK",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "exhaust-heat-wrap-10m-roll",
@@ -6670,9 +6989,11 @@
       {
         "sku": "ZOO-HEATWRAP",
         "price": 69.99,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "external-wastegate-beanies",
@@ -6707,58 +7028,67 @@
         "price": 47.88,
         "inventory": 0,
         "option1": "38mm",
-        "option2": "CARBON FIBRE"
+        "option2": "CARBON FIBRE",
+        "weight": 1
       },
       {
         "sku": "external-wastegate-beanies-2",
         "price": 45.99,
         "inventory": 0,
         "option1": "38mm",
-        "option2": "CARBON KEVLAR"
+        "option2": "CARBON KEVLAR",
+        "weight": 1
       },
       {
         "sku": "external-wastegate-beanies-3",
         "price": 53.33,
         "inventory": 0,
         "option1": "45mm",
-        "option2": "CARBON FIBRE"
+        "option2": "CARBON FIBRE",
+        "weight": 1
       },
       {
         "sku": "external-wastegate-beanies-4",
         "price": 51.99,
         "inventory": 0,
         "option1": "45mm",
-        "option2": "CARBON KEVLAR"
+        "option2": "CARBON KEVLAR",
+        "weight": 1
       },
       {
         "sku": "external-wastegate-beanies-5",
         "price": 59.99,
         "inventory": 0,
         "option1": "50mm",
-        "option2": "CARBON FIBRE"
+        "option2": "CARBON FIBRE",
+        "weight": 1
       },
       {
         "sku": "external-wastegate-beanies-6",
         "price": 55.99,
         "inventory": 0,
         "option1": "50mm",
-        "option2": "CARBON KEVLAR"
+        "option2": "CARBON KEVLAR",
+        "weight": 1
       },
       {
         "sku": "external-wastegate-beanies-7",
         "price": 65.99,
         "inventory": 0,
         "option1": "60mm",
-        "option2": "CARBON FIBRE"
+        "option2": "CARBON FIBRE",
+        "weight": 1
       },
       {
         "sku": "external-wastegate-beanies-8",
         "price": 61.99,
         "inventory": 0,
         "option1": "60mm",
-        "option2": "CARBON KEVLAR"
+        "option2": "CARBON KEVLAR",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "nylon-vice-jaws",
@@ -6810,15 +7140,18 @@
       {
         "sku": "ZOO-W0402-C",
         "price": 179,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       },
       {
         "sku": "alloy-wrench-set-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "metric-one-way-valve",
@@ -7033,21 +7366,25 @@
         "sku": "ZOO-QRFASTENERSBLACK",
         "price": 14.95,
         "inventory": 0,
-        "option1": "BLACK"
+        "option1": "BLACK",
+        "weight": 0.3
       },
       {
         "sku": "ZOO-QRFASTENERSGOLD",
         "price": 14.95,
         "inventory": 0,
-        "option1": "GOLD"
+        "option1": "GOLD",
+        "weight": 0.3
       },
       {
         "sku": "ZOO-QRFASTENERSPURPLE",
         "price": 14.95,
         "inventory": 0,
-        "option1": "PURPLE"
+        "option1": "PURPLE",
+        "weight": 0.3
       }
-    ]
+    ],
+    "weight": 0.3
   },
   {
     "id": "an-cushioned-p-clips",
@@ -7074,45 +7411,53 @@
         "sku": "ZOO-PLCC90-6",
         "price": 18.26,
         "inventory": 0,
-        "option1": "PACK OF 5 AN4 (I.D 9.5mm)"
+        "option1": "PACK OF 5 AN4 (I.D 9.5mm)",
+        "weight": 0.2
       },
       {
         "sku": "ZOO-PLCC90-8",
         "price": 19,
         "inventory": 0,
-        "option1": "PACK OF 5 AN6 (ID 12.7mm)"
+        "option1": "PACK OF 5 AN6 (ID 12.7mm)",
+        "weight": 0.2
       },
       {
         "sku": "ZOO-PLCC90-10",
         "price": 21.09,
         "inventory": 0,
-        "option1": "PACK OF 5 AN8 (I.D 15.9mm)"
+        "option1": "PACK OF 5 AN8 (I.D 15.9mm)",
+        "weight": 0.2
       },
       {
         "sku": "ZOO-PLCC90-12",
         "price": 22.57,
         "inventory": 0,
-        "option1": "PACK OF 5 AN10 (ID 19.1mm)"
+        "option1": "PACK OF 5 AN10 (ID 19.1mm)",
+        "weight": 0.2
       },
       {
         "sku": "ZOO-PLCC90-16",
         "price": 25.28,
         "inventory": 0,
-        "option1": "PACK OF 5 AN12 (ID 25.4mm)"
+        "option1": "PACK OF 5 AN12 (ID 25.4mm)",
+        "weight": 0.2
       },
       {
         "sku": "ZOO-PLCC90-18",
         "price": 29.33,
         "inventory": 0,
-        "option1": "PACK OF 5 AN16 (ID 28.6mm)"
+        "option1": "PACK OF 5 AN16 (ID 28.6mm)",
+        "weight": 0.2
       },
       {
         "sku": "ZOO-PLCC90-24",
         "price": 31.86,
         "inventory": 0,
-        "option1": "PACK OF 5 AN20 (ID 38.1mm)"
+        "option1": "PACK OF 5 AN20 (ID 38.1mm)",
+        "weight": 0.2
       }
-    ]
+    ],
+    "weight": 0.2
   },
   {
     "id": "silicone-hose-clamps",
@@ -7283,44 +7628,51 @@
         "price": 49.99,
         "inventory": 0,
         "option1": "1\" / 25mm",
-        "option2": "BLACK"
+        "option2": "BLACK",
+        "weight": 1.5
       },
       {
         "sku": "ZOO-BK02001S",
         "price": 49.99,
         "inventory": 0,
         "option1": "1\" / 25mm",
-        "option2": "SILVER"
+        "option2": "SILVER",
+        "weight": 1.5
       },
       {
         "sku": "ZOO-BK02002",
         "price": 59.99,
         "inventory": 0,
         "option1": "1.5\" / 38mm",
-        "option2": "BLACK"
+        "option2": "BLACK",
+        "weight": 1.5
       },
       {
         "sku": "ZOO-BK02002S",
         "price": 59.99,
         "inventory": 0,
         "option1": "1.5\" / 38mm",
-        "option2": "SILVER"
+        "option2": "SILVER",
+        "weight": 1.5
       },
       {
         "sku": "ZOO-BK02003",
         "price": 69.99,
         "inventory": 0,
         "option1": "2\" / 51mm",
-        "option2": "BLACK"
+        "option2": "BLACK",
+        "weight": 1.5
       },
       {
         "sku": "ZOO-BK02003S",
         "price": 69.99,
         "inventory": 0,
         "option1": "2\" / 51mm",
-        "option2": "SILVER"
+        "option2": "SILVER",
+        "weight": 1.5
       }
-    ]
+    ],
+    "weight": 1.5
   },
   {
     "id": "an4-an16-90-deg-bulkhead",
@@ -7349,39 +7701,46 @@
         "sku": "ZOO-AN833-4",
         "price": 17.99,
         "inventory": 0,
-        "option1": "AN4"
+        "option1": "AN4",
+        "weight": 1
       },
       {
         "sku": "ZOO-AN833-6",
         "price": 19.99,
         "inventory": 0,
-        "option1": "AN6"
+        "option1": "AN6",
+        "weight": 1
       },
       {
         "sku": "ZOO-AN833-8",
         "price": 29.45,
         "inventory": 0,
-        "option1": "AN8"
+        "option1": "AN8",
+        "weight": 1
       },
       {
         "sku": "ZOO-AN833-10",
         "price": 35,
         "inventory": 0,
-        "option1": "AN10"
+        "option1": "AN10",
+        "weight": 1
       },
       {
         "sku": "ZOO-AN833-12",
         "price": 39.99,
         "inventory": 0,
-        "option1": "AN12"
+        "option1": "AN12",
+        "weight": 1
       },
       {
         "sku": "ZOO-AN833-16",
         "price": 59.22,
         "inventory": 0,
-        "option1": "AN16"
+        "option1": "AN16",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "zoo-performance-harness",
@@ -7428,57 +7787,66 @@
         "price": 306.9,
         "inventory": 0,
         "option1": "2\"",
-        "option2": "KNIGHT RIDER BLACK"
+        "option2": "KNIGHT RIDER BLACK",
+        "weight": 1
       },
       {
         "sku": "ZOO-60009",
         "price": 306.9,
         "inventory": 0,
         "option1": "2\"",
-        "option2": "TIFFANY TEAL"
+        "option2": "TIFFANY TEAL",
+        "weight": 1
       },
       {
         "sku": "ZOO-60007",
         "price": 306.9,
         "inventory": 0,
         "option1": "2\"",
-        "option2": "LIPSTICK PINK"
+        "option2": "LIPSTICK PINK",
+        "weight": 1
       },
       {
         "sku": "ZOO-60006",
         "price": 306.9,
         "inventory": 0,
         "option1": "2\"",
-        "option2": "PLUM PURPLE"
+        "option2": "PLUM PURPLE",
+        "weight": 1
       },
       {
         "sku": "ZOO-60011",
         "price": 306.9,
         "inventory": 0,
         "option1": "2\"",
-        "option2": "URBAN CAMO"
+        "option2": "URBAN CAMO",
+        "weight": 1
       },
       {
         "sku": "ZOO-60010",
         "price": 306.9,
         "inventory": 0,
         "option1": "2\"",
-        "option2": "OCEAN BLUE"
+        "option2": "OCEAN BLUE",
+        "weight": 1
       },
       {
         "sku": "ZOO-60002",
         "price": 306.9,
         "inventory": 0,
         "option1": "2\"",
-        "option2": "RACE RED"
+        "option2": "RACE RED",
+        "weight": 1
       },
       {
         "sku": "zoo-performance-harness-8",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "black-stainless-steel-braided-hose",
@@ -7618,21 +7986,25 @@
         "sku": "ZOO-6BOLTDIFFS",
         "price": 7899,
         "inventory": 0,
-        "option1": "HD Aluminium Spool"
+        "option1": "HD Aluminium Spool",
+        "weight": 1
       },
       {
         "sku": "ZOO-6BOLTDIFFT",
         "price": 8299,
         "inventory": 0,
-        "option1": "LSD Torsen"
+        "option1": "LSD Torsen",
+        "weight": 1
       },
       {
         "sku": "winters-diff-3",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "zoo-winters-skidplate",
@@ -7652,15 +8024,18 @@
       {
         "sku": "ZOO-SKIDPLATE",
         "price": 329,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       },
       {
         "sku": "zoo-winters-skidplate-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "an6-fuel-filter",
@@ -7680,15 +8055,18 @@
       {
         "sku": "ZOO-KI00210-02",
         "price": 65.77,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1.5
       },
       {
         "sku": "an6-fuel-filter-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1.5
       }
-    ]
+    ],
+    "weight": 1.5
   },
   {
     "id": "steering-wheel-adaptor-1",
@@ -7736,15 +8114,18 @@
       {
         "sku": "ZOO-93001",
         "price": 130.9,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       },
       {
         "sku": "weld-on-on-quick-release-wheel-adaptor-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "oxy-sensors",
@@ -7769,15 +8150,18 @@
         "sku": "ZOO-VP03401-M18*1.5SS",
         "price": 14.29,
         "inventory": 0,
-        "option1": "M18 * 1.5 Stainless Steel"
+        "option1": "M18 * 1.5 Stainless Steel",
+        "weight": 1
       },
       {
         "sku": "ZOO-VP03401-M18*1.5S",
         "price": 12.09,
         "inventory": 0,
-        "option1": "M18 * 1.5 Steel"
+        "option1": "M18 * 1.5 Steel",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "ford-barra-90mm-black-throttle-body",
@@ -7794,9 +8178,11 @@
       {
         "sku": "ford-barra-90mm-black-throttle-body-1",
         "price": 383.9,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 2.5
       }
-    ]
+    ],
+    "weight": 2.5
   },
   {
     "id": "radiator-overflow-tank",
@@ -7825,21 +8211,25 @@
         "sku": "ZOO-WP010",
         "price": 169.39,
         "inventory": 0,
-        "option1": "89mm Length 180mm 1L BLACK"
+        "option1": "89mm Length 180mm 1L BLACK",
+        "weight": 1.5
       },
       {
         "sku": "ZOO-WP010S",
         "price": 169.39,
         "inventory": 0,
-        "option1": "89mm Length 180mm 1L SILVER"
+        "option1": "89mm Length 180mm 1L SILVER",
+        "weight": 1.5
       },
       {
         "sku": "radiator-overflow-tank-3",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1.5
       }
-    ]
+    ],
+    "weight": 1.5
   },
   {
     "id": "nissan-rb-90mm-black-throttle-body",
@@ -7868,15 +8258,18 @@
         "sku": "ZOO-RBTB80B-B",
         "price": 449,
         "inventory": 0,
-        "option1": "80mm"
+        "option1": "80mm",
+        "weight": 2.5
       },
       {
         "sku": "nissan-rb-90mm-black-throttle-body-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 2.5
       }
-    ]
+    ],
+    "weight": 2.5
   },
   {
     "id": "2jz-barra-90mm-black-throttle-body",
@@ -7900,15 +8293,18 @@
       {
         "sku": "ZOO-JZTB80B",
         "price": 394.99,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 2.5
       },
       {
         "sku": "2jz-barra-90mm-black-throttle-body-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 2.5
       }
-    ]
+    ],
+    "weight": 2.5
   },
   {
     "id": "nissan-s14-sr20-76mm-black-throttle-body",
@@ -7928,15 +8324,18 @@
       {
         "sku": "ZOO-S14TB-B",
         "price": 383.9,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 2.5
       },
       {
         "sku": "nissan-s14-sr20-76mm-black-throttle-body-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 2.5
       }
-    ]
+    ],
+    "weight": 2.5
   },
   {
     "id": "nissan-s13-sr20-76mm-black-throttle-body",
@@ -7957,15 +8356,18 @@
       {
         "sku": "ZOO-S13TB-B",
         "price": 383.9,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 2.5
       },
       {
         "sku": "nissan-s13-sr20-76mm-black-throttle-body-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 2.5
       }
-    ]
+    ],
+    "weight": 2.5
   },
   {
     "id": "ls-102mm-black-cable-throttle-body",
@@ -8007,36 +8409,42 @@
         "price": 493.9,
         "inventory": 0,
         "option1": "92mm",
-        "option2": "Black"
+        "option2": "Black",
+        "weight": 1
       },
       {
         "sku": "ZOO-LSTB92S",
         "price": 493.9,
         "inventory": 0,
         "option1": "92mm",
-        "option2": "Silver"
+        "option2": "Silver",
+        "weight": 1
       },
       {
         "sku": "ZOO-LSTB102B",
         "price": 550,
         "inventory": 0,
         "option1": "102mm",
-        "option2": "Black"
+        "option2": "Black",
+        "weight": 1
       },
       {
         "sku": "ZOO-LSTB102S",
         "price": 550,
         "inventory": 0,
         "option1": "102mm",
-        "option2": "Silver"
+        "option2": "Silver",
+        "weight": 1
       },
       {
         "sku": "ls-102mm-black-cable-throttle-body-5",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "catch-tank-breather-1",
@@ -8066,27 +8474,32 @@
         "sku": "ZOO-KI00503-01B",
         "price": 82.99,
         "inventory": 0,
-        "option1": "CATCH TANK BREATHER (BLACK)"
+        "option1": "CATCH TANK BREATHER (BLACK)",
+        "weight": 1.5
       },
       {
         "sku": "ZOO-KI00503-01B-SILVER",
         "price": 82.99,
         "inventory": 0,
-        "option1": "CATCH TANK BREATHER (SILVER)"
+        "option1": "CATCH TANK BREATHER (SILVER)",
+        "weight": 1.5
       },
       {
         "sku": "ZOO-KI00503-01B-TEAL",
         "price": 82.99,
         "inventory": 0,
-        "option1": "CATCH TANK BREATHER (TEAL)"
+        "option1": "CATCH TANK BREATHER (TEAL)",
+        "weight": 1.5
       },
       {
         "sku": "catch-tank-breather-1-4",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1.5
       }
-    ]
+    ],
+    "weight": 1.5
   },
   {
     "id": "square-model-tank-performance-unit-for-extremely-high-horse-power-applications-minus-pumps-black",
@@ -8138,36 +8551,42 @@
         "price": 195.99,
         "inventory": 0,
         "option1": "2 LITRE",
-        "option2": "BLACK"
+        "option2": "BLACK",
+        "weight": 1.5
       },
       {
         "sku": "ZOO-FT005S",
         "price": 195.99,
         "inventory": 0,
         "option1": "2 LITRE",
-        "option2": "SILVER"
+        "option2": "SILVER",
+        "weight": 1.5
       },
       {
         "sku": "ZOO-FT006S",
         "price": 273.9,
         "inventory": 0,
         "option1": "3 LITRE",
-        "option2": "BLACK"
+        "option2": "BLACK",
+        "weight": 1.5
       },
       {
         "sku": "ZOO-FT006S",
         "price": 273.9,
         "inventory": 0,
         "option1": "3 LITRE",
-        "option2": "SILVER"
+        "option2": "SILVER",
+        "weight": 1.5
       },
       {
         "sku": "square-model-tank-performance-unit-for-extremely-high-horse-power-applications-minus-pumps-black-5",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1.5
       }
-    ]
+    ],
+    "weight": 1.5
   },
   {
     "id": "2-8ltr-surge-tank",
@@ -8195,21 +8614,25 @@
         "sku": "ZOO-VP02211",
         "price": 499,
         "inventory": 0,
-        "option1": "Black"
+        "option1": "Black",
+        "weight": 1.5
       },
       {
         "sku": "ZOO-VP02211S",
         "price": 499,
         "inventory": 0,
-        "option1": "Silver"
+        "option1": "Silver",
+        "weight": 1.5
       },
       {
         "sku": "2-8ltr-surge-tank-3",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1.5
       }
-    ]
+    ],
+    "weight": 1.5
   },
   {
     "id": "quick-connect-adapters",
@@ -8283,15 +8706,18 @@
       {
         "sku": "ZOO-BKX-13",
         "price": 24.99,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 1
       },
       {
         "sku": "an-o-ring-set-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "an-flare-tee",
@@ -8316,45 +8742,53 @@
         "sku": "ZOO-AN824-04",
         "price": 23.65,
         "inventory": 0,
-        "option1": "AN4"
+        "option1": "AN4",
+        "weight": 1
       },
       {
         "sku": "ZOO-AN824-06",
         "price": 25.88,
         "inventory": 0,
-        "option1": "AN6"
+        "option1": "AN6",
+        "weight": 1
       },
       {
         "sku": "ZOO-AN824-08",
         "price": 30.51,
         "inventory": 0,
-        "option1": "AN8"
+        "option1": "AN8",
+        "weight": 1
       },
       {
         "sku": "ZOO-AN824-10",
         "price": 34.13,
         "inventory": 0,
-        "option1": "AN10"
+        "option1": "AN10",
+        "weight": 1
       },
       {
         "sku": "ZOO-AN824-12",
         "price": 44.99,
         "inventory": 0,
-        "option1": "AN12"
+        "option1": "AN12",
+        "weight": 1
       },
       {
         "sku": "ZOO-AN824-16",
         "price": 69.99,
         "inventory": 0,
-        "option1": "AN16"
+        "option1": "AN16",
+        "weight": 1
       },
       {
         "sku": "ZOO-AN824-20",
         "price": 109.91,
         "inventory": 0,
-        "option1": "AN20"
+        "option1": "AN20",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "zoo-hoodpinkits",
@@ -8372,15 +8806,18 @@
       {
         "sku": "ZOO-HOODPINKITS",
         "price": 27.99,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 0.2
       },
       {
         "sku": "zoo-hoodpinkits-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 0.2
       }
-    ]
+    ],
+    "weight": 0.2
   },
   {
     "id": "zoo-performance-stubby-holders",
@@ -8399,15 +8836,18 @@
       {
         "sku": "ZOO-STUBBYHOLDER",
         "price": 14.95,
-        "inventory": 0
+        "inventory": 0,
+        "weight": 0.1
       },
       {
         "sku": "zoo-performance-stubby-holders-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 0.1
       }
-    ]
+    ],
+    "weight": 0.1
   },
   {
     "id": "quick-release-wheel-adaptor",
@@ -8491,21 +8931,25 @@
         "sku": "ZOO-K020901-0606",
         "price": 41.99,
         "inventory": 0,
-        "option1": "AN6 30 MICROM"
+        "option1": "AN6 30 MICROM",
+        "weight": 1.5
       },
       {
         "sku": "ZOO-K020901-0808",
         "price": 41.99,
         "inventory": 0,
-        "option1": "AN8 30 MICROM BLACK AN8"
+        "option1": "AN8 30 MICROM BLACK AN8",
+        "weight": 1.5
       },
       {
         "sku": "inline-billet-fuel-filter-3",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1.5
       }
-    ]
+    ],
+    "weight": 1.5
   },
   {
     "id": "quick-release-v-band-clamps",
@@ -8533,33 +8977,39 @@
         "sku": "ZOO-VR-001",
         "price": 59.65,
         "inventory": 0,
-        "option1": "2\" QUICK RELEASE V-BAND CLAMP"
+        "option1": "2\" QUICK RELEASE V-BAND CLAMP",
+        "weight": 0.3
       },
       {
         "sku": "ZOO-VR-002",
         "price": 67.11,
         "inventory": 0,
-        "option1": "2.5\" QUICK RELEASE V-BAND CLAMP"
+        "option1": "2.5\" QUICK RELEASE V-BAND CLAMP",
+        "weight": 0.3
       },
       {
         "sku": "ZOO-VR-003",
         "price": 75.81,
         "inventory": 0,
-        "option1": "3\" QUICK RELEASE V-BAND CLAMP"
+        "option1": "3\" QUICK RELEASE V-BAND CLAMP",
+        "weight": 0.3
       },
       {
         "sku": "ZOO-VR-004",
         "price": 87,
         "inventory": 0,
-        "option1": "3.5\" QUICK RELEASE V-BAND CLAMP"
+        "option1": "3.5\" QUICK RELEASE V-BAND CLAMP",
+        "weight": 0.3
       },
       {
         "sku": "ZOO-VR-005",
         "price": 95.7,
         "inventory": 0,
-        "option1": "4\" QUICK RELEASE V-BAND CLAMP"
+        "option1": "4\" QUICK RELEASE V-BAND CLAMP",
+        "weight": 0.3
       }
-    ]
+    ],
+    "weight": 0.3
   },
   {
     "id": "45-deg-silicone-reducer-elbow-hose",
@@ -8691,15 +9141,18 @@
         "sku": "ZOO-VP02211-00B",
         "price": 296.99,
         "inventory": 0,
-        "option1": "FUEL PUMP HANGER KITS - BLACK"
+        "option1": "FUEL PUMP HANGER KITS - BLACK",
+        "weight": 1.5
       },
       {
         "sku": "fuel-pump-hanger-kits-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1.5
       }
-    ]
+    ],
+    "weight": 1.5
   },
   {
     "id": "female-to-male-swivel-adapter",
@@ -8904,33 +9357,39 @@
         "sku": "ZOO-617-6801AL",
         "price": 14.29,
         "inventory": 0,
-        "option1": "1/8\""
+        "option1": "1/8\"",
+        "weight": 1
       },
       {
         "sku": "ZOO-617-6802AL",
         "price": 15.39,
         "inventory": 0,
-        "option1": "1/4\""
+        "option1": "1/4\"",
+        "weight": 1
       },
       {
         "sku": "ZOO-617-6803AL",
         "price": 16.49,
         "inventory": 0,
-        "option1": "3/8\""
+        "option1": "3/8\"",
+        "weight": 1
       },
       {
         "sku": "ZOO-617-6804AL",
         "price": 18.69,
         "inventory": 0,
-        "option1": "1/2\""
+        "option1": "1/2\"",
+        "weight": 1
       },
       {
         "sku": "ZOO-617-6805AL",
         "price": 19.7,
         "inventory": 0,
-        "option1": "3/4\""
+        "option1": "3/4\"",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "heat-proof-sleeves",
@@ -8957,45 +9416,53 @@
         "sku": "ZOO-HF-03",
         "price": 15.1,
         "inventory": 0,
-        "option1": "AN3 HEAT PROOF SLEEVE ID 8mm"
+        "option1": "AN3 HEAT PROOF SLEEVE ID 8mm",
+        "weight": 1
       },
       {
         "sku": "ZOO-HF-04",
         "price": 20.67,
         "inventory": 0,
-        "option1": "AN4 HEAT PROOF SLEEVE ID 12mm"
+        "option1": "AN4 HEAT PROOF SLEEVE ID 12mm",
+        "weight": 1
       },
       {
         "sku": "ZOO-HF-06",
         "price": 25.48,
         "inventory": 0,
-        "option1": "AN6 HEAT PROOF SLEEVE ID 15mm"
+        "option1": "AN6 HEAT PROOF SLEEVE ID 15mm",
+        "weight": 1
       },
       {
         "sku": "ZOO-HF-08",
         "price": 30.16,
         "inventory": 0,
-        "option1": "AN8 HEAT PROOF SLEEVE ID 20mm"
+        "option1": "AN8 HEAT PROOF SLEEVE ID 20mm",
+        "weight": 1
       },
       {
         "sku": "ZOO-HF-10",
         "price": 34.71,
         "inventory": 0,
-        "option1": "AN10 HEAT PROOF SLEEVE ID 22mm"
+        "option1": "AN10 HEAT PROOF SLEEVE ID 22mm",
+        "weight": 1
       },
       {
         "sku": "ZOO-HF-12",
         "price": 37.71,
         "inventory": 0,
-        "option1": "AN12 HEAT PROOF SLEEVE ID 25mm"
+        "option1": "AN12 HEAT PROOF SLEEVE ID 25mm",
+        "weight": 1
       },
       {
         "sku": "ZOO-HF-16",
         "price": 39.91,
         "inventory": 0,
-        "option1": "AN16 HEAT PROOF SLEEVE ID 35mm"
+        "option1": "AN16 HEAT PROOF SLEEVE ID 35mm",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "stainless-steel-braided-ptfe-hose",
@@ -9126,45 +9593,53 @@
         "sku": "ZOO-AN832-04",
         "price": 9.67,
         "inventory": 0,
-        "option1": "AN4"
+        "option1": "AN4",
+        "weight": 1
       },
       {
         "sku": "ZOO-AN832-06",
         "price": 10.97,
         "inventory": 0,
-        "option1": "AN6"
+        "option1": "AN6",
+        "weight": 1
       },
       {
         "sku": "ZOO-AN832-08",
         "price": 13.17,
         "inventory": 0,
-        "option1": "AN8"
+        "option1": "AN8",
+        "weight": 1
       },
       {
         "sku": "ZOO-AN832-10",
         "price": 14.71,
         "inventory": 0,
-        "option1": "AN10"
+        "option1": "AN10",
+        "weight": 1
       },
       {
         "sku": "ZOO-AN832-12",
         "price": 25.17,
         "inventory": 0,
-        "option1": "AN12"
+        "option1": "AN12",
+        "weight": 1
       },
       {
         "sku": "ZOO-AN832-16",
         "price": 32.73,
         "inventory": 0,
-        "option1": "AN16"
+        "option1": "AN16",
+        "weight": 1
       },
       {
         "sku": "ZOO-AN832-20",
         "price": 43.77,
         "inventory": 0,
-        "option1": "AN20"
+        "option1": "AN20",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "npt-to-barb-90-deg",
@@ -10430,33 +10905,39 @@
         "sku": "ZOO-C03-04",
         "price": 10.99,
         "inventory": 0,
-        "option1": "AN4"
+        "option1": "AN4",
+        "weight": 1
       },
       {
         "sku": "ZOO-C03-06",
         "price": 13.19,
         "inventory": 0,
-        "option1": "AN6"
+        "option1": "AN6",
+        "weight": 1
       },
       {
         "sku": "ZOO-C03-08",
         "price": 14.73,
         "inventory": 0,
-        "option1": "AN8"
+        "option1": "AN8",
+        "weight": 1
       },
       {
         "sku": "ZOO-C03-10",
         "price": 17.05,
         "inventory": 0,
-        "option1": "AN10"
+        "option1": "AN10",
+        "weight": 1
       },
       {
         "sku": "ZOO-C03-12",
         "price": 18.43,
         "inventory": 0,
-        "option1": "AN12"
+        "option1": "AN12",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "npt-to-barb-straight",
@@ -10529,21 +11010,25 @@
         "sku": "ZOO-AN921-06",
         "price": 18.69,
         "inventory": 0,
-        "option1": "AN6"
+        "option1": "AN6",
+        "weight": 1.5
       },
       {
         "sku": "ZOO-AN921-08",
         "price": 21.16,
         "inventory": 0,
-        "option1": "AN8"
+        "option1": "AN8",
+        "weight": 1.5
       },
       {
         "sku": "fuel-cell-fittings-3",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1.5
       }
-    ]
+    ],
+    "weight": 1.5
   },
   {
     "id": "stainless-steel-hose",
@@ -10701,75 +11186,88 @@
         "sku": "ZOO-JP0209-03",
         "price": 6.92,
         "inventory": 0,
-        "option1": "BILLET ALUMINIUM P CLAMP ID 4.8mm"
+        "option1": "BILLET ALUMINIUM P CLAMP ID 4.8mm",
+        "weight": 0.1
       },
       {
         "sku": "ZOO-JP0209-04",
         "price": 6.96,
         "inventory": 0,
-        "option1": "BILLET ALUMINIUM P CLAMP ID 6.4mm"
+        "option1": "BILLET ALUMINIUM P CLAMP ID 6.4mm",
+        "weight": 0.1
       },
       {
         "sku": "ZOO-JP0209-05",
         "price": 7.03,
         "inventory": 0,
-        "option1": "BILLET ALUMINIUM P CLAMP ID 7.9mm"
+        "option1": "BILLET ALUMINIUM P CLAMP ID 7.9mm",
+        "weight": 0.1
       },
       {
         "sku": "ZOO-JP0209-06",
         "price": 7.25,
         "inventory": 0,
-        "option1": "AN3 BILLET ALUMINIUM P CLAMP ID 9.5mm"
+        "option1": "AN3 BILLET ALUMINIUM P CLAMP ID 9.5mm",
+        "weight": 0.1
       },
       {
         "sku": "ZOO-JP0209-07",
         "price": 10.89,
         "inventory": 0,
-        "option1": "AN4 BILLET ALUMINIUM P CLAMP ID 11.1mm"
+        "option1": "AN4 BILLET ALUMINIUM P CLAMP ID 11.1mm",
+        "weight": 0.1
       },
       {
         "sku": "ZOO-JP0209-08",
         "price": 11.99,
         "inventory": 0,
-        "option1": "AN5 BILLET ALUMINIUM P CLAMP ID 12.7mm"
+        "option1": "AN5 BILLET ALUMINIUM P CLAMP ID 12.7mm",
+        "weight": 0.1
       },
       {
         "sku": "ZOO-JP0209-09",
         "price": 13.16,
         "inventory": 0,
-        "option1": "AN7 BILLET ALUMINIUM P CLAMP ID 14.3mm"
+        "option1": "AN7 BILLET ALUMINIUM P CLAMP ID 14.3mm",
+        "weight": 0.1
       },
       {
         "sku": "ZOO-JP0209-10",
         "price": 14.19,
         "inventory": 0,
-        "option1": "AN8 BILLET ALUMINIUM P CLAMP ID 15.9mm"
+        "option1": "AN8 BILLET ALUMINIUM P CLAMP ID 15.9mm",
+        "weight": 0.1
       },
       {
         "sku": "ZOO-JP0209-12",
         "price": 14.63,
         "inventory": 0,
-        "option1": "AN10 BILLET ALUMINIUM P CLAMP ID 19.1mm"
+        "option1": "AN10 BILLET ALUMINIUM P CLAMP ID 19.1mm",
+        "weight": 0.1
       },
       {
         "sku": "ZOO-JP0209-15",
         "price": 16.39,
         "inventory": 0,
-        "option1": "AN12 BILLET ALUMINIUM P CLAMP ID 23.8mm"
+        "option1": "AN12 BILLET ALUMINIUM P CLAMP ID 23.8mm",
+        "weight": 0.1
       },
       {
         "sku": "ZOO-JP0209-16",
         "price": 45.46,
         "inventory": 0,
-        "option1": "AN16 BILLET ALUMINIUM P CLAMP ID 30.5mm"
+        "option1": "AN16 BILLET ALUMINIUM P CLAMP ID 30.5mm",
+        "weight": 0.1
       },
       {
         "sku": "ZOO-JP0209-17",
         "price": 49.2,
         "inventory": 0,
-        "option1": "AN20 BILLET ALUMINIUM P CLAMP ID 35.81mm"
+        "option1": "AN20 BILLET ALUMINIUM P CLAMP ID 35.81mm",
+        "weight": 0.1
       }
-    ]
+    ],
+    "weight": 0.1
   },
   {
     "id": "aluminium-line-separators",
@@ -10949,39 +11447,46 @@
         "sku": "ZOO-617H-7203ST",
         "price": 7.03,
         "inventory": 0,
-        "option1": "AN3"
+        "option1": "AN3",
+        "weight": 1
       },
       {
         "sku": "ZOO-617H-7204ST",
         "price": 7.69,
         "inventory": 0,
-        "option1": "AN4"
+        "option1": "AN4",
+        "weight": 1
       },
       {
         "sku": "ZOO-617H-7206ST",
         "price": 8.79,
         "inventory": 0,
-        "option1": "AN6"
+        "option1": "AN6",
+        "weight": 1
       },
       {
         "sku": "ZOO-617H-7208ST",
         "price": 12.09,
         "inventory": 0,
-        "option1": "AN8"
+        "option1": "AN8",
+        "weight": 1
       },
       {
         "sku": "ZOO-617H-7210ST",
         "price": 14.29,
         "inventory": 0,
-        "option1": "AN10"
+        "option1": "AN10",
+        "weight": 1
       },
       {
         "sku": "ZOO-617H-7212ST",
         "price": 19.79,
         "inventory": 0,
-        "option1": "AN12"
+        "option1": "AN12",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "an-weld-on-bung-male-aluminium-hexagon-head",
@@ -11006,33 +11511,39 @@
         "sku": "ZOO-617H-7203AL",
         "price": 13.19,
         "inventory": 0,
-        "option1": "AN3"
+        "option1": "AN3",
+        "weight": 1
       },
       {
         "sku": "ZOO-617H-7204AL",
         "price": 18.35,
         "inventory": 0,
-        "option1": "AN4"
+        "option1": "AN4",
+        "weight": 1
       },
       {
         "sku": "ZOO-617H-7206AL",
         "price": 12.51,
         "inventory": 0,
-        "option1": "AN6"
+        "option1": "AN6",
+        "weight": 1
       },
       {
         "sku": "ZOO-617H-7208AL",
         "price": 14.29,
         "inventory": 0,
-        "option1": "AN8"
+        "option1": "AN8",
+        "weight": 1
       },
       {
         "sku": "ZOO-617H-7212AL",
         "price": 24.19,
         "inventory": 0,
-        "option1": "AN12"
+        "option1": "AN12",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "an-weld-on-bung-male-stainless-steel-hexagon-head",
@@ -11058,39 +11569,46 @@
         "sku": "ZOO-617H-7203SS",
         "price": 13.99,
         "inventory": 0,
-        "option1": "AN3"
+        "option1": "AN3",
+        "weight": 1
       },
       {
         "sku": "ZOO-617H-7204SS",
         "price": 14.99,
         "inventory": 0,
-        "option1": "AN4"
+        "option1": "AN4",
+        "weight": 1
       },
       {
         "sku": "ZOO-617H-7206SS",
         "price": 21.99,
         "inventory": 0,
-        "option1": "AN6"
+        "option1": "AN6",
+        "weight": 1
       },
       {
         "sku": "ZOO-617H-7208SS",
         "price": 23.99,
         "inventory": 0,
-        "option1": "AN8"
+        "option1": "AN8",
+        "weight": 1
       },
       {
         "sku": "ZOO-617H-7210SS",
         "price": 29.99,
         "inventory": 0,
-        "option1": "AN10"
+        "option1": "AN10",
+        "weight": 1
       },
       {
         "sku": "ZOO-617H-7212SS",
         "price": 49.99,
         "inventory": 0,
-        "option1": "AN12"
+        "option1": "AN12",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "an-weld-on-bung-male-aluminium-circle-head",
@@ -11116,45 +11634,53 @@
         "sku": "ZOO-617-7204",
         "price": 7.69,
         "inventory": 0,
-        "option1": "AN4"
+        "option1": "AN4",
+        "weight": 1
       },
       {
         "sku": "ZOO-617-7206",
         "price": 9.89,
         "inventory": 0,
-        "option1": "AN6"
+        "option1": "AN6",
+        "weight": 1
       },
       {
         "sku": "ZOO-617-7208",
         "price": 10.99,
         "inventory": 0,
-        "option1": "AN8"
+        "option1": "AN8",
+        "weight": 1
       },
       {
         "sku": "ZOO-617-7210",
         "price": 12.09,
         "inventory": 0,
-        "option1": "AN10"
+        "option1": "AN10",
+        "weight": 1
       },
       {
         "sku": "ZOO-617-7212",
         "price": 15.39,
         "inventory": 0,
-        "option1": "AN12"
+        "option1": "AN12",
+        "weight": 1
       },
       {
         "sku": "ZOO-617-7216",
         "price": 18.47,
         "inventory": 0,
-        "option1": "AN16"
+        "option1": "AN16",
+        "weight": 1
       },
       {
         "sku": "ZOO-617-7220",
         "price": 21.77,
         "inventory": 0,
-        "option1": "AN20"
+        "option1": "AN20",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "an-weld-on-bung-male-stainless-steel-circle-head",
@@ -11179,39 +11705,46 @@
         "sku": "ZOO-617-7206SS",
         "price": 12.09,
         "inventory": 0,
-        "option1": "AN6"
+        "option1": "AN6",
+        "weight": 1
       },
       {
         "sku": "ZOO-617-7208SS",
         "price": 14.29,
         "inventory": 0,
-        "option1": "AN8"
+        "option1": "AN8",
+        "weight": 1
       },
       {
         "sku": "ZOO-617-7210SS",
         "price": 15.39,
         "inventory": 0,
-        "option1": "AN10"
+        "option1": "AN10",
+        "weight": 1
       },
       {
         "sku": "ZOO-617-7212SS",
         "price": 33.79,
         "inventory": 0,
-        "option1": "AN12"
+        "option1": "AN12",
+        "weight": 1
       },
       {
         "sku": "ZOO-617-7216SS",
         "price": 36.29,
         "inventory": 0,
-        "option1": "AN16"
+        "option1": "AN16",
+        "weight": 1
       },
       {
         "sku": "ZOO-617-7220SS",
         "price": 48.39,
         "inventory": 0,
-        "option1": "AN20"
+        "option1": "AN20",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "weld-on-bung-female-aluminium",
@@ -11236,39 +11769,46 @@
         "sku": "ZOO-617-6801",
         "price": 14.29,
         "inventory": 0,
-        "option1": "1/8\""
+        "option1": "1/8\"",
+        "weight": 1
       },
       {
         "sku": "ZOO-617-6802",
         "price": 15.39,
         "inventory": 0,
-        "option1": "1/4\""
+        "option1": "1/4\"",
+        "weight": 1
       },
       {
         "sku": "ZOO-617-6803",
         "price": 16.49,
         "inventory": 0,
-        "option1": "3/8\""
+        "option1": "3/8\"",
+        "weight": 1
       },
       {
         "sku": "ZOO-617-6804",
         "price": 18.69,
         "inventory": 0,
-        "option1": "1/2\""
+        "option1": "1/2\"",
+        "weight": 1
       },
       {
         "sku": "ZOO-617-681415",
         "price": 12.99,
         "inventory": 0,
-        "option1": "M14*1.5"
+        "option1": "M14*1.5",
+        "weight": 1
       },
       {
         "sku": "ZOO-617-6810125",
         "price": 12.99,
         "inventory": 0,
-        "option1": "M10*1.25"
+        "option1": "M10*1.25",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "weld-on-bung-female-stainless-steel",
@@ -11296,33 +11836,39 @@
         "sku": "ZOO-617-6701SS",
         "price": 7.69,
         "inventory": 0,
-        "option1": "1/8\""
+        "option1": "1/8\"",
+        "weight": 1
       },
       {
         "sku": "ZOO-617-6702SS",
         "price": 8.77,
         "inventory": 0,
-        "option1": "1/4\""
+        "option1": "1/4\"",
+        "weight": 1
       },
       {
         "sku": "ZOO-617-6703SS",
         "price": 13.19,
         "inventory": 0,
-        "option1": "3/8\""
+        "option1": "3/8\"",
+        "weight": 1
       },
       {
         "sku": "ZOO-617-6704SS",
         "price": 16.49,
         "inventory": 0,
-        "option1": "1/2\""
+        "option1": "1/2\"",
+        "weight": 1
       },
       {
         "sku": "ZOO-617-6705SS",
         "price": 18.69,
         "inventory": 0,
-        "option1": "3/4\""
+        "option1": "3/4\"",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "weld-on-bung-female-steel",
@@ -11347,33 +11893,39 @@
         "sku": "ZOO-617-6701",
         "price": 4.39,
         "inventory": 0,
-        "option1": "1/8\""
+        "option1": "1/8\"",
+        "weight": 1
       },
       {
         "sku": "ZOO-617-6702",
         "price": 5.49,
         "inventory": 0,
-        "option1": "1/4\""
+        "option1": "1/4\"",
+        "weight": 1
       },
       {
         "sku": "ZOO-617-6703",
         "price": 9.89,
         "inventory": 0,
-        "option1": "3/8\""
+        "option1": "3/8\"",
+        "weight": 1
       },
       {
         "sku": "ZOO-617-6704",
         "price": 15.39,
         "inventory": 0,
-        "option1": "1/2\""
+        "option1": "1/2\"",
+        "weight": 1
       },
       {
         "sku": "ZOO-617-6705",
         "price": 12.09,
         "inventory": 0,
-        "option1": "3/4\""
+        "option1": "3/4\"",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "npt-weld-on-bung-female-stainless-steel-hexagon-head",
@@ -11401,33 +11953,39 @@
         "sku": "ZOO-617-6801SS",
         "price": 15.81,
         "inventory": 0,
-        "option1": "1/8\""
+        "option1": "1/8\"",
+        "weight": 1
       },
       {
         "sku": "ZOO-617-6802SS",
         "price": 16.47,
         "inventory": 0,
-        "option1": "1/4\""
+        "option1": "1/4\"",
+        "weight": 1
       },
       {
         "sku": "ZOO-617-6803SS",
         "price": 16.09,
         "inventory": 0,
-        "option1": "3/8\""
+        "option1": "3/8\"",
+        "weight": 1
       },
       {
         "sku": "ZOO-617-6804SS",
         "price": 19.69,
         "inventory": 0,
-        "option1": "1/2\""
+        "option1": "1/2\"",
+        "weight": 1
       },
       {
         "sku": "ZOO-617-6805SS",
         "price": 15.81,
         "inventory": 0,
-        "option1": "3/4\""
+        "option1": "3/4\"",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "npt-weld-on-bung-female-steel-hexagon-head",
@@ -11453,33 +12011,39 @@
         "sku": "ZOO-617-6801ST",
         "price": 7.69,
         "inventory": 0,
-        "option1": "1/8\""
+        "option1": "1/8\"",
+        "weight": 1
       },
       {
         "sku": "ZOO-617-6802ST",
         "price": 8.79,
         "inventory": 0,
-        "option1": "1/4\""
+        "option1": "1/4\"",
+        "weight": 1
       },
       {
         "sku": "ZOO-617-6803ST",
         "price": 13.19,
         "inventory": 0,
-        "option1": "3/8\""
+        "option1": "3/8\"",
+        "weight": 1
       },
       {
         "sku": "ZOO-617-6804ST",
         "price": 7.69,
         "inventory": 0,
-        "option1": "1/2\""
+        "option1": "1/2\"",
+        "weight": 1
       },
       {
         "sku": "ZOO-617-6805ST",
         "price": 18.69,
         "inventory": 0,
-        "option1": "3/4\""
+        "option1": "3/4\"",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "alloy-weld-on-female",
@@ -11508,33 +12072,39 @@
         "sku": "ZOO-AN990-04D",
         "price": 7.69,
         "inventory": 0,
-        "option1": "AN4"
+        "option1": "AN4",
+        "weight": 1
       },
       {
         "sku": "ZOO-AN990-06D",
         "price": 8.79,
         "inventory": 0,
-        "option1": "AN6"
+        "option1": "AN6",
+        "weight": 1
       },
       {
         "sku": "ZOO-AN990-08D",
         "price": 13.19,
         "inventory": 0,
-        "option1": "AN8"
+        "option1": "AN8",
+        "weight": 1
       },
       {
         "sku": "ZOO-AN990-10D",
         "price": 14.29,
         "inventory": 0,
-        "option1": "AN10"
+        "option1": "AN10",
+        "weight": 1
       },
       {
         "sku": "ZOO-AN990-12D",
         "price": 15.39,
         "inventory": 0,
-        "option1": "AN12"
+        "option1": "AN12",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "barb-weld-on-male",
@@ -11680,45 +12250,53 @@
         "sku": "ZOO-AN814-03",
         "price": 5.49,
         "inventory": 0,
-        "option1": "AN3"
+        "option1": "AN3",
+        "weight": 1
       },
       {
         "sku": "ZOO-AN814-04",
         "price": 6.85,
         "inventory": 0,
-        "option1": "AN4"
+        "option1": "AN4",
+        "weight": 1
       },
       {
         "sku": "ZOO-AN814-06",
         "price": 8.99,
         "inventory": 0,
-        "option1": "AN6"
+        "option1": "AN6",
+        "weight": 1
       },
       {
         "sku": "ZOO-AN814-08",
         "price": 9.12,
         "inventory": 0,
-        "option1": "AN8"
+        "option1": "AN8",
+        "weight": 1
       },
       {
         "sku": "ZOO-AN814-10",
         "price": 10.71,
         "inventory": 0,
-        "option1": "AN10"
+        "option1": "AN10",
+        "weight": 1
       },
       {
         "sku": "ZOO-AN814-12",
         "price": 14.29,
         "inventory": 0,
-        "option1": "AN12"
+        "option1": "AN12",
+        "weight": 1
       },
       {
         "sku": "ZOO-AN814-16",
         "price": 15.37,
         "inventory": 0,
-        "option1": "AN16"
+        "option1": "AN16",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "an-flare-to-barb-adaptor",
@@ -12155,21 +12733,25 @@
         "sku": "ZOO-AN817-06-3/8",
         "price": 17.59,
         "inventory": 0,
-        "option1": "AN6 - 3/8\""
+        "option1": "AN6 - 3/8\"",
+        "weight": 1
       },
       {
         "sku": "ZOO-AN817-06-5/16",
         "price": 17.59,
         "inventory": 0,
-        "option1": "AN6 - 5/16\""
+        "option1": "AN6 - 5/16\"",
+        "weight": 1
       },
       {
         "sku": "ZOO-AN817-08-3/8",
         "price": 17.59,
         "inventory": 0,
-        "option1": "AN8 - 3/8\""
+        "option1": "AN8 - 3/8\"",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "an-hex-finishers",
@@ -12196,45 +12778,53 @@
         "sku": "ZOO-G0209-04",
         "price": 9.89,
         "inventory": 0,
-        "option1": "AN4 HEX FINISHERS ID 12.8"
+        "option1": "AN4 HEX FINISHERS ID 12.8",
+        "weight": 1
       },
       {
         "sku": "ZOO-G0209-06",
         "price": 10.89,
         "inventory": 0,
-        "option1": "AN6 HEX FINISHERS ID 16.0"
+        "option1": "AN6 HEX FINISHERS ID 16.0",
+        "weight": 1
       },
       {
         "sku": "ZOO-G0209-08",
         "price": 11.96,
         "inventory": 0,
-        "option1": "AN8 HEX FINISHERS ID 17.75"
+        "option1": "AN8 HEX FINISHERS ID 17.75",
+        "weight": 1
       },
       {
         "sku": "ZOO-G0209-10",
         "price": 12.63,
         "inventory": 0,
-        "option1": "AN10 HEX FINISHERS ID 21.0"
+        "option1": "AN10 HEX FINISHERS ID 21.0",
+        "weight": 1
       },
       {
         "sku": "ZOO-G0209-12",
         "price": 14.87,
         "inventory": 0,
-        "option1": "AN12 HEX FINISHERS ID 25.0"
+        "option1": "AN12 HEX FINISHERS ID 25.0",
+        "weight": 1
       },
       {
         "sku": "ZOO-G0209-16",
         "price": 23.54,
         "inventory": 0,
-        "option1": "AN16 HEX FINISHERS ID 30.58"
+        "option1": "AN16 HEX FINISHERS ID 30.58",
+        "weight": 1
       },
       {
         "sku": "ZOO-G0209-20",
         "price": 29.51,
         "inventory": 0,
-        "option1": "AN20 HEX FINISHERS ID 40.65"
+        "option1": "AN20 HEX FINISHERS ID 40.65",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "fuel-pressure-gauge",
@@ -12263,27 +12853,32 @@
         "sku": "ZOO-19PG-21",
         "price": 40.7,
         "inventory": 0,
-        "option1": "BLACK/SILVER"
+        "option1": "BLACK/SILVER",
+        "weight": 1.5
       },
       {
         "sku": "ZOO-19PG-21-GOLD/BLACK",
         "price": 40.7,
         "inventory": 0,
-        "option1": "GOLD/BLACK"
+        "option1": "GOLD/BLACK",
+        "weight": 1.5
       },
       {
         "sku": "ZOO-19PG-21-WHITE/BLACK",
         "price": 40.7,
         "inventory": 0,
-        "option1": "WHITE/BLACK"
+        "option1": "WHITE/BLACK",
+        "weight": 1.5
       },
       {
         "sku": "fuel-pressure-gauge-4",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1.5
       }
-    ]
+    ],
+    "weight": 1.5
   },
   {
     "id": "billet-fuel-filter",
@@ -12311,15 +12906,18 @@
         "sku": "ZOO-KI00204M",
         "price": 179.99,
         "inventory": 0,
-        "option1": "BILLET FUEL FILTER AN10 O-RING OD 50mm Length 140mm NEW FILTER ELEMENT"
+        "option1": "BILLET FUEL FILTER AN10 O-RING OD 50mm Length 140mm NEW FILTER ELEMENT",
+        "weight": 1.5
       },
       {
         "sku": "billet-fuel-filter-2",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1.5
       }
-    ]
+    ],
+    "weight": 1.5
   },
   {
     "id": "roll-over-valve",
@@ -12344,21 +12942,25 @@
         "sku": "ZOO-VP834-006",
         "price": 28.59,
         "inventory": 0,
-        "option1": "AN6"
+        "option1": "AN6",
+        "weight": 1
       },
       {
         "sku": "ZOO-VP834-008",
         "price": 35.19,
         "inventory": 0,
-        "option1": "AN8"
+        "option1": "AN8",
+        "weight": 1
       },
       {
         "sku": "ZOO-VP834-010",
         "price": 37.39,
         "inventory": 0,
-        "option1": "AN10"
+        "option1": "AN10",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "fuel-pump-bracket",
@@ -12387,21 +12989,25 @@
         "sku": "ZOO-VP00701-516",
         "price": 37.39,
         "inventory": 0,
-        "option1": "Single Bracket"
+        "option1": "Single Bracket",
+        "weight": 0.2
       },
       {
         "sku": "ZOO-VP00709",
         "price": 59.99,
         "inventory": 0,
-        "option1": "Dual Bracket"
+        "option1": "Dual Bracket",
+        "weight": 0.2
       },
       {
         "sku": "fuel-pump-bracket-3",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 0.2
       }
-    ]
+    ],
+    "weight": 0.2
   },
   {
     "id": "fuel-regulator",
@@ -12429,57 +13035,67 @@
         "sku": "ZOO-VP01204B",
         "price": 279.99,
         "inventory": 0,
-        "option1": "2 x AN6 (IN) 1 x AN6 (OUT) BLACK"
+        "option1": "2 x AN6 (IN) 1 x AN6 (OUT) BLACK",
+        "weight": 1.5
       },
       {
         "sku": "ZOO-VP01204S",
         "price": 279.99,
         "inventory": 0,
-        "option1": "2 x AN6 (IN) 1 X AN6 (OUT) SILVER"
+        "option1": "2 x AN6 (IN) 1 X AN6 (OUT) SILVER",
+        "weight": 1.5
       },
       {
         "sku": "ZOO-VP01204",
         "price": 279.99,
         "inventory": 0,
-        "option1": "2 x AN6 (IN) 1 x AN6 (OUT) BLACK/SILVER"
+        "option1": "2 x AN6 (IN) 1 x AN6 (OUT) BLACK/SILVER",
+        "weight": 1.5
       },
       {
         "sku": "ZOO-VP01203B",
         "price": 279.99,
         "inventory": 0,
-        "option1": "2 x AN8 (IN) 1 x AN6 (OUT) BLACK"
+        "option1": "2 x AN8 (IN) 1 x AN6 (OUT) BLACK",
+        "weight": 1.5
       },
       {
         "sku": "ZOO-VP01203S",
         "price": 279.99,
         "inventory": 0,
-        "option1": "2 x AN8 (IN) 1 x AN6 (OUT) SILVER"
+        "option1": "2 x AN8 (IN) 1 x AN6 (OUT) SILVER",
+        "weight": 1.5
       },
       {
         "sku": "ZOO-VP01203",
         "price": 279.99,
         "inventory": 0,
-        "option1": "2 x AN8 (IN) 1 x AN6 (OUT) BLACK/SILVER"
+        "option1": "2 x AN8 (IN) 1 x AN6 (OUT) BLACK/SILVER",
+        "weight": 1.5
       },
       {
         "sku": "ZOO-VP01202B",
         "price": 279.99,
         "inventory": 0,
-        "option1": "2 x AN10 (IN) 1 x AN6 (OUT) BLACK"
+        "option1": "2 x AN10 (IN) 1 x AN6 (OUT) BLACK",
+        "weight": 1.5
       },
       {
         "sku": "ZOO-VP01202S",
         "price": 279.99,
         "inventory": 0,
-        "option1": "2 x AN10 (IN) 1 x AN6 (OUT) SILVER"
+        "option1": "2 x AN10 (IN) 1 x AN6 (OUT) SILVER",
+        "weight": 1.5
       },
       {
         "sku": "ZOO-VP01202",
         "price": 279.99,
         "inventory": 0,
-        "option1": "2 x AN10 (IN) 1 x AN6 (OUT) BLACK/SILVER"
+        "option1": "2 x AN10 (IN) 1 x AN6 (OUT) BLACK/SILVER",
+        "weight": 1.5
       }
-    ]
+    ],
+    "weight": 1.5
   },
   {
     "id": "surge-tank",
@@ -12507,21 +13123,25 @@
         "sku": "ZOO-VP02208B",
         "price": 157.29,
         "inventory": 0,
-        "option1": "2.5L BLACK"
+        "option1": "2.5L BLACK",
+        "weight": 1.5
       },
       {
         "sku": "ZOO-VP02208S",
         "price": 157.29,
         "inventory": 0,
-        "option1": "2.5L SILVER"
+        "option1": "2.5L SILVER",
+        "weight": 1.5
       },
       {
         "sku": "surge-tank-3",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1.5
       }
-    ]
+    ],
+    "weight": 1.5
   },
   {
     "id": "fuel-pump-adaptors",
@@ -12547,21 +13167,25 @@
         "sku": "ZOO-Y-0608",
         "price": 65.99,
         "inventory": 0,
-        "option1": "AN6 x 2, AN8 x 1 (centre to centre 50mm)"
+        "option1": "AN6 x 2, AN8 x 1 (centre to centre 50mm)",
+        "weight": 1
       },
       {
         "sku": "ZOO-Y-0810",
         "price": 76.99,
         "inventory": 0,
-        "option1": "AN8 x 2, AN10 x 1 (centre to centre 76mm)"
+        "option1": "AN8 x 2, AN10 x 1 (centre to centre 76mm)",
+        "weight": 1
       },
       {
         "sku": "ZOO-Y-0608L",
         "price": 65.99,
         "inventory": 0,
-        "option1": "AN6 x 2, AN8 x 1 (centre to centre 86.5mm)"
+        "option1": "AN6 x 2, AN8 x 1 (centre to centre 86.5mm)",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "air-filter",
@@ -12601,27 +13225,32 @@
         "sku": "ZOO-FLANGEID3\"",
         "price": 95.59,
         "inventory": 0,
-        "option1": "3\" FLANGE AIR FILTER"
+        "option1": "3\" FLANGE AIR FILTER",
+        "weight": 1.5
       },
       {
         "sku": "ZOO-AF4-9R",
         "price": 102.29,
         "inventory": 0,
-        "option1": "4\" FLANGE AIR FILTER"
+        "option1": "4\" FLANGE AIR FILTER",
+        "weight": 1.5
       },
       {
         "sku": "ZOO-FLANGEID5\"",
         "price": 108.9,
         "inventory": 0,
-        "option1": "5\" FLANGE AIR FILTER"
+        "option1": "5\" FLANGE AIR FILTER",
+        "weight": 1.5
       },
       {
         "sku": "air-filter-4",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1.5
       }
-    ]
+    ],
+    "weight": 1.5
   },
   {
     "id": "turbo-blankets",
@@ -12658,58 +13287,67 @@
         "price": 134.99,
         "inventory": 0,
         "option1": "T3",
-        "option2": "KEVLAR"
+        "option2": "KEVLAR",
+        "weight": 1
       },
       {
         "sku": "ZOO-TB-T3CFB",
         "price": 139.99,
         "inventory": 0,
         "option1": "T3",
-        "option2": "CARBON FIBRE"
+        "option2": "CARBON FIBRE",
+        "weight": 1
       },
       {
         "sku": "ZOO-TB-T4BFN",
         "price": 143.99,
         "inventory": 0,
         "option1": "T4",
-        "option2": "KEVLAR"
+        "option2": "KEVLAR",
+        "weight": 1
       },
       {
         "sku": "ZOO-TB-T4CFB",
         "price": 149.99,
         "inventory": 0,
         "option1": "T4",
-        "option2": "CARBON FIBRE"
+        "option2": "CARBON FIBRE",
+        "weight": 1
       },
       {
         "sku": "ZOO-TB-T6BFN",
         "price": 159.99,
         "inventory": 0,
         "option1": "T6",
-        "option2": "KEVLAR"
+        "option2": "KEVLAR",
+        "weight": 1
       },
       {
         "sku": "ZOO-TB-T6CFB",
         "price": 164.99,
         "inventory": 0,
         "option1": "T6",
-        "option2": "CARBON FIBRE"
+        "option2": "CARBON FIBRE",
+        "weight": 1
       },
       {
         "sku": "ZOO-TB-T28BFN",
         "price": 119,
         "inventory": 0,
         "option1": "T28",
-        "option2": "KEVLAR"
+        "option2": "KEVLAR",
+        "weight": 1
       },
       {
         "sku": "ZOO-TB-T28CFB",
         "price": 129.99,
         "inventory": 0,
         "option1": "T28",
-        "option2": "CARBON FIBRE"
+        "option2": "CARBON FIBRE",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "high-performance-oil-cooler",
@@ -12739,33 +13377,39 @@
         "sku": "ZOO-T-262-7R",
         "price": 109.99,
         "inventory": 0,
-        "option1": "7 Row BLACK"
+        "option1": "7 Row BLACK",
+        "weight": 2
       },
       {
         "sku": "ZOO-T-262-15R",
         "price": 137.49,
         "inventory": 0,
-        "option1": "15 Row BLACK"
+        "option1": "15 Row BLACK",
+        "weight": 2
       },
       {
         "sku": "ZOO-T-262-7RBL",
         "price": 109.99,
         "inventory": 0,
-        "option1": "7 Row BLUE"
+        "option1": "7 Row BLUE",
+        "weight": 2
       },
       {
         "sku": "ZOO-T-262-15RBL",
         "price": 137.49,
         "inventory": 0,
-        "option1": "15 Row BLUE"
+        "option1": "15 Row BLUE",
+        "weight": 2
       },
       {
         "sku": "high-performance-oil-cooler-5",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 2
       }
-    ]
+    ],
+    "weight": 2
   },
   {
     "id": "aluminium-catch-cans",
@@ -12800,22 +13444,26 @@
         "price": 164.99,
         "inventory": 0,
         "option1": "1 LITRE",
-        "option2": "BLACK"
+        "option2": "BLACK",
+        "weight": 1
       },
       {
         "sku": "ZOO-VP-02706S",
         "price": 164.99,
         "inventory": 0,
         "option1": "1 LITRE",
-        "option2": "SILVER"
+        "option2": "SILVER",
+        "weight": 1
       },
       {
         "sku": "aluminium-catch-cans-3",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "reducer-silicone-hose",
@@ -13152,33 +13800,39 @@
         "sku": "ZOO-VB-001",
         "price": 59.65,
         "inventory": 0,
-        "option1": "2\""
+        "option1": "2\"",
+        "weight": 0.2
       },
       {
         "sku": "ZOO-VB-002",
         "price": 67.11,
         "inventory": 0,
-        "option1": "2.5\""
+        "option1": "2.5\"",
+        "weight": 0.2
       },
       {
         "sku": "ZOO-VB-003",
         "price": 75.81,
         "inventory": 0,
-        "option1": "3\""
+        "option1": "3\"",
+        "weight": 0.2
       },
       {
         "sku": "ZOO-VB-004",
         "price": 87,
         "inventory": 0,
-        "option1": "3.5\""
+        "option1": "3.5\"",
+        "weight": 0.2
       },
       {
         "sku": "ZOO-VB-005",
         "price": 95.7,
         "inventory": 0,
-        "option1": "4\""
+        "option1": "4\"",
+        "weight": 0.2
       }
-    ]
+    ],
+    "weight": 0.2
   },
   {
     "id": "intercooler-clamps",
@@ -13207,39 +13861,46 @@
         "sku": "ZOO-1671-250",
         "price": 139.99,
         "inventory": 0,
-        "option1": "2.5\" (63.5mm)"
+        "option1": "2.5\" (63.5mm)",
+        "weight": 0.2
       },
       {
         "sku": "ZOO-1671-300",
         "price": 144.99,
         "inventory": 0,
-        "option1": "3\" (76.2mm)"
+        "option1": "3\" (76.2mm)",
+        "weight": 0.2
       },
       {
         "sku": "ZOO-1671-350",
         "price": 169.99,
         "inventory": 0,
-        "option1": "3.5\" (88.9mm)"
+        "option1": "3.5\" (88.9mm)",
+        "weight": 0.2
       },
       {
         "sku": "ZOO-1671-400",
         "price": 172.7,
         "inventory": 0,
-        "option1": "4\" (101.6mm)"
+        "option1": "4\" (101.6mm)",
+        "weight": 0.2
       },
       {
         "sku": "ZOO-1671-450",
         "price": 189.99,
         "inventory": 0,
-        "option1": "4.5\" (114mm)"
+        "option1": "4.5\" (114mm)",
+        "weight": 0.2
       },
       {
         "sku": "ZOO-1671-450",
         "price": 208.99,
         "inventory": 0,
-        "option1": "5\" (127mm)"
+        "option1": "5\" (127mm)",
+        "weight": 0.2
       }
-    ]
+    ],
+    "weight": 0.2
   },
   {
     "id": "tow-straps",
@@ -13272,45 +13933,53 @@
         "sku": "ZOO-73001",
         "price": 26.99,
         "inventory": 0,
-        "option1": "Knight Rider Black"
+        "option1": "Knight Rider Black",
+        "weight": 1
       },
       {
         "sku": "ZOO-73002",
         "price": 26.99,
         "inventory": 0,
-        "option1": "Race Red"
+        "option1": "Race Red",
+        "weight": 1
       },
       {
         "sku": "ZOO-73007",
         "price": 26.99,
         "inventory": 0,
-        "option1": "Lipstick Pink"
+        "option1": "Lipstick Pink",
+        "weight": 1
       },
       {
         "sku": "ZOO-73009",
         "price": 26.99,
         "inventory": 0,
-        "option1": "Tiffany Teal"
+        "option1": "Tiffany Teal",
+        "weight": 1
       },
       {
         "sku": "ZOO-73010",
         "price": 26.99,
         "inventory": 0,
-        "option1": "Iceman Grey"
+        "option1": "Iceman Grey",
+        "weight": 1
       },
       {
         "sku": "ZOO-73011",
         "price": 26.99,
         "inventory": 0,
-        "option1": "Urban Camo"
+        "option1": "Urban Camo",
+        "weight": 1
       },
       {
         "sku": "tow-straps-7",
         "price": 0,
         "inventory": 0,
-        "option1": ""
+        "option1": "",
+        "weight": 1
       }
-    ]
+    ],
+    "weight": 1
   },
   {
     "id": "fuel-cell",
@@ -13344,44 +14013,51 @@
         "price": 399,
         "inventory": 0,
         "option1": "20 LITRE",
-        "option2": "BLACK"
+        "option2": "BLACK",
+        "weight": 1.5
       },
       {
         "sku": "ZOO-KI03501S",
         "price": 399,
         "inventory": 0,
         "option1": "20 LITRE",
-        "option2": "SILVER"
+        "option2": "SILVER",
+        "weight": 1.5
       },
       {
         "sku": "ZOO-KI03502SA",
         "price": 529.99,
         "inventory": 0,
         "option1": "40 LITRE",
-        "option2": "BLACK"
+        "option2": "BLACK",
+        "weight": 1.5
       },
       {
         "sku": "ZOO-KI03502S",
         "price": 529.99,
         "inventory": 0,
         "option1": "40 LITRE",
-        "option2": "SILVER"
+        "option2": "SILVER",
+        "weight": 1.5
       },
       {
         "sku": "ZOO-KI03503SA",
         "price": 649.99,
         "inventory": 0,
         "option1": "60 LITRE",
-        "option2": "BLACK"
+        "option2": "BLACK",
+        "weight": 1.5
       },
       {
         "sku": "ZOO-KI03503S",
         "price": 649.99,
         "inventory": 0,
         "option1": "60 LITRE",
-        "option2": "SILVER"
+        "option2": "SILVER",
+        "weight": 1.5
       }
-    ]
+    ],
+    "weight": 1.5
   },
   {
     "id": "category-placeholder-1745567137178",
