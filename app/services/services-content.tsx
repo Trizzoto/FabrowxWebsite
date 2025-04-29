@@ -90,20 +90,18 @@ export function ServicesContent({ services }: ServicesContentProps) {
     "provider": {
       "@type": "LocalBusiness",
       "name": "Elite FabWorx",
-      "url": "https://www.elitefabworx.com",
-      "logo": "https://www.elitefabworx.com/logo.png",
-      "telephone": "+1234567890",
+      "url": "https://www.elitefabworx.com.au",
+      "logo": "https://www.elitefabworx.com.au/logo.png",
+      "telephone": "0499638046",
       "address": {
         "@type": "PostalAddress",
-        "streetAddress": "123 Main St",
-        "addressLocality": "City",
-        "addressRegion": "State",
-        "postalCode": "12345",
-        "addressCountry": "US"
+        "addressLocality": "Adelaide",
+        "addressRegion": "South Australia",
+        "addressCountry": "AU"
       }
     },
-    "areaServed": "United States",
-    "description": "Expert metal fabrication services for performance vehicles and 4WDs."
+    "areaServed": ["Adelaide", "Tailem Bend", "South Australia"],
+    "description": "Custom metal fabrication services specializing in performance exhausts, roll cages, and 4x4 accessories in Adelaide and Tailem Bend, South Australia."
   };
 
   return (
@@ -117,7 +115,7 @@ export function ServicesContent({ services }: ServicesContentProps) {
                 ? getCloudinaryUrl("https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741783803/lc03gne4mnc77za4awxa.jpg", 1200)
                 : "https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741783803/lc03gne4mnc77za4awxa.jpg"
             }
-            alt="Elite FabWorx Services"
+            alt="Professional metal fabrication services in Adelaide and Tailem Bend"
             fill
             className="object-cover object-center opacity-40"
             priority
@@ -129,10 +127,10 @@ export function ServicesContent({ services }: ServicesContentProps) {
         <div className="container relative z-10 px-4 md:px-6">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              Our <span className="text-orange-500">Services</span>
+              Our <span className="text-orange-500">Services</span> in <span className="text-white">Adelaide</span> & <span className="text-orange-500">Tailem Bend</span>
             </h1>
             <p className="text-lg text-zinc-300 max-w-2xl mx-auto">
-              Expert metal fabrication services for performance vehicles and 4WDs. From custom builds to repairs, we've got you covered.
+              Expert metal fabrication for performance vehicles, 4WDs, and motorsport applications across Adelaide and Tailem Bend. From custom exhausts to roll cages, we've got you covered.
             </p>
           </div>
         </div>

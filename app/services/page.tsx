@@ -16,12 +16,12 @@ interface Settings {
 
 // Define metadata for better SEO
 export const metadata: Metadata = {
-  title: 'Professional Metal Fabrication Services | Elite FabWorx',
-  description: 'Expert metal fabrication services for performance vehicles and 4WDs. Custom builds, repairs, and modifications with quality craftsmanship.',
-  keywords: 'metal fabrication, custom exhaust, roll cages, performance upgrades, 4WD modifications, Elite FabWorx',
+  title: 'Custom Automotive Fabrication Services | Adelaide & Tailem Bend',
+  description: 'Expert metal fabrication services in Adelaide and Tailem Bend. Custom exhausts, roll cages, and 4x4 accessories built for performance and durability.',
+  keywords: 'metal fabrication Adelaide, custom exhaust Adelaide, roll cage fabrication Adelaide, 4x4 fabrication Adelaide, metal fabrication Tailem Bend, performance upgrades South Australia',
   openGraph: {
-    title: 'Professional Metal Fabrication Services | Elite FabWorx',
-    description: 'Expert metal fabrication services for performance vehicles and 4WDs. Custom builds, repairs, and modifications with quality craftsmanship.',
+    title: 'Custom Automotive Fabrication Services | Adelaide & Tailem Bend',
+    description: 'Expert metal fabrication services in Adelaide and Tailem Bend. Custom exhausts, roll cages, and 4x4 accessories built for performance and durability.',
     images: ['/fabrication.jpg'],
     type: 'website',
   },

@@ -252,7 +252,7 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
             src={settings.heroImage && settings.heroImage.includes('cloudinary')
               ? getCloudinaryUrl(settings.heroImage, 1200)
               : settings.heroImage}
-            alt="Elite FabWorx metal fabrication"
+            alt="Custom metal fabrication services in Adelaide and Tailem Bend - Elite FabWorx"
             fill
             className="object-cover object-center opacity-40"
             priority
@@ -524,7 +524,7 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
                 src={settings.aboutImage && settings.aboutImage.includes('cloudinary')
                   ? getCloudinaryUrl(settings.aboutImage, 800)
                   : settings.aboutImage || "/workshop.jpg"}
-                alt="Elite FabWorx Workshop"
+                alt="Elite FabWorx automotive fabrication workshop in Adelaide, South Australia"
                 fill
                 className="object-cover rounded-lg"
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"

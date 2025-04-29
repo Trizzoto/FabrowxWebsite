@@ -7,8 +7,9 @@ import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 
 export const metadata: Metadata = {
-  title: 'Contact Us | Elite Fabworx',
-  description: 'Get in touch with Elite Fabworx for all your metal fabrication needs. We\'re here to help with your custom projects.',
+  title: 'Contact Us | Metal Fabrication Services in Adelaide & Tailem Bend',
+  description: 'Contact Elite Fabworx for custom automotive fabrication services in Adelaide and Tailem Bend. Specialists in exhausts, roll cages, and 4x4 accessories.',
+  keywords: ['metal fabrication Adelaide', 'custom exhaust Adelaide', 'roll cage fabrication Adelaide', '4x4 fabrication Adelaide', 'metal fabrication Tailem Bend'],
 };
 
 function getCloudinaryUrl(url: string, width: number) {

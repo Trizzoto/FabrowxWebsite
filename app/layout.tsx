@@ -11,11 +11,11 @@ const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: {
-    default: "Elite FabWorx - Performance Metal Fabrication",
+    default: "Elite FabWorx | Custom Automotive Fabrication Adelaide & Tailem Bend",
     template: "%s | Elite FabWorx"
   },
-  description: "Precision metal fabrication for performance vehicles and 4WDs. Custom fabrication, welding, and metalwork services in Australia.",
-  keywords: ["metal fabrication", "performance vehicles", "4WD", "custom fabrication", "welding", "Australia"],
+  description: "Custom metal fabrication, exhausts, roll cages, 4x4 accessories, and chassis upgrades — servicing Adelaide and Tailem Bend, South Australia.",
+  keywords: ["metal fabrication Adelaide", "custom exhaust Adelaide", "roll cage fabrication Adelaide", "4x4 fabrication Adelaide", "metal fabrication Tailem Bend", "custom exhaust Tailem Bend", "roll cage fabrication Tailem Bend", "4x4 fabrication Tailem Bend"],
   authors: [{ name: "Elite FabWorx" }],
   creator: "Elite FabWorx",
   publisher: "Elite FabWorx",
@@ -24,22 +24,22 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL('https://elitefabworx.com'),
+  metadataBase: new URL('https://elitefabworx.com.au'),
   alternates: {
     canonical: '/',
   },
   openGraph: {
     type: 'website',
     locale: 'en_AU',
-    url: 'https://elitefabworx.com',
-    title: 'Elite FabWorx - Performance Metal Fabrication',
-    description: 'Precision metal fabrication for performance vehicles and 4WDs. Custom fabrication, welding, and metalwork services in Australia.',
+    url: 'https://elitefabworx.com.au',
+    title: 'Elite FabWorx | Custom Automotive Fabrication Adelaide & Tailem Bend',
+    description: 'Custom metal fabrication, exhausts, roll cages, 4x4 accessories, and chassis upgrades — servicing Adelaide and Tailem Bend, South Australia.',
     siteName: 'Elite FabWorx',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Elite FabWorx - Performance Metal Fabrication',
-    description: 'Precision metal fabrication for performance vehicles and 4WDs. Custom fabrication, welding, and metalwork services in Australia.',
+    title: 'Elite FabWorx | Custom Automotive Fabrication Adelaide & Tailem Bend',
+    description: 'Custom metal fabrication, exhausts, roll cages, 4x4 accessories, and chassis upgrades — servicing Adelaide and Tailem Bend, South Australia.',
     creator: '@elitefabworx',
   },
   robots: {
