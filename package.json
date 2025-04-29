@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "migrate-products": "node scripts/migrate-products-to-mongodb.js"
+    "migrate-products": "node scripts/migrate-products-to-mongodb.js",
+    "cleanup-cloudinary": "node scripts/cleanup-cloudinary.js"
   },
   "dependencies": {
     "@emotion/is-prop-valid": "latest",
@@ -67,6 +68,7 @@
     "jspdf-autotable": "^5.0.2",
     "lucide-react": "^0.454.0",
     "mongodb": "^6.16.0",
+    "mongoose": "^8.14.0",
     "multer": "^1.4.5-lts.1",
     "multer-storage-cloudinary": "^4.0.0",
     "next": "^14.1.0",

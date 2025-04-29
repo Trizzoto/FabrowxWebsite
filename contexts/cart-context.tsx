@@ -8,6 +8,7 @@ export interface CartItem {
   price: number
   image: string
   quantity: number
+  weight?: number // Weight in kilograms for shipping calculations
   selectedVariant?: {
     sku: string
     option1?: string
@@ -77,6 +78,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
             price: product.price,
             image: product.images?.[0] || '',
             quantity,
+            weight: product.weight,
             selectedVariant: product.selectedVariant || undefined
           },
         ]

@@ -5,17 +5,20 @@ import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { CheckCircle } from 'lucide-react';
 import Link from 'next/link';
+import { useCart } from '@/contexts/cart-context';
 
 function PaymentSuccessContent() {
   const searchParams = useSearchParams();
   const paymentIntentId = searchParams.get('payment_intent');
+  const { clearCart } = useCart();
 
   useEffect(() => {
     if (paymentIntentId) {
-      // You could verify the payment status here if needed
-      console.log('Payment Intent ID:', paymentIntentId);
+      // Clear the cart when payment is confirmed
+      clearCart();
+      console.log('Cart cleared after successful payment');
     }
-  }, [paymentIntentId]);
+  }, [paymentIntentId, clearCart]);
 
   return (
     <div className="min-h-screen bg-black text-white flex items-center justify-center">

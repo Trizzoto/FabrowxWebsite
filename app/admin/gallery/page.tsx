@@ -226,14 +226,37 @@ export default function GalleryPage() {
         category: category
       };
       
-      const addedImage = await addGalleryImage(imageToAdd);
+      const response = await fetch('/api/gallery', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          images: [imageToAdd] 
+        }),
+      });
       
-      if (addedImage) {
-        setGalleryImages([...galleryImages, addedImage]);
-        
-        // Add category if it's new
-        if (!categories.includes(category)) {
-          setCategories([...categories, category]);
+      const data = await response.json();
+      
+      if (response.ok) {
+        if (data.message === 'All images already exist in gallery') {
+          toast({
+            title: "Duplicate Image",
+            description: "This image already exists in the gallery",
+            variant: "destructive"
+          });
+        } else {
+          setGalleryImages([...galleryImages, ...data]);
+          
+          // Add category if it's new
+          if (!categories.includes(category)) {
+            setCategories([...categories, category]);
+          }
+          
+          toast({
+            title: "Image Added",
+            description: "New gallery image has been added",
+          });
         }
         
         // Reset form
@@ -244,6 +267,12 @@ export default function GalleryPage() {
         });
         
         setIsDialogOpen(false);
+      } else {
+        toast({
+          title: "Error",
+          description: data.error || "Failed to add gallery image",
+          variant: "destructive"
+        });
       }
     } else {
       toast({

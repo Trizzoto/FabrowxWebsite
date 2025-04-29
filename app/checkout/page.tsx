@@ -8,14 +8,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import Image from 'next/image';
-import { CheckCircle2, AlertCircle, CreditCard, Truck, User, MapPin } from 'lucide-react';
+import { CheckCircle2, AlertCircle, CreditCard, Truck, User, MapPin, Trash } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { cart, totalPrice, clearCart } = useCart();
+  const { cart, totalPrice, clearCart, updateQuantity, removeFromCart } = useCart();
   const [clientSecret, setClientSecret] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [shippingCost, setShippingCost] = useState<number | null>(null);
@@ -78,7 +78,7 @@ export default function CheckoutPage() {
 
     setIsCalculatingShipping(true);
     try {
-      const response = await fetch('/api/shipping/calculate', {
+      const response = await fetch('/api/shipping/sendle', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -98,8 +98,13 @@ export default function CheckoutPage() {
         throw new Error(data.error);
       }
 
-      setShippingCost(data.shippingCost);
-      setEstimatedDelivery(data.estimatedDelivery);
+      // Set the cheapest shipping option by default
+      const cheapestOption = data.shippingOptions.reduce((min: any, option: any) => 
+        option.price < min.price ? option : min
+      );
+
+      setShippingCost(cheapestOption.price);
+      setEstimatedDelivery(cheapestOption.estimatedDelivery);
     } catch (error) {
       console.error('Shipping calculation error:', error);
       toast.error('Failed to calculate shipping costs');
@@ -228,7 +233,6 @@ export default function CheckoutPage() {
   };
 
   const handlePaymentSuccess = () => {
-    clearCart();
     toast.success('Payment successful! Thank you for your purchase.');
   };
 
@@ -449,8 +453,37 @@ export default function CheckoutPage() {
                         </div>
                         <span className="font-medium">${(item.price * item.quantity).toFixed(2)}</span>
                       </div>
-                      <div className="text-sm text-zinc-400 mt-1">
-                        Quantity: {item.quantity} × ${item.price.toFixed(2)}
+                      <div className="flex items-center justify-between mt-2">
+                        <div className="flex items-center space-x-2">
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-7 w-7 border-zinc-800"
+                            onClick={() => updateQuantity(item._id, item.quantity - 1)}
+                          >
+                            <span className="sr-only">Decrease quantity</span>
+                            <span className="text-sm">−</span>
+                          </Button>
+                          <span className="w-8 text-center">{item.quantity}</span>
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-7 w-7 border-zinc-800"
+                            onClick={() => updateQuantity(item._id, item.quantity + 1)}
+                          >
+                            <span className="sr-only">Increase quantity</span>
+                            <span className="text-sm">+</span>
+                          </Button>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-red-500 hover:text-red-600 hover:bg-red-500/10 -mr-2"
+                          onClick={() => removeFromCart(item._id)}
+                        >
+                          <Trash className="h-4 w-4" />
+                          <span className="sr-only">Remove item</span>
+                        </Button>
                       </div>
                     </div>
                   </div>
