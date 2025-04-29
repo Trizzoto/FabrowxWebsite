@@ -1,15 +1,15 @@
 import { NextResponse } from 'next/server';
 
-// Sendle API configuration from Vercel environment variables
-const SENDLE_API_URL = process.env.NEXT_PUBLIC_SENDLE_API_URL || 'https://api.sendle.com/api/quotes'; // Note: Changed to /quotes instead of /api/v1/quotes
+// Sendle API configuration from environment variables
+const SENDLE_API_URL = process.env.SENDLE_API_URL || 'https://api.sendle.com/api/quotes';
 const SENDLE_ID = process.env.SENDLE_ID;
 const SENDLE_API_KEY = process.env.SENDLE_API_KEY;
 
 // Default pickup location from environment variables
 const PICKUP_LOCATION = {
-  suburb: process.env.NEXT_PUBLIC_PICKUP_SUBURB || "SYDNEY",
-  postcode: process.env.NEXT_PUBLIC_PICKUP_POSTCODE || "2000",
-  country: process.env.NEXT_PUBLIC_PICKUP_COUNTRY || "AU"
+  suburb: process.env.PICKUP_SUBURB || "SYDNEY",
+  postcode: process.env.PICKUP_POSTCODE || "2000",
+  country: process.env.PICKUP_COUNTRY || "AU"
 };
 
 export async function POST(request: Request) {
