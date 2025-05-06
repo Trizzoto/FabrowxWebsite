@@ -14,7 +14,7 @@ function getCloudinaryUrl(url: string, width: number) {
 }
 
 export default function CartPage() {
-  const { cart, removeFromCart, updateQuantity, clearCart, totalItems, totalPrice } = useCart()
+  const { cart, removeFromCart, updateQuantity, clearCart, totalItems, totalPrice, totalPriceWithGST } = useCart()
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
 
@@ -197,9 +197,17 @@ export default function CartPage() {
               </div>
 
               <div className="border-t border-zinc-800 pt-4 mb-6">
-                <div className="flex justify-between font-bold">
-                  <span>Total</span>
+                <div className="flex justify-between text-sm mb-2">
+                  <span className="text-zinc-400">Subtotal</span>
                   <span>${totalPrice.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-sm mb-2">
+                  <span className="text-zinc-400">GST (10%)</span>
+                  <span>${(totalPrice * 0.1).toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between font-bold mt-2">
+                  <span>Total (incl. GST)</span>
+                  <span>${totalPriceWithGST.toFixed(2)}</span>
                 </div>
               </div>
 

@@ -20,6 +20,16 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   return {
     title: `${product.name} | Elite Fabworx`,
     description: product.description,
+    openGraph: {
+      title: `${product.name} | Elite Fabworx`,
+      description: product.description,
+      images: ['/Elitefabworx_Social.png'],
+    },
+    twitter: {
+      title: `${product.name} | Elite Fabworx`,
+      description: product.description,
+      images: ['/Elitefabworx_Social.png'],
+    }
   }
 }
 

@@ -95,13 +95,13 @@ export function ServicesContent({ services }: ServicesContentProps) {
       "telephone": "0499638046",
       "address": {
         "@type": "PostalAddress",
-        "addressLocality": "Tailem Bend",
+        "addressLocality": "Murray Bridge",
         "addressRegion": "South Australia",
         "addressCountry": "AU"
       }
     },
-    "areaServed": ["Adelaide", "Tailem Bend", "South Australia", "The Bend Motorsport Park"],
-    "description": "Custom metal fabrication services from our Tailem Bend workshop, specializing in performance exhausts, roll cages, and 4x4 accessories for clients across Adelaide and South Australia."
+    "areaServed": ["Adelaide", "Murray Bridge", "South Australia", "The Bend Motorsport Park"],
+    "description": "Custom metal fabrication services from our Murray Bridge workshop, specializing in performance exhausts, roll cages, and 4x4 accessories for clients across Adelaide and South Australia."
   };
 
   return (
@@ -115,7 +115,7 @@ export function ServicesContent({ services }: ServicesContentProps) {
                 ? getCloudinaryUrl("https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741783803/lc03gne4mnc77za4awxa.jpg", 1200)
                 : "https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741783803/lc03gne4mnc77za4awxa.jpg"
             }
-            alt="Professional metal fabrication services in Tailem Bend, serving clients across Adelaide and South Australia"
+            alt="Professional metal fabrication services in Murray Bridge, serving clients across Adelaide and South Australia"
             fill
             className="object-cover object-center opacity-40"
             priority
@@ -127,10 +127,10 @@ export function ServicesContent({ services }: ServicesContentProps) {
         <div className="container relative z-10 px-4 md:px-6">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              Our <span className="text-orange-500">Services</span> from <span className="text-white">Tailem Bend</span> to <span className="text-orange-500">Adelaide</span>
+              Our <span className="text-orange-500">Services</span> from <span className="text-white">Murray Bridge</span> to <span className="text-orange-500">Adelaide</span>
             </h1>
             <p className="text-lg text-zinc-300 max-w-2xl mx-auto">
-              Expert metal fabrication from our Tailem Bend workshop for performance vehicles, 4WDs, and motorsport applications. We proudly service clients throughout Adelaide and South Australia with custom exhausts, roll cages, and more.
+              Expert metal fabrication from our Murray Bridge workshop for performance vehicles, 4WDs, and motorsport applications. We proudly service clients throughout Adelaide and South Australia with custom exhausts, roll cages, and more.
             </p>
           </div>
         </div>

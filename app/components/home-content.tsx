@@ -252,7 +252,7 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
             src={settings.heroImage && settings.heroImage.includes('cloudinary')
               ? getCloudinaryUrl(settings.heroImage, 1200)
               : settings.heroImage}
-            alt="Custom metal fabrication and performance exhausts in Tailem Bend, servicing Adelaide - Elite Fabworx"
+            alt="Custom metal fabrication and performance exhausts in Murray Bridge, servicing Adelaide - Elite Fabworx"
             fill
             className="object-cover object-center opacity-40"
             priority
@@ -273,7 +273,7 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
                 <span className="font-bold tracking-widest ml-1 md:ml-2">FABWORX</span>
               </h1>
               <p className="text-xl sm:text-2xl md:text-3xl text-orange-500 font-light tracking-wider mb-6">
-                CUSTOM AUTOMOTIVE FABRICATION – TAILEM BEND & ADELAIDE
+                CUSTOM AUTOMOTIVE FABRICATION – MURRAY BRIDGE & ADELAIDE
               </p>
               <p className="text-base sm:text-lg md:text-xl mb-8 text-zinc-300 max-w-2xl mx-auto font-light tracking-wide">
                 {settings.heroTagline || "Precision metal fabrication for performance vehicles and 4WDs"}
@@ -524,7 +524,7 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
                 src={settings.aboutImage && settings.aboutImage.includes('cloudinary')
                   ? getCloudinaryUrl(settings.aboutImage, 800)
                   : settings.aboutImage || "/workshop.jpg"}
-                alt="Elite Fabworx automotive fabrication workshop in Tailem Bend, serving Adelaide and South Australia"
+                alt="Elite Fabworx automotive fabrication workshop in Murray Bridge, serving Adelaide and South Australia"
                 fill
                 className="object-cover rounded-lg"
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
@@ -649,7 +649,7 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
                 </div>
                 <div className="mt-6 p-4 bg-zinc-800/40 rounded-lg border border-orange-500/20">
                   <p className="text-sm text-center text-zinc-300">
-                    <span className="text-orange-400 font-semibold">Service Area:</span> Proudly serving Tailem Bend, The Bend Motorsport Park, Adelaide, and South Australia.
+                    <span className="text-orange-400 font-semibold">Service Area:</span> Proudly serving Murray Bridge, The Bend Motorsport Park, Adelaide, and South Australia.
                   </p>
                 </div>
               </div>

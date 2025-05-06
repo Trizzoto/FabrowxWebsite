@@ -15,7 +15,7 @@ import { Badge } from '@/components/ui/badge';
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { cart, totalPrice, clearCart, updateQuantity, removeFromCart } = useCart();
+  const { cart, totalPrice, totalPriceWithGST, clearCart, updateQuantity, removeFromCart } = useCart();
   const [clientSecret, setClientSecret] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [shippingCost, setShippingCost] = useState<number | null>(null);
@@ -192,13 +192,16 @@ export default function CheckoutPage() {
       localStorage.setItem('userName', customerInfo.name);
       localStorage.setItem('userPhone', customerInfo.phone);
 
+      // Calculate total with GST
+      const totalWithGST = (totalPrice + (shippingCost || 0)) * 1.1;
+
       const response = await fetch('/api/stripe/payment', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          amount: totalPrice,
+          amount: totalWithGST,
           customer: customerInfo,
           items: cart.map(item => ({
             name: item.name,
@@ -387,7 +390,7 @@ export default function CheckoutPage() {
               <CardContent>
                 <PaymentProvider
                   clientSecret={clientSecret}
-                  amount={totalPrice}
+                  amount={(totalPrice + (shippingCost || 0)) * 1.1}
                   onSuccess={handlePaymentSuccess}
                   onError={handlePaymentError}
                 />
@@ -514,11 +517,15 @@ export default function CheckoutPage() {
                     <span className="text-zinc-400">Enter shipping address</span>
                   )}
                 </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-zinc-400">GST (10%)</span>
+                  <span>${((totalPrice + (shippingCost || 0)) * 0.1).toFixed(2)}</span>
+                </div>
                 <Separator className="my-2 bg-zinc-800" />
                 <div className="flex justify-between font-bold">
                   <span>Total</span>
                   <span className="text-orange-500">
-                    ${((totalPrice + (shippingCost || 0)).toFixed(2))}
+                    ${((totalPrice + (shippingCost || 0)) * 1.1).toFixed(2)}
                   </span>
                 </div>
               </div>

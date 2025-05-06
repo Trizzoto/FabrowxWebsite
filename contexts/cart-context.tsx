@@ -25,6 +25,7 @@ interface CartContextType {
   clearCart: () => void
   totalItems: number
   totalPrice: number
+  totalPriceWithGST: number
   cartUpdated: boolean
   setCartUpdated: (updated: boolean) => void
 }
@@ -110,6 +111,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const totalItems = cart.reduce((total, item) => total + item.quantity, 0)
 
   const totalPrice = cart.reduce((total, item) => total + item.price * item.quantity, 0)
+  
+  const totalPriceWithGST = totalPrice * 1.1
 
   return (
     <CartContext.Provider
@@ -121,6 +124,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         clearCart,
         totalItems,
         totalPrice,
+        totalPriceWithGST,
         cartUpdated,
         setCartUpdated
       }}

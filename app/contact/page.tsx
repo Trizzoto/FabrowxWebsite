@@ -7,9 +7,21 @@ import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 
 export const metadata: Metadata = {
-  title: 'Contact Us | Metal Fabrication Services Based in Tailem Bend, Servicing Adelaide',
-  description: 'Contact Elite Fabworx for custom automotive fabrication services. Based in Tailem Bend, proudly serving Adelaide, The Bend Motorsport Park, and all of South Australia.',
-  keywords: ['metal fabrication Adelaide', 'custom exhaust Adelaide', 'roll cage fabrication Adelaide', 'metal fabrication Tailem Bend', '4x4 fabrication South Australia', 'The Bend Motorsport Park fabrication'],
+  title: 'Contact Us | Metal Fabrication Services Based in Murray Bridge, Servicing Adelaide',
+  description: 'Contact Elite Fabworx for custom automotive fabrication services. Based in Murray Bridge, proudly serving Adelaide, The Bend Motorsport Park, and all of South Australia.',
+  keywords: ['metal fabrication Adelaide', 'custom exhaust Adelaide', 'roll cage fabrication Adelaide', 'metal fabrication Murray Bridge', '4x4 fabrication South Australia', 'The Bend Motorsport Park fabrication'],
+  openGraph: {
+    title: 'Contact Us | Metal Fabrication Services Based in Murray Bridge, Servicing Adelaide',
+    description: 'Contact Elite Fabworx for custom automotive fabrication services. Based in Murray Bridge, proudly serving Adelaide, The Bend Motorsport Park, and all of South Australia.',
+    images: ['/Elitefabworx_Social.png'],
+    type: 'website',
+  },
+  twitter: {
+    title: 'Contact Us | Metal Fabrication Services Based in Murray Bridge, Servicing Adelaide',
+    description: 'Contact Elite Fabworx for custom automotive fabrication services. Based in Murray Bridge, proudly serving Adelaide, The Bend Motorsport Park, and all of South Australia.',
+    images: ['/Elitefabworx_Social.png'],
+    card: 'summary_large_image',
+  }
 };
 
 function getCloudinaryUrl(url: string, width: number) {
@@ -26,7 +38,7 @@ export default function ContactPage() {
             src={"https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741783803/lc03gne4mnc77za4awxa.jpg".includes('cloudinary')
               ? getCloudinaryUrl("https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741783803/lc03gne4mnc77za4awxa.jpg", 1200)
               : "https://res.cloudinary.com/dz8iqfdvf/image/upload/v1741783803/lc03gne4mnc77za4awxa.jpg"}
-            alt="Contact Elite Fabworx - Custom automotive fabrication in Tailem Bend, serving Adelaide and South Australia"
+            alt="Contact Elite Fabworx - Custom automotive fabrication in Murray Bridge, serving Adelaide and South Australia"
             fill
             className="object-cover object-center opacity-40"
             priority
