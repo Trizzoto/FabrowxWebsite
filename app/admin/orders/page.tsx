@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Search, FileText, Calendar, User, DollarSign, Tag, RefreshCw } from 'lucide-react'
+import { Search, FileText, Calendar, User, DollarSign, Tag, RefreshCw, MapPin } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { useToast } from '@/components/ui/use-toast'
 import { OrderDetailsModal } from './order-details-modal'
@@ -274,6 +274,12 @@ export default function OrdersPage() {
                     <DollarSign className="h-3 w-3" />
                     <span>Total: ${order.total.toFixed(2)}</span>
                   </div>
+                  {order.address && (
+                    <div className="flex items-center gap-2 text-sm text-zinc-400">
+                      <MapPin className="h-3 w-3" />
+                      <span>{order.address.startsWith('Pickup') ? 'Pickup from Murray Bridge' : 'Delivery'}</span>
+                    </div>
+                  )}
                   <div className="flex flex-wrap gap-2 mt-2">
                     {order.items.map((item, index) => (
                       <Badge key={index} variant="outline" className="bg-zinc-800/50">

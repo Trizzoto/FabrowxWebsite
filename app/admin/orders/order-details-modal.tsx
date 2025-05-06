@@ -56,7 +56,10 @@ Customer Information:
 Name: ${order.customer}
 Email: ${order.email}
 ${order.phone ? `Phone: ${order.phone}` : ''}
-${order.address ? `Delivery Address: ${order.address}` : ''}
+${order.address ? (order.address.startsWith('Pickup') 
+  ? `Delivery Method: ${order.address}`
+  : `Delivery Address: ${order.address}`
+) : ''}
 
 Order Items:
 -----------
@@ -164,7 +167,9 @@ Total: $${order.total.toFixed(2)}
                   <div className="flex items-start gap-2 md:col-span-2">
                     <MapPin className="h-5 w-5 text-orange-500 mt-0.5" />
                     <div>
-                      <p className="text-sm text-zinc-400">Delivery Address</p>
+                      <p className="text-sm text-zinc-400">
+                        {order.address.startsWith('Pickup') ? 'Delivery Method' : 'Delivery Address'}
+                      </p>
                       <p className="whitespace-pre-line">{order.address}</p>
                     </div>
                   </div>
