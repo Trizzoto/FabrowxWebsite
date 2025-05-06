@@ -21,6 +21,7 @@ export default function CheckoutPage() {
   const [shippingCost, setShippingCost] = useState<number | null>(null);
   const [estimatedDelivery, setEstimatedDelivery] = useState<string>('');
   const [isCalculatingShipping, setIsCalculatingShipping] = useState(false);
+  const [isPickup, setIsPickup] = useState(false);
   const [customerInfo, setCustomerInfo] = useState({
     name: '',
     email: '',
@@ -72,6 +73,12 @@ export default function CheckoutPage() {
   }, [customerInfo]);
 
   const calculateShipping = async () => {
+    if (isPickup) {
+      setShippingCost(0);
+      setEstimatedDelivery('Available for pickup in Murray Bridge');
+      return;
+    }
+
     if (!customerInfo.address.city || !customerInfo.address.state || !customerInfo.address.postcode) {
       return;
     }
@@ -113,14 +120,14 @@ export default function CheckoutPage() {
     }
   };
 
-  // Calculate shipping when address changes
+  // Calculate shipping when address changes or pickup option changes
   useEffect(() => {
     const timer = setTimeout(() => {
       calculateShipping();
     }, 500); // Debounce for 500ms
 
     return () => clearTimeout(timer);
-  }, [customerInfo.address.city, customerInfo.address.state, customerInfo.address.postcode]);
+  }, [customerInfo.address.city, customerInfo.address.state, customerInfo.address.postcode, isPickup]);
 
   const validateForm = () => {
     const errors = { ...formErrors };
@@ -147,32 +154,35 @@ export default function CheckoutPage() {
       errors.phone = false;
     }
 
-    if (!customerInfo.address.street.trim()) {
-      errors.street = true;
-      isValid = false;
-    } else {
-      errors.street = false;
-    }
-    
-    if (!customerInfo.address.city.trim()) {
-      errors.city = true;
-      isValid = false;
-    } else {
-      errors.city = false;
-    }
-    
-    if (!customerInfo.address.state.trim()) {
-      errors.state = true;
-      isValid = false;
-    } else {
-      errors.state = false;
-    }
-    
-    if (!customerInfo.address.postcode.trim()) {
-      errors.postcode = true;
-      isValid = false;
-    } else {
-      errors.postcode = false;
+    // Only validate address fields if not picking up
+    if (!isPickup) {
+      if (!customerInfo.address.street.trim()) {
+        errors.street = true;
+        isValid = false;
+      } else {
+        errors.street = false;
+      }
+      
+      if (!customerInfo.address.city.trim()) {
+        errors.city = true;
+        isValid = false;
+      } else {
+        errors.city = false;
+      }
+      
+      if (!customerInfo.address.state.trim()) {
+        errors.state = true;
+        isValid = false;
+      } else {
+        errors.state = false;
+      }
+      
+      if (!customerInfo.address.postcode.trim()) {
+        errors.postcode = true;
+        isValid = false;
+      } else {
+        errors.postcode = false;
+      }
     }
 
     setFormErrors(errors);
@@ -202,7 +212,11 @@ export default function CheckoutPage() {
         },
         body: JSON.stringify({
           amount: totalWithGST,
-          customer: customerInfo,
+          customer: {
+            ...customerInfo,
+            isPickup,
+            pickupLocation: isPickup ? 'Murray Bridge' : null
+          },
           items: cart.map(item => ({
             name: item.name,
             quantity: item.quantity,
@@ -301,79 +315,102 @@ export default function CheckoutPage() {
           <Card className="bg-zinc-900 border-zinc-800">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <MapPin className="h-5 w-5 text-orange-500" />
+                <Truck className="h-5 w-5 text-orange-500" />
                 Shipping Information
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-1">Street Address <span className="text-red-500">*</span></label>
-                <Input
-                  type="text"
-                  value={customerInfo.address.street}
-                  onChange={(e) => setCustomerInfo(prev => ({
-                    ...prev,
-                    address: { ...prev.address, street: e.target.value }
-                  }))}
-                  placeholder="Street address"
-                  className={formErrors.street ? "border-red-500 focus-visible:ring-red-500" : ""}
-                />
-                {formErrors.street && <p className="text-sm text-red-500 mt-1">Street address is required</p>}
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">City <span className="text-red-500">*</span></label>
-                  <Input
-                    type="text"
-                    value={customerInfo.address.city}
-                    onChange={(e) => setCustomerInfo(prev => ({
-                      ...prev,
-                      address: { ...prev.address, city: e.target.value }
-                    }))}
-                    placeholder="City"
-                    className={formErrors.city ? "border-red-500 focus-visible:ring-red-500" : ""}
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="pickup"
+                    checked={isPickup}
+                    onChange={(e) => setIsPickup(e.target.checked)}
+                    className="h-4 w-4 rounded border-zinc-600 bg-zinc-900 text-orange-500 focus:ring-orange-500"
                   />
-                  {formErrors.city && <p className="text-sm text-red-500 mt-1">City is required</p>}
+                  <label htmlFor="pickup" className="text-sm font-medium">
+                    Pick up from Murray Bridge (Free)
+                  </label>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">State <span className="text-red-500">*</span></label>
-                  <Input
-                    type="text"
-                    value={customerInfo.address.state}
-                    onChange={(e) => setCustomerInfo(prev => ({
-                      ...prev,
-                      address: { ...prev.address, state: e.target.value }
-                    }))}
-                    placeholder="State"
-                    className={formErrors.state ? "border-red-500 focus-visible:ring-red-500" : ""}
-                  />
-                  {formErrors.state && <p className="text-sm text-red-500 mt-1">State is required</p>}
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">Postcode <span className="text-red-500">*</span></label>
-                  <Input
-                    type="text"
-                    value={customerInfo.address.postcode}
-                    onChange={(e) => setCustomerInfo(prev => ({
-                      ...prev,
-                      address: { ...prev.address, postcode: e.target.value }
-                    }))}
-                    placeholder="Postcode"
-                    className={formErrors.postcode ? "border-red-500 focus-visible:ring-red-500" : ""}
-                  />
-                  {formErrors.postcode && <p className="text-sm text-red-500 mt-1">Postcode is required</p>}
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Country</label>
-                  <Input
-                    type="text"
-                    value={customerInfo.address.country}
-                    disabled
-                    className="bg-zinc-800"
-                  />
-                </div>
+
+                {!isPickup && (
+                  <>
+                    <div className="grid gap-4">
+                      <div>
+                        <label htmlFor="street" className="block text-sm font-medium mb-1">
+                          Street Address
+                        </label>
+                        <Input
+                          id="street"
+                          value={customerInfo.address.street}
+                          onChange={(e) => setCustomerInfo(prev => ({
+                            ...prev,
+                            address: { ...prev.address, street: e.target.value }
+                          }))}
+                          className={formErrors.street ? "border-red-500" : ""}
+                          placeholder="Enter your street address"
+                        />
+                        {formErrors.street && (
+                          <p className="text-sm text-red-500 mt-1">Street address is required</p>
+                        )}
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">City <span className="text-red-500">*</span></label>
+                        <Input
+                          type="text"
+                          value={customerInfo.address.city}
+                          onChange={(e) => setCustomerInfo(prev => ({
+                            ...prev,
+                            address: { ...prev.address, city: e.target.value }
+                          }))}
+                          placeholder="City"
+                          className={formErrors.city ? "border-red-500 focus-visible:ring-red-500" : ""}
+                        />
+                        {formErrors.city && <p className="text-sm text-red-500 mt-1">City is required</p>}
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">State <span className="text-red-500">*</span></label>
+                        <Input
+                          type="text"
+                          value={customerInfo.address.state}
+                          onChange={(e) => setCustomerInfo(prev => ({
+                            ...prev,
+                            address: { ...prev.address, state: e.target.value }
+                          }))}
+                          placeholder="State"
+                          className={formErrors.state ? "border-red-500 focus-visible:ring-red-500" : ""}
+                        />
+                        {formErrors.state && <p className="text-sm text-red-500 mt-1">State is required</p>}
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Postcode <span className="text-red-500">*</span></label>
+                        <Input
+                          type="text"
+                          value={customerInfo.address.postcode}
+                          onChange={(e) => setCustomerInfo(prev => ({
+                            ...prev,
+                            address: { ...prev.address, postcode: e.target.value }
+                          }))}
+                          placeholder="Postcode"
+                          className={formErrors.postcode ? "border-red-500 focus-visible:ring-red-500" : ""}
+                        />
+                        {formErrors.postcode && <p className="text-sm text-red-500 mt-1">Postcode is required</p>}
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-1">Country</label>
+                        <Input
+                          type="text"
+                          value={customerInfo.address.country}
+                          disabled
+                          className="bg-zinc-800"
+                        />
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             </CardContent>
           </Card>
