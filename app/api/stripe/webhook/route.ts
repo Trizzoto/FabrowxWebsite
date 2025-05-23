@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 import { stripe } from '@/lib/stripe';
+import { sendOrderNotification } from '@/lib/email';
 
 // Disable Next.js cache for this route
 export const dynamic = 'force-dynamic';
@@ -107,6 +108,41 @@ export async function POST(request: Request) {
         amount: paymentIntent.amount,
         metadata: paymentIntent.metadata,
       });
+      
+      // Send order notification email
+      try {
+        if (paymentIntent.metadata?.items) {
+          const orderNumber = `WEB-${paymentIntent.id.slice(0, 8).toUpperCase()}`;
+          const items = JSON.parse(paymentIntent.metadata.items);
+          
+          // Format items for email
+          const emailItems = items.map((item: any) => ({
+            name: item.name,
+            quantity: item.quantity,
+            price: item.price,
+            variant: item.variant?.options || undefined,
+          }));
+
+          const orderData = {
+            orderNumber,
+            customerName: paymentIntent.metadata.customer_name || 'Unknown',
+            customerEmail: paymentIntent.metadata.customer_email || '',
+            customerPhone: paymentIntent.metadata.customer_phone || '',
+            customerAddress: paymentIntent.metadata.customer_address || undefined,
+            isPickup: paymentIntent.metadata.is_pickup === 'true',
+            items: emailItems,
+            total: paymentIntent.amount / 100, // Convert from cents
+            paymentIntentId: paymentIntent.id,
+            date: new Date(paymentIntent.created * 1000).toISOString(),
+          };
+
+          await sendOrderNotification(orderData);
+          console.log('Order notification email sent successfully');
+        }
+      } catch (emailError) {
+        console.error('Failed to send order notification email:', emailError);
+        // Don't fail the webhook if email fails
+      }
       
       return new NextResponse(JSON.stringify({
         received: true,

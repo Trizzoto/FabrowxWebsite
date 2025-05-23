@@ -11,11 +11,11 @@ const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: {
-    default: "Elite Fabworx | Custom Automotive Fabrication - Servicing Adelaide & Murray Bridge",
+    default: "Metal Fabrication Adelaide & Murray Bridge | Elite Fabworx",
     template: "%s | Elite Fabworx"
   },
-  description: "Elite Fabworx specializes in custom automotive fabrication, exhausts, roll cages, and 4x4 accessories. Based in Murray Bridge, proudly servicing Adelaide, The Bend Motorsport Park, and all of South Australia.",
-  keywords: ["metal fabrication Adelaide", "custom exhaust Adelaide", "roll cage fabrication Adelaide", "4x4 fabrication Adelaide", "metal fabrication Murray Bridge", "4x4 fabrication South Australia", "The Bend Motorsport Park fabrication"],
+  description: "Professional metal fabrication in Adelaide & Murray Bridge. Custom 4WD parts, exhaust systems, roll cages & motorsport fabrication. Expert TIG welding. Get a quote today!",
+  keywords: ["metal fabrication Adelaide", "metal fabrication Murray Bridge", "custom exhaust Adelaide", "roll cage fabrication Adelaide", "4x4 fabrication Adelaide", "TIG welding Adelaide", "motorsport fabrication SA", "The Bend Motorsport Park fabrication"],
   authors: [{ name: "Elite Fabworx" }],
   creator: "Elite Fabworx",
   publisher: "Elite Fabworx",
@@ -32,22 +32,22 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_AU',
     url: 'https://elitefabworx.com.au',
-    title: 'Elite Fabworx | Custom Automotive Fabrication - Servicing Adelaide & Murray Bridge',
-    description: 'Elite Fabworx specializes in custom automotive fabrication, exhausts, roll cages, and 4x4 accessories. Based in Murray Bridge, proudly servicing Adelaide, The Bend Motorsport Park, and all of South Australia.',
+    title: 'Metal Fabrication Adelaide & Murray Bridge | Elite Fabworx',
+    description: 'Professional metal fabrication in Adelaide & Murray Bridge. Custom 4WD parts, exhaust systems, roll cages & motorsport fabrication. Expert TIG welding. Get a quote today!',
     siteName: 'Elite Fabworx',
     images: [
       {
         url: '/Elitefabworx_Social.png',
         width: 1200,
         height: 630,
-        alt: 'Elite Fabworx',
+        alt: 'Elite Fabworx - Metal Fabrication Adelaide & Murray Bridge',
       }
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Elite Fabworx | Custom Automotive Fabrication - Servicing Adelaide & Murray Bridge',
-    description: 'Elite Fabworx specializes in custom automotive fabrication, exhausts, roll cages, and 4x4 accessories. Based in Murray Bridge, proudly servicing Adelaide, The Bend Motorsport Park, and all of South Australia.',
+    title: 'Metal Fabrication Adelaide & Murray Bridge | Elite Fabworx',
+    description: 'Professional metal fabrication in Adelaide & Murray Bridge. Custom 4WD parts, exhaust systems, roll cages & motorsport fabrication. Expert TIG welding. Get a quote today!',
     creator: '@elitefabworx',
     images: ['/Elitefabworx_Social.png'],
   },
@@ -74,6 +74,61 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "AutoBodyShop",
+              "name": "Elite Fabworx",
+              "image": "https://elitefabworx.com.au/Elitefabworx_Social.png",
+              "url": "https://elitefabworx.com.au",
+              "telephone": "+61-499-638-046",
+              "priceRange": "$$",
+              "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "Murray Bridge",
+                "addressRegion": "SA",
+                "postalCode": "5253",
+                "addressCountry": "AU"
+              },
+              "geo": {
+                "@type": "GeoCoordinates",
+                "latitude": -35.1193,
+                "longitude": 139.2747
+              },
+              "areaServed": ["Adelaide SA", "Murray Bridge SA", "South Australia"],
+              "sameAs": [
+                "https://www.facebook.com/ELITEFABWORX",
+                "https://www.instagram.com/elitefabworx"
+              ],
+              "serviceOffered": [
+                {
+                  "@type": "Service",
+                  "name": "Metal Fabrication",
+                  "description": "Custom metal fabrication services including TIG welding"
+                },
+                {
+                  "@type": "Service", 
+                  "name": "Custom Exhaust Systems",
+                  "description": "Performance exhaust systems for cars and 4WD vehicles"
+                },
+                {
+                  "@type": "Service",
+                  "name": "Roll Cage Fabrication", 
+                  "description": "Safety roll cages for motorsport and 4WD applications"
+                },
+                {
+                  "@type": "Service",
+                  "name": "4WD Accessories",
+                  "description": "Custom 4WD sliders, bull bars and accessories"
+                }
+              ]
+            })
+          }}
+        />
+      </head>
       <body
         className={`min-h-screen bg-black font-sans antialiased ${inter.className}`}
       >

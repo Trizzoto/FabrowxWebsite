@@ -16,18 +16,18 @@ interface Settings {
 
 // Define metadata for better SEO
 export const metadata: Metadata = {
-  title: 'Custom Automotive Fabrication Services | Based in Murray Bridge, Servicing Adelaide',
-  description: 'Expert metal fabrication services from our Murray Bridge workshop, serving clients across Adelaide and South Australia. Custom exhausts, roll cages, and 4x4 accessories built for performance and durability.',
-  keywords: 'metal fabrication Adelaide, custom exhaust Adelaide, roll cage fabrication Adelaide, 4x4 fabrication Adelaide, metal fabrication Murray Bridge, 4x4 fabrication South Australia, The Bend Motorsport Park fabrication',
+  title: 'Custom 4WD Metal Fabrication Services Adelaide',
+  description: 'From heavy-duty 4WD sliders to TIG-welded stainless manifolds – see how we build stronger, lighter parts for SA drivers. Get a quote today!',
+  keywords: 'metal fabrication Adelaide, custom exhaust Adelaide, roll cage fabrication Adelaide, 4x4 fabrication Adelaide, metal fabrication Murray Bridge, 4x4 fabrication South Australia, The Bend Motorsport Park fabrication, TIG welding Adelaide',
   openGraph: {
-    title: 'Custom Automotive Fabrication Services | Based in Murray Bridge, Servicing Adelaide',
-    description: 'Expert metal fabrication services from our Murray Bridge workshop, serving clients across Adelaide and South Australia. Custom exhausts, roll cages, and 4x4 accessories built for performance and durability.',
+    title: 'Custom 4WD Metal Fabrication Services Adelaide',
+    description: 'From heavy-duty 4WD sliders to TIG-welded stainless manifolds – see how we build stronger, lighter parts for SA drivers. Get a quote today!',
     images: ['/Elitefabworx_Social.png'],
     type: 'website',
   },
   twitter: {
-    title: 'Custom Automotive Fabrication Services | Based in Murray Bridge, Servicing Adelaide',
-    description: 'Expert metal fabrication services from our Murray Bridge workshop, serving clients across Adelaide and South Australia. Custom exhausts, roll cages, and 4x4 accessories built for performance and durability.',
+    title: 'Custom 4WD Metal Fabrication Services Adelaide',
+    description: 'From heavy-duty 4WD sliders to TIG-welded stainless manifolds – see how we build stronger, lighter parts for SA drivers. Get a quote today!',
     images: ['/Elitefabworx_Social.png'],
     card: 'summary_large_image',
   }

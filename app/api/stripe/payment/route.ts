@@ -10,9 +10,11 @@ export async function POST(request: Request) {
     const amountInCents = Math.round(amount * 100);
 
     // Format the full address
-    const fullAddress = customer.address ? 
-      `${customer.address.street}, ${customer.address.city}, ${customer.address.state} ${customer.address.postcode}, ${customer.address.country}` : 
-      '';
+    const fullAddress = customer.isPickup 
+      ? `Pickup from Murray Bridge` 
+      : customer.address 
+        ? `${customer.address.street}, ${customer.address.city}, ${customer.address.state} ${customer.address.postcode}, ${customer.address.country}` 
+        : '';
 
     // Create metadata for the payment intent
     const metadata = {
@@ -20,6 +22,8 @@ export async function POST(request: Request) {
       customer_email: customer.email,
       customer_phone: customer.phone,
       customer_address: fullAddress,
+      is_pickup: customer.isPickup ? 'true' : 'false',
+      pickup_location: customer.isPickup ? 'Murray Bridge' : '',
       items: JSON.stringify(items)
     };
 

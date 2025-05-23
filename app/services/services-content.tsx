@@ -197,6 +197,91 @@ export function ServicesContent({ services }: ServicesContentProps) {
         </div>
       </section>
 
+      {/* Service Areas Section */}
+      <section className="py-16 bg-black">
+        <div className="container px-4 md:px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Serving <span className="text-orange-500">Adelaide</span> & <span className="text-orange-500">Murray Bridge</span>
+            </h2>
+            <p className="text-zinc-300 max-w-2xl mx-auto">
+              Discover our specialized services for your local area. Whether you're in Adelaide or Murray Bridge, 
+              we provide expert metal fabrication tailored to your region's needs.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {/* Adelaide Card */}
+            <Card className="bg-zinc-900 border-zinc-700 hover:border-orange-500/50 transition-colors">
+              <CardContent className="p-8">
+                <div className="text-center mb-6">
+                  <h3 className="text-2xl font-bold text-orange-500 mb-2">Metal Fabrication Adelaide</h3>
+                  <p className="text-zinc-400">Serving the greater Adelaide metropolitan area</p>
+                </div>
+                <ul className="space-y-3 mb-6">
+                  <li className="flex items-center text-zinc-300">
+                    <CheckCircle className="h-5 w-5 text-orange-500 mr-3 flex-shrink-0" />
+                    <span>Custom 4WD accessories for Adelaide hills adventures</span>
+                  </li>
+                  <li className="flex items-center text-zinc-300">
+                    <CheckCircle className="h-5 w-5 text-orange-500 mr-3 flex-shrink-0" />
+                    <span>Performance exhausts for city and highway driving</span>
+                  </li>
+                  <li className="flex items-center text-zinc-300">
+                    <CheckCircle className="h-5 w-5 text-orange-500 mr-3 flex-shrink-0" />
+                    <span>Roll cages for The Bend Motorsport Park</span>
+                  </li>
+                  <li className="flex items-center text-zinc-300">
+                    <CheckCircle className="h-5 w-5 text-orange-500 mr-3 flex-shrink-0" />
+                    <span>Just 45 minutes from Adelaide CBD</span>
+                  </li>
+                </ul>
+                <Button className="w-full bg-orange-600 hover:bg-orange-700" asChild>
+                  <Link href="/metal-fabrication-adelaide">
+                    View Adelaide Services
+                    <ChevronRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Murray Bridge Card */}
+            <Card className="bg-zinc-900 border-zinc-700 hover:border-orange-500/50 transition-colors">
+              <CardContent className="p-8">
+                <div className="text-center mb-6">
+                  <h3 className="text-2xl font-bold text-orange-500 mb-2">Metal Fabrication Murray Bridge</h3>
+                  <p className="text-zinc-400">Your local fabrication workshop</p>
+                </div>
+                <ul className="space-y-3 mb-6">
+                  <li className="flex items-center text-zinc-300">
+                    <CheckCircle className="h-5 w-5 text-orange-500 mr-3 flex-shrink-0" />
+                    <span>Local Murray Bridge workshop with easy access</span>
+                  </li>
+                  <li className="flex items-center text-zinc-300">
+                    <CheckCircle className="h-5 w-5 text-orange-500 mr-3 flex-shrink-0" />
+                    <span>Agricultural and farming vehicle modifications</span>
+                  </li>
+                  <li className="flex items-center text-zinc-300">
+                    <CheckCircle className="h-5 w-5 text-orange-500 mr-3 flex-shrink-0" />
+                    <span>Murray River recreation accessories</span>
+                  </li>
+                  <li className="flex items-center text-zinc-300">
+                    <CheckCircle className="h-5 w-5 text-orange-500 mr-3 flex-shrink-0" />
+                    <span>Same-day quotes for local customers</span>
+                  </li>
+                </ul>
+                <Button className="w-full bg-orange-600 hover:bg-orange-700" asChild>
+                  <Link href="/metal-fabrication-murray-bridge">
+                    View Murray Bridge Services
+                    <ChevronRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
       {/* Additional Services Message */}
       <section className="py-10 bg-zinc-900">
         <div className="container px-4 md:px-6">

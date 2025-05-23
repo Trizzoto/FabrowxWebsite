@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { MongoClient } from 'mongodb';
+import { sendContactNotification } from '@/lib/email';
 
 // Define the contact submission interface
 interface ContactSubmission {
@@ -73,6 +74,24 @@ export async function POST(request: Request) {
     const db = await getDb();
     const collection = db.collection(collectionName);
     await collection.insertOne(newSubmission);
+    
+    // Send email notification
+    try {
+      await sendContactNotification({
+        name,
+        email,
+        phone: phone || undefined,
+        title,
+        message,
+        submissionId: newSubmission.id,
+        date: newSubmission.date,
+      });
+      console.log('Contact notification email sent successfully');
+    } catch (emailError) {
+      console.error('Failed to send contact notification email:', emailError);
+      // Don't fail the contact submission if email fails
+      // Just log the error for monitoring
+    }
     
     return NextResponse.json({ success: true, submission: newSubmission });
   } catch (error) {
