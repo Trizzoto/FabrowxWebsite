@@ -194,9 +194,46 @@ export default function CheckoutPage() {
     return isValid;
   };
 
+  // Check if shipping is properly calculated
+  const isShippingValid = () => {
+    if (isPickup) return true; // Pickup doesn't need shipping calculation
+    
+    // Check if shipping address is complete
+    const addressComplete = customerInfo.address.city && 
+                           customerInfo.address.state && 
+                           customerInfo.address.postcode;
+    
+    // Check if shipping cost has been calculated
+    return addressComplete && shippingCost !== null && !isCalculatingShipping;
+  };
+
+  const getShippingErrorMessage = () => {
+    if (isPickup) return null;
+    
+    if (!customerInfo.address.city || !customerInfo.address.state || !customerInfo.address.postcode) {
+      return "Please complete your shipping address";
+    }
+    
+    if (isCalculatingShipping) {
+      return "Calculating shipping costs...";
+    }
+    
+    if (shippingCost === null) {
+      return "Unable to calculate shipping costs. Please check your address.";
+    }
+    
+    return null;
+  };
+
   const handleInitiatePayment = async () => {
     if (!validateForm()) {
       toast.error('Please fill in all required fields correctly');
+      return;
+    }
+
+    if (!isShippingValid()) {
+      const errorMessage = getShippingErrorMessage();
+      toast.error(errorMessage || 'Please calculate shipping costs before proceeding');
       return;
     }
 
@@ -447,14 +484,22 @@ export default function CheckoutPage() {
               >
                 Back to Cart
               </Button>
-              <Button 
-                onClick={handleInitiatePayment}
-                className="bg-orange-600 hover:bg-orange-700"
-                disabled={isLoading}
-              >
-                {isLoading ? "Processing..." : "Proceed to Payment"}
-                <CreditCard className="ml-2 h-4 w-4" />
-              </Button>
+              <div className="flex flex-col gap-2">
+                {getShippingErrorMessage() && (
+                  <div className="flex items-center gap-2 text-sm text-red-400 bg-red-500/10 p-2 rounded border border-red-500/20">
+                    <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                    <span>{getShippingErrorMessage()}</span>
+                  </div>
+                )}
+                <Button 
+                  onClick={handleInitiatePayment}
+                  className="bg-orange-600 hover:bg-orange-700 disabled:bg-zinc-700 disabled:text-zinc-400"
+                  disabled={isLoading || !isShippingValid()}
+                >
+                  {isLoading ? "Processing..." : "Proceed to Payment"}
+                  <CreditCard className="ml-2 h-4 w-4" />
+                </Button>
+              </div>
             </div>
           )}
         </div>
