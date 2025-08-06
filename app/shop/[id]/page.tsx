@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, use } from "react"
 import Image from "next/image"
 import { useRouter, useSearchParams } from "next/navigation"
 import { ArrowLeft, Minus, Plus, ShoppingCart, ChevronRight } from "lucide-react"
@@ -15,12 +15,13 @@ import { useToast } from "@/components/ui/use-toast"
 import Link from "next/link"
 
 interface ProductPageProps {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 export default function ProductPage({ params }: ProductPageProps) {
+  const resolvedParams = use(params)
   const router = useRouter()
   const { addToCart } = useCart()
   const { toast } = useToast()
@@ -34,7 +35,7 @@ export default function ProductPage({ params }: ProductPageProps) {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await fetch(`/api/products/${params.id}`)
+        const response = await fetch(`/api/products/${resolvedParams.id}`)
         if (!response.ok) {
           throw new Error('Product not found')
         }
@@ -119,7 +120,7 @@ export default function ProductPage({ params }: ProductPageProps) {
     }
 
     fetchProduct()
-  }, [params.id])
+  }, [resolvedParams.id])
 
   useEffect(() => {
     if (product?.variants && Object.keys(selectedOptions).length > 0) {

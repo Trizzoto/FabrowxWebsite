@@ -25,6 +25,16 @@ export interface Product {
   options?: ProductOption[]
   brand?: string // 'Zoo Performance' or 'Elite Fabworx'
   weight?: number // Weight in kilograms for shipping calculations
+  // Enhanced shipping properties
+  dimensions?: {
+    length: number // cm
+    width: number  // cm
+    height: number // cm
+  }
+  shippingClass?: 'standard' | 'fragile' | 'oversized' | 'hazardous' | 'heavy'
+  isFragile?: boolean
+  requiresSpecialHandling?: boolean
+  packagingType?: 'box' | 'tube' | 'envelope' | 'pallet'
 }
 
 export interface ProductOptions {

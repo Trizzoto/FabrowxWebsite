@@ -94,7 +94,12 @@ export default function CheckoutPage() {
           address: customerInfo.address,
           items: cart.map(item => ({
             quantity: item.quantity,
-            weight: item.weight || 0.5 // Use product weight or default to 0.5kg
+            weight: item.weight || 0.5,
+            dimensions: item.dimensions || { length: 20, width: 20, height: 10 },
+            shippingClass: item.shippingClass || 'standard',
+            isFragile: item.isFragile || false,
+            requiresSpecialHandling: item.requiresSpecialHandling || false,
+            packagingType: item.packagingType || 'box'
           }))
         }),
       });

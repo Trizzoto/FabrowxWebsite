@@ -47,7 +47,13 @@ export default function ContactPage() {
         throw new Error("Failed to fetch submissions")
       }
       const data = await response.json()
-      setSubmissions(data)
+      
+      // Sort submissions by date, most recent first
+      const sortedData = data.sort((a: ContactSubmission, b: ContactSubmission) => 
+        new Date(b.date).getTime() - new Date(a.date).getTime()
+      )
+      
+      setSubmissions(sortedData)
     } catch (error) {
       console.error("Error fetching submissions:", error)
       toast.error("Failed to load contact submissions")

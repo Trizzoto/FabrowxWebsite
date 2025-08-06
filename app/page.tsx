@@ -35,7 +35,7 @@ interface Settings {
 }
 
 async function getSettings(): Promise<Settings> {
-  const headersList = headers();
+  const headersList = await headers();
   const host = headersList.get('host');
   const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
   
@@ -50,7 +50,7 @@ async function getSettings(): Promise<Settings> {
 }
 
 async function getGalleryImages(): Promise<GalleryImage[]> {
-  const headersList = headers();
+  const headersList = await headers();
   const host = headersList.get('host');
   const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
   

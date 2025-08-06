@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, use } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import { useToast } from "@/components/ui/use-toast"
@@ -15,8 +15,9 @@ import { type Product, type ProductOption, type ProductVariant } from "@/types"
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd"
 import { uploadToCloudinary } from "@/lib/cloudinary"
 
-export default function ProductForm({ params }: { params: { id: string } }) {
-  const isEditing = params.id !== "new"
+export default function ProductForm({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = use(params)
+  const isEditing = resolvedParams.id !== "new"
   const router = useRouter()
   const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(true)
@@ -35,7 +36,16 @@ export default function ProductForm({ params }: { params: { id: string } }) {
     options: [],
     variants: [],
     brand: "Zoo Performance", // Default to Zoo Performance
-    weight: 0
+    weight: 0,
+    dimensions: {
+      length: 0,
+      width: 0,
+      height: 0
+    },
+    shippingClass: 'standard',
+    isFragile: false,
+    requiresSpecialHandling: false,
+    packagingType: 'box'
   })
 
   const refreshCategories = async () => {
@@ -71,7 +81,7 @@ export default function ProductForm({ params }: { params: { id: string } }) {
               'Cache-Control': 'no-cache'
             }
           }),
-          params.id !== 'new' ? fetch(`/api/products/${params.id}`) : null
+          resolvedParams.id !== 'new' ? fetch(`/api/products/${resolvedParams.id}`) : null
         ])
 
         if (!categoriesResponse.ok) {
@@ -86,7 +96,24 @@ export default function ProductForm({ params }: { params: { id: string } }) {
             throw new Error('Failed to fetch product')
           }
           const productData = await productResponse.json()
-          setFormData(productData)
+          // Ensure all fields have default values to prevent controlled/uncontrolled input warnings
+          setFormData({
+            id: productData.id || "",
+            name: productData.name || "",
+            category: productData.category || "",
+            price: productData.price || 0,
+            description: productData.description || "",
+            images: productData.images || [],
+            options: productData.options || [],
+            variants: productData.variants || [],
+            brand: productData.brand || "Zoo Performance",
+            weight: productData.weight || 0,
+            dimensions: productData.dimensions || { length: 0, width: 0, height: 0 },
+            shippingClass: productData.shippingClass || 'standard',
+            isFragile: productData.isFragile || false,
+            requiresSpecialHandling: productData.requiresSpecialHandling || false,
+            packagingType: productData.packagingType || 'box'
+          })
         }
       } catch (error) {
         console.error('Error fetching data:', error)
@@ -101,7 +128,7 @@ export default function ProductForm({ params }: { params: { id: string } }) {
     }
 
     fetchData()
-  }, [params.id])
+  }, [resolvedParams.id])
 
   const handleSave = async () => {
     try {
@@ -166,9 +193,9 @@ export default function ProductForm({ params }: { params: { id: string } }) {
 
       // Save product
       const response = await fetch(
-        params.id === 'new' ? '/api/products' : `/api/products/${params.id}`,
+        resolvedParams.id === 'new' ? '/api/products' : `/api/products/${resolvedParams.id}`,
         {
-          method: params.id === 'new' ? 'POST' : 'PUT',
+          method: resolvedParams.id === 'new' ? 'POST' : 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(productToSave)
         }
@@ -181,8 +208,8 @@ export default function ProductForm({ params }: { params: { id: string } }) {
       }
 
       toast({
-        title: params.id === 'new' ? "Product Created" : "Product Updated",
-        description: `${formData.name} has been ${params.id === 'new' ? 'created' : 'updated'}`
+        title: resolvedParams.id === 'new' ? "Product Created" : "Product Updated",
+        description: `${formData.name} has been ${resolvedParams.id === 'new' ? 'created' : 'updated'}`
       })
 
       router.push('/admin/products')
@@ -410,7 +437,6 @@ export default function ProductForm({ params }: { params: { id: string } }) {
                 </div>
               </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="price">Base Price ($)</Label>
                 <Input
@@ -426,6 +452,17 @@ export default function ProductForm({ params }: { params: { id: string } }) {
                   required
                 />
               </div>
+          </CardContent>
+        </Card>
+
+        {/* Shipping Information Card */}
+        <Card className="bg-zinc-900 border-zinc-800">
+          <CardHeader>
+            <CardTitle>Shipping Information</CardTitle>
+            <CardDescription>Configure shipping properties for accurate rate calculations</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Weight */}
               <div className="space-y-2">
                 <Label htmlFor="weight">Weight (kg)</Label>
                 <Input
@@ -440,8 +477,147 @@ export default function ProductForm({ params }: { params: { id: string } }) {
                   className="bg-zinc-800 border-zinc-700"
                 />
                 <p className="text-sm text-zinc-500">
-                  Product weight in kilograms. Used for shipping calculations.
-                </p>
+                Product weight in kilograms. Used for shipping rate calculations and dimensional weight comparisons.
+              </p>
+            </div>
+
+            {/* Dimensions */}
+            <div className="space-y-2">
+              <Label className="text-base font-medium">Dimensions (cm)</Label>
+              <div className="grid grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="length">Length</Label>
+                  <Input
+                    id="length"
+                    type="number"
+                    min="0"
+                    step="0.1"
+                    value={formData.dimensions?.length || 0}
+                    onChange={(e) => setFormData(prev => ({
+                      ...prev,
+                      dimensions: {
+                        ...prev.dimensions,
+                        length: parseFloat(e.target.value) || 0,
+                        width: prev.dimensions?.width || 0,
+                        height: prev.dimensions?.height || 0
+                      }
+                    }))}
+                    placeholder="0.0"
+                    className="bg-zinc-800 border-zinc-700"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="width">Width</Label>
+                  <Input
+                    id="width"
+                    type="number"
+                    min="0"
+                    step="0.1"
+                    value={formData.dimensions?.width || 0}
+                    onChange={(e) => setFormData(prev => ({
+                      ...prev,
+                      dimensions: {
+                        length: prev.dimensions?.length || 0,
+                        width: parseFloat(e.target.value) || 0,
+                        height: prev.dimensions?.height || 0
+                      }
+                    }))}
+                    placeholder="0.0"
+                    className="bg-zinc-800 border-zinc-700"
+                />
+              </div>
+              <div className="space-y-2">
+                  <Label htmlFor="height">Height</Label>
+                <Input
+                    id="height"
+                  type="number"
+                  min="0"
+                  step="0.1"
+                    value={formData.dimensions?.height || 0}
+                    onChange={(e) => setFormData(prev => ({
+                      ...prev,
+                      dimensions: {
+                        length: prev.dimensions?.length || 0,
+                        width: prev.dimensions?.width || 0,
+                        height: parseFloat(e.target.value) || 0
+                      }
+                    }))}
+                  placeholder="0.0"
+                  className="bg-zinc-800 border-zinc-700"
+                />
+                </div>
+              </div>
+                <p className="text-sm text-zinc-500">
+                Product dimensions for packaging calculations and dimensional weight pricing
+              </p>
+            </div>
+
+            {/* Shipping Class and Options */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="shippingClass">Shipping Class</Label>
+                <Select
+                  value={formData.shippingClass || 'standard'}
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, shippingClass: value as any }))}
+                >
+                  <SelectTrigger className="bg-zinc-800 border-zinc-700">
+                    <SelectValue placeholder="Select shipping class" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="standard">Standard</SelectItem>
+                    <SelectItem value="fragile">Fragile (+$10)</SelectItem>
+                    <SelectItem value="oversized">Oversized (+$25)</SelectItem>
+                    <SelectItem value="heavy">Heavy (+$15)</SelectItem>
+                    <SelectItem value="hazardous">Hazardous (+$50)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="packagingType">Packaging Type</Label>
+                <Select
+                  value={formData.packagingType || 'box'}
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, packagingType: value as any }))}
+                >
+                  <SelectTrigger className="bg-zinc-800 border-zinc-700">
+                    <SelectValue placeholder="Select packaging type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="box">Box</SelectItem>
+                    <SelectItem value="tube">Tube</SelectItem>
+                    <SelectItem value="envelope">Envelope</SelectItem>
+                    <SelectItem value="pallet">Pallet</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* Special Handling Options */}
+            <div className="space-y-3">
+              <Label className="text-base font-medium">Special Handling</Label>
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="isFragile"
+                  checked={formData.isFragile || false}
+                  onChange={(e) => setFormData(prev => ({ ...prev, isFragile: e.target.checked }))}
+                  className="w-4 h-4 rounded bg-zinc-800 border-zinc-700 text-orange-500 focus:ring-orange-500"
+                />
+                <Label htmlFor="isFragile" className="text-sm">
+                  Fragile item (requires extra packaging)
+                </Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="requiresSpecialHandling"
+                  checked={formData.requiresSpecialHandling || false}
+                  onChange={(e) => setFormData(prev => ({ ...prev, requiresSpecialHandling: e.target.checked }))}
+                  className="w-4 h-4 rounded bg-zinc-800 border-zinc-700 text-orange-500 focus:ring-orange-500"
+                />
+                <Label htmlFor="requiresSpecialHandling" className="text-sm">
+                  Requires special handling
+                </Label>
               </div>
             </div>
           </CardContent>
