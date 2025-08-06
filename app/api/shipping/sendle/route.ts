@@ -103,14 +103,17 @@ function calculateOptimalPackaging(items: any[]) {
 
 export async function POST(request: Request) {
   let totalWeight = 0;
+  let requestData: any = null;
   
   try {
+    // Parse request data first
+    requestData = await request.json();
+    const { address, items } = requestData;
+    
     // Verify API credentials are configured
     if (!SENDLE_ID || !SENDLE_API_KEY) {
       throw new Error('Sendle API credentials not configured');
     }
-
-    const { address, items } = await request.json();
     
     // Calculate smart packaging
     const packagingResult = calculateOptimalPackaging(items);
@@ -124,6 +127,11 @@ export async function POST(request: Request) {
       weight: totalWeight,
       dimensions
     });
+
+    // Validate required fields
+    if (!address.city || !address.postcode) {
+      throw new Error('Missing required address fields: city and postcode are required');
+    }
 
     // Get shipping quote from Sendle
     const response = await fetch(SENDLE_API_URL, {
@@ -149,15 +157,23 @@ export async function POST(request: Request) {
       })
     });
 
+    console.log('Sendle API response status:', response.status, response.statusText);
+    
     const responseData = await response.text();
     console.log('Sendle API response:', responseData);
 
     if (!response.ok) {
       console.error('Sendle API error:', responseData);
-      throw new Error('Failed to get shipping quote');
+      throw new Error(`Sendle API error: ${response.status} ${response.statusText} - ${responseData}`);
     }
 
-    const data = JSON.parse(responseData);
+    let data;
+    try {
+      data = JSON.parse(responseData);
+    } catch (parseError) {
+      console.error('Failed to parse Sendle response:', parseError);
+      throw new Error('Invalid response from Sendle API');
+    }
     
     // Format the response with enhanced packaging info
     let shippingOptions = data.map((quote: any) => ({
@@ -199,8 +215,22 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error('Shipping calculation error:', error);
+    console.error('Error details:', {
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+      name: error instanceof Error ? error.name : undefined
+    });
+    
+    // If we couldn't parse the request, return a proper error
+    if (!requestData) {
+      return NextResponse.json({
+        error: 'Invalid request data',
+        message: 'Unable to parse shipping request'
+      }, { status: 400 });
+    }
+    
     // Calculate fallback using smart packaging even if API fails
-    const { address, items } = await request.json();
+    const { address, items } = requestData;
     const fallbackPackaging = calculateOptimalPackaging(items);
     
     // Return a fallback shipping option if the API fails
