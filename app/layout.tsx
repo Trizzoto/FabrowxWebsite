@@ -29,9 +29,9 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   icons: {
-    icon: '/EFicon.png',
-    shortcut: '/EFicon.png',
-    apple: '/EFicon.png',
+    icon: '/favicon2.ico',
+    shortcut: '/favicon2.ico',
+    apple: '/favicon2.ico',
   },
   openGraph: {
     type: 'website',
@@ -80,9 +80,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="icon" href="/EFicon.png" />
-        <link rel="shortcut icon" href="/favicon.ico" />
-        <link rel="apple-touch-icon" href="/EFicon.png" />
+        <link rel="icon" href="/favicon2.ico" />
+        <link rel="shortcut icon" href="/favicon2.ico" />
+        <link rel="apple-touch-icon" href="/favicon2.ico" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
