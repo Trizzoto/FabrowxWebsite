@@ -16,7 +16,9 @@ export async function getSettings(): Promise<Settings> {
     : (process.env.VERCEL_URL 
         ? `https://${process.env.VERCEL_URL}` 
         : 'http://localhost:3000');
-  const response = await fetch(`${baseUrl}/api/settings`, { cache: 'no-store' })
+  const response = await fetch(`${baseUrl}/api/settings`, { 
+    next: { revalidate: 60 } // Revalidate every 60 seconds
+  })
   const settings = await response.json()
   return settings
 } 

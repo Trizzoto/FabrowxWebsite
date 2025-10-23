@@ -7,14 +7,39 @@ const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017';
 const dbName = 'elitefabworx';
 const collectionName = 'products';
 
-// Helper function to connect to MongoDB with better error handling
+// Enable API route caching
+export const revalidate = 30 // Revalidate every 30 seconds
+
+// Connection pool for MongoDB
+let cachedClient: MongoClient | null = null;
+
+// Helper function to connect to MongoDB with connection pooling
 async function connectToDatabase() {
   console.log("Attempting MongoDB connection for GET request");
+  
+  // Return cached client if available and connected
+  if (cachedClient) {
+    try {
+      // Test if connection is still alive
+      await cachedClient.db(dbName).admin().ping();
+      console.log("Using cached MongoDB connection");
+      return cachedClient;
+    } catch (error) {
+      console.log("Cached connection failed, creating new connection");
+      cachedClient = null;
+    }
+  }
+  
   console.log(`Connecting to MongoDB with URI: ${uri.slice(0, 15)}...`);
   
   try {
-    const client = new MongoClient(uri);
+    const client = new MongoClient(uri, {
+      maxPoolSize: 10, // Maximum number of connections in the pool
+      minPoolSize: 2,  // Minimum number of connections to keep open
+    });
     await client.connect();
+    cachedClient = client; // Cache the client for reuse
+    console.log("New MongoDB connection established and cached");
     return client;
   } catch (error) {
     console.error('Error connecting to MongoDB:', error);
@@ -50,8 +75,8 @@ export async function GET(request: Request) {
       console.log(`Found ${result.length} products in MongoDB`);
     }
     
-    // Close the connection
-    await mongoClient.close();
+    // Don't close the connection - keep it in the pool
+    // await mongoClient.close();
     
     // Return the result
     return NextResponse.json(result);
@@ -169,8 +194,8 @@ export async function POST(request: Request) {
       processedProducts.push(product);
     }
 
-    // Close the connection
-    await mongoClient.close();
+    // Don't close the connection - keep it in the pool
+    // await mongoClient.close();
 
     // Return the processed product(s)
     return NextResponse.json({ 
@@ -207,7 +232,7 @@ export async function DELETE(request: Request) {
       result = await collection.deleteOne({ id });
       
       if (result.deletedCount === 0) {
-        await mongoClient.close();
+        // Don't close the connection - keep it in the pool
         return NextResponse.json(
           { error: 'Product not found' },
           { status: 404 }
@@ -218,8 +243,8 @@ export async function DELETE(request: Request) {
       result = await collection.deleteMany({});
     }
     
-    // Close the connection
-    await mongoClient.close();
+    // Don't close the connection - keep it in the pool
+    // await mongoClient.close();
     
     return NextResponse.json({ 
       success: true, 

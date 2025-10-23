@@ -2,6 +2,16 @@ import { Suspense } from "react"
 import { getProducts } from "@/lib/products"
 import { getSettings } from "@/lib/settings"
 import { ShopContent } from "./shop-content"
+import type { Metadata } from 'next'
+
+// Enable ISR with 30 second revalidation
+export const revalidate = 30
+
+// Metadata for SEO
+export const metadata: Metadata = {
+  title: 'Shop - Elite Fabworx',
+  description: 'Browse our collection of premium fabrication products and accessories',
+}
 
 async function getInitialData() {
   const [products, settings] = await Promise.all([

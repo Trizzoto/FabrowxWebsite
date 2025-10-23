@@ -21,8 +21,7 @@ export async function getProducts(): Promise<Product[]> {
     console.log(`Fetching products from: ${baseUrl}/api/products`);
     
     const response = await fetch(`${baseUrl}/api/products`, { 
-      cache: 'no-store',
-      next: { revalidate: 60 } // Revalidate every minute
+      next: { revalidate: 30 } // Revalidate every 30 seconds
     });
     
     if (!response.ok) {
