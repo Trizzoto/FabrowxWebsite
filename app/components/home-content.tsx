@@ -279,13 +279,13 @@ export function HomeContent({ settings, galleryImages }: HomeContentProps) {
                 {settings.heroTagline || "Precision metal fabrication for performance vehicles and 4WDs"}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button size="lg" className="bg-orange-700 hover:bg-orange-800 text-white px-6 py-3 h-auto text-base focus-visible:ring-orange-600">
+                <Button size="lg" className="bg-orange-700 hover:bg-orange-800 text-white px-6 py-3 h-auto text-base focus-visible:ring-orange-600" asChild>
                   <Link href="/services" className="flex items-center">
                     Our Services
                     <ChevronRight className="ml-2 h-5 w-5" />
                   </Link>
                 </Button>
-                <Button size="lg" variant="outline" className="border-orange-600 text-orange-300 hover:bg-orange-950/50 px-6 py-3 h-auto text-base focus-visible:ring-orange-600">
+                <Button size="lg" variant="outline" className="border-orange-600 text-orange-300 hover:bg-orange-950/50 px-6 py-3 h-auto text-base focus-visible:ring-orange-600" asChild>
                   <Link href="/shop" className="flex items-center">
                     View Shop
                     <ChevronRight className="ml-2 h-5 w-5" />
