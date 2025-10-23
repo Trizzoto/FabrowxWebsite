@@ -3,7 +3,7 @@
 import { useState, useEffect, use } from "react"
 import Image from "next/image"
 import { useRouter, useSearchParams } from "next/navigation"
-import { ArrowLeft, Minus, Plus, ShoppingCart, ChevronRight } from "lucide-react"
+import { ArrowLeft, Minus, Plus, ShoppingCart, ChevronRight, X, ChevronLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
@@ -13,6 +13,10 @@ import { Separator } from '@/components/ui/separator'
 import { useCart } from "@/contexts/cart-context"
 import { useToast } from "@/components/ui/use-toast"
 import Link from "next/link"
+import {
+  Dialog,
+  DialogContent,
+} from "@/components/ui/dialog"
 
 interface ProductPageProps {
   params: Promise<{
@@ -31,6 +35,8 @@ export default function ProductPage({ params }: ProductPageProps) {
   const [quantity, setQuantity] = useState(1)
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({})
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null)
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false)
+  const [modalImageIndex, setModalImageIndex] = useState(0)
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -164,6 +170,36 @@ export default function ProductPage({ params }: ProductPageProps) {
     setQuantity(prev => Math.max(1, prev + delta))
   }
 
+  const handleImageClick = (index: number) => {
+    setModalImageIndex(index)
+    setIsImageModalOpen(true)
+  }
+
+  const handlePrevImage = () => {
+    if (product && product.images) {
+      setModalImageIndex((prev) => (prev === 0 ? product.images.length - 1 : prev - 1))
+    }
+  }
+
+  const handleNextImage = () => {
+    if (product && product.images) {
+      setModalImageIndex((prev) => (prev === product.images.length - 1 ? 0 : prev + 1))
+    }
+  }
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (isImageModalOpen) {
+        if (e.key === 'ArrowLeft') handlePrevImage()
+        if (e.key === 'ArrowRight') handleNextImage()
+        if (e.key === 'Escape') setIsImageModalOpen(false)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isImageModalOpen, product])
+
   const handleOptionSelect = (optionName: string, value: string) => {
     setSelectedOptions((prev) => ({
       ...prev,
@@ -254,7 +290,10 @@ export default function ProductPage({ params }: ProductPageProps) {
         <div className="grid lg:grid-cols-2 gap-12">
           {/* Image Gallery */}
           <div className="space-y-4">
-            <div className="relative aspect-square overflow-hidden rounded-lg bg-zinc-900 border border-zinc-800">
+            <button 
+              onClick={() => handleImageClick(selectedImage)}
+              className="relative aspect-square overflow-hidden rounded-lg bg-zinc-900 border border-zinc-800 cursor-pointer hover:border-orange-500/50 transition-colors w-full"
+            >
               {product.images && product.images.length > 0 && (
                 <Image
                   src={product.images[selectedImage]}
@@ -264,7 +303,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                   priority
                 />
               )}
-            </div>
+            </button>
             
             {/* Thumbnails */}
             {product.images && product.images.length > 1 && (
@@ -272,9 +311,12 @@ export default function ProductPage({ params }: ProductPageProps) {
                 {product.images.map((image, index) => (
                   <button
                     key={image}
-                    onClick={() => setSelectedImage(index)}
+                    onClick={() => {
+                      setSelectedImage(index)
+                      handleImageClick(index)
+                    }}
                     className={cn(
-                      "relative aspect-square overflow-hidden rounded-md border border-zinc-800",
+                      "relative aspect-square overflow-hidden rounded-md border border-zinc-800 cursor-pointer",
                       selectedImage === index ? "ring-2 ring-orange-500" : "hover:border-orange-500/50"
                     )}
                   >
@@ -439,6 +481,84 @@ export default function ProductPage({ params }: ProductPageProps) {
           </div>
         </div>
       </div>
+
+      {/* Image Modal */}
+      <Dialog open={isImageModalOpen} onOpenChange={setIsImageModalOpen}>
+        <DialogContent className="max-w-7xl w-full h-[90vh] bg-black border-zinc-800 p-0">
+          <div className="relative w-full h-full flex items-center justify-center">
+            {/* Close Button */}
+            <button
+              onClick={() => setIsImageModalOpen(false)}
+              className="absolute top-4 right-4 z-50 p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors"
+            >
+              <X className="h-6 w-6" />
+            </button>
+
+            {/* Previous Button */}
+            {product && product.images && product.images.length > 1 && (
+              <button
+                onClick={handlePrevImage}
+                className="absolute left-4 z-50 p-3 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors"
+              >
+                <ChevronLeft className="h-8 w-8" />
+              </button>
+            )}
+
+            {/* Image */}
+            {product && product.images && product.images[modalImageIndex] && (
+              <div className="relative w-full h-full flex items-center justify-center p-12">
+                <Image
+                  src={product.images[modalImageIndex]}
+                  alt={`${product.name} - Image ${modalImageIndex + 1}`}
+                  fill
+                  className="object-contain"
+                  priority
+                />
+              </div>
+            )}
+
+            {/* Next Button */}
+            {product && product.images && product.images.length > 1 && (
+              <button
+                onClick={handleNextImage}
+                className="absolute right-4 z-50 p-3 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors"
+              >
+                <ChevronRight className="h-8 w-8" />
+              </button>
+            )}
+
+            {/* Image Counter */}
+            {product && product.images && product.images.length > 1 && (
+              <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-50 px-4 py-2 rounded-full bg-black/50 text-white text-sm">
+                {modalImageIndex + 1} / {product.images.length}
+              </div>
+            )}
+
+            {/* Thumbnail Strip */}
+            {product && product.images && product.images.length > 1 && (
+              <div className="absolute bottom-16 left-1/2 transform -translate-x-1/2 z-50 flex gap-2 max-w-4xl overflow-x-auto px-4 py-2 bg-black/50 rounded-lg">
+                {product.images.map((image, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setModalImageIndex(index)}
+                    className={cn(
+                      "relative flex-shrink-0 w-16 h-16 rounded-md overflow-hidden border-2 transition-all",
+                      modalImageIndex === index ? "border-orange-500 scale-110" : "border-zinc-700 hover:border-orange-500/50"
+                    )}
+                  >
+                    <Image
+                      src={image}
+                      alt={`Thumbnail ${index + 1}`}
+                      fill
+                      className="object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 } 

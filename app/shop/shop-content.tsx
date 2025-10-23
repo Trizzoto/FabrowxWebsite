@@ -393,12 +393,12 @@ export function ShopContent({ initialData }: ShopContentProps) {
 
               {/* Elite Fabworx Engineered Section */}
               <div className="mb-4">
+                <div className="w-full h-0.5 bg-zinc-800 mb-2"></div>
                 <div className="inline-flex items-center justify-center w-full mb-1">
                   <h3 className="text-lg font-bold tracking-wide">
                     <span className="text-orange-500">ELITE</span> <span className="text-white">FABWORX</span> <span className="text-orange-500">ENGINEERED</span>
                   </h3>
                 </div>
-                <div className="w-full h-0.5 bg-zinc-800 my-2"></div>
                 <div className="space-y-2 my-3">
                   {eliteCategories.map((category) => (
                   <div 
@@ -433,6 +433,7 @@ export function ShopContent({ initialData }: ShopContentProps) {
 
               {/* RDM Logo in Mobile Categories */}
               <div className="mb-4">
+                <div className="w-full h-0.5 bg-zinc-800 mb-2"></div>
                 <div className="w-full max-w-[140px] mx-auto mb-2">
                   <Image 
                     src="/RDM Logo.png" 
@@ -442,7 +443,6 @@ export function ShopContent({ initialData }: ShopContentProps) {
                     className="w-full h-auto"
                   />
                 </div>
-                <div className="w-full h-0.5 bg-zinc-800 my-2"></div>
                 <div className="space-y-2 my-3">
                   {rdmCategories.map((category) => (
                     <div 
@@ -477,6 +477,7 @@ export function ShopContent({ initialData }: ShopContentProps) {
 
               {/* Zoo Performance Logo in Mobile Categories */}
               <div className="mb-4">
+                <div className="w-full h-0.5 bg-zinc-800 mb-2"></div>
                 <div className="w-full max-w-[140px] mx-auto mb-2">
                   <Image 
                     src="/Zoo-logo.png" 
@@ -486,7 +487,6 @@ export function ShopContent({ initialData }: ShopContentProps) {
                     className="w-full h-auto"
                   />
                 </div>
-                <div className="w-full h-0.5 bg-zinc-800 my-2"></div>
                 <div className="space-y-2 my-3">
                   {zooCategories.map((category) => (
                     <div 
@@ -541,12 +541,12 @@ export function ShopContent({ initialData }: ShopContentProps) {
               <div className="relative overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-orange-500/20 scrollbar-track-zinc-800/10 flex-1">
                 {/* Elite Fabworx Section */}
                 <div className="flex flex-col items-center mb-4">
+                  <div className="w-full h-0.5 bg-zinc-800 mb-2"></div>
                   <div className="inline-flex items-center justify-center">
                     <h3 className="text-lg font-bold tracking-wide mb-1">
                       <span className="text-orange-500">ELITE</span> <span className="text-white">FABWORX</span> <span className="text-orange-500">ENGINEERED</span>
                     </h3>
                   </div>
-                  <div className="w-full h-0.5 bg-zinc-800 mt-2"></div>
                 </div>
                 
                 <div className="space-y-3 mb-6">
@@ -574,6 +574,7 @@ export function ShopContent({ initialData }: ShopContentProps) {
                 
                 {/* RDM Section */}
                 <div className="flex flex-col items-center mb-4">
+                  <div className="w-full h-0.5 bg-zinc-800 mb-2"></div>
                   <div className="w-full max-w-[160px] mb-2">
                     <Image 
                       src="/RDM Logo.png" 
@@ -583,7 +584,6 @@ export function ShopContent({ initialData }: ShopContentProps) {
                       className="w-full h-auto"
                     />
                   </div>
-                  <div className="w-full h-0.5 bg-zinc-800 mt-1"></div>
                 </div>
                 
                 <div className="space-y-3 mb-6">
@@ -611,6 +611,7 @@ export function ShopContent({ initialData }: ShopContentProps) {
                 
                 {/* Zoo Performance Section */}
                 <div className="flex flex-col items-center mb-4">
+                  <div className="w-full h-0.5 bg-zinc-800 mb-2"></div>
                   <div className="w-full max-w-[160px] mb-2">
                     <Image 
                       src="/Zoo-logo.png" 
@@ -620,7 +621,6 @@ export function ShopContent({ initialData }: ShopContentProps) {
                       className="w-full h-auto"
                     />
                   </div>
-                  <div className="w-full h-0.5 bg-zinc-800 mt-1"></div>
                 </div>
                 
                 <div className="space-y-3">
@@ -672,7 +672,8 @@ export function ShopContent({ initialData }: ShopContentProps) {
                 {/* Elite Fabworx Products */}
                 {eliteCategories.length > 0 && (
                   <div className="mb-16">
-                    <div className="border-b border-zinc-800 pb-4 mb-8 text-center">
+                    <div className="text-center mb-8">
+                      <div className="border-t border-zinc-800 pt-4 mb-4"></div>
                       <div className="inline-flex items-center justify-center mb-4">
                         <h2 className="text-4xl font-bold tracking-wide">
                           <span className="text-orange-500">ELITE</span> <span className="text-white">FABWORX</span> <span className="text-orange-500">ENGINEERED</span>
@@ -792,6 +793,7 @@ export function ShopContent({ initialData }: ShopContentProps) {
                 {rdmCategories.length > 0 && (
                   <div className="mt-24 mb-16">
                     <div className="relative flex flex-col items-center justify-center mb-10">
+                      <div className="border-t border-zinc-800 w-full mb-6"></div>
                       <div className="mb-6 w-full max-w-[300px]">
                         <Image 
                           src="/RDM Logo.png" 
@@ -836,9 +838,8 @@ export function ShopContent({ initialData }: ShopContentProps) {
                                                   : product.images[0]
                                             ) : "/placeholder.svg"}
                                             alt={product.name}
+                                            fill
                                             className="object-cover transition-transform duration-300 group-hover:scale-110"
-                                            width={400}
-                                            height={400}
                                             loading="lazy"
                                             decoding="async"
                                             sizes="(max-width: 640px) 90vw, (max-width: 1024px) 33vw, 25vw"
@@ -915,6 +916,7 @@ export function ShopContent({ initialData }: ShopContentProps) {
                 {zooCategories.length > 0 && (
                   <div className="mt-24 mb-16">
                     <div className="relative flex flex-col items-center justify-center mb-10">
+                      <div className="border-t border-zinc-800 w-full mb-6"></div>
                       <div className="mb-6 w-full max-w-[300px]">
                         <Image 
                           src="/Zoo-logo.png" 
@@ -959,9 +961,8 @@ export function ShopContent({ initialData }: ShopContentProps) {
                                                   : product.images[0]
                                             ) : "/placeholder.svg"}
                                             alt={product.name}
+                                            fill
                                             className="object-cover transition-transform duration-300 group-hover:scale-110"
-                                            width={400}
-                                            height={400}
                                             loading="lazy"
                                             decoding="async"
                                             sizes="(max-width: 640px) 90vw, (max-width: 1024px) 33vw, 25vw"
