@@ -405,8 +405,9 @@ export default function ProductForm({ params }: { params: Promise<{ id: string }
                   <SelectValue placeholder="Select a brand" />
                         </SelectTrigger>
                         <SelectContent className="bg-zinc-900 border-zinc-800">
-                  <SelectItem value="Zoo Performance">Zoo Performance</SelectItem>
                   <SelectItem value="Elite Fabworx">Elite Fabworx</SelectItem>
+                  <SelectItem value="Realtime Data Monitoring">Realtime Data Monitoring</SelectItem>
+                  <SelectItem value="Zoo Performance">Zoo Performance</SelectItem>
                         </SelectContent>
                       </Select>
               <p className="text-sm text-zinc-500 mt-1">

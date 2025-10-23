@@ -981,6 +981,7 @@ export default function ProductsPage() {
             <SelectContent>
               <SelectItem value="all">All Brands</SelectItem>
               <SelectItem value="Elite Fabworx">Elite Fabworx</SelectItem>
+              <SelectItem value="Realtime Data Monitoring">Realtime Data Monitoring</SelectItem>
               <SelectItem value="Zoo Performance">Zoo Performance</SelectItem>
             </SelectContent>
           </Select>
@@ -1135,8 +1136,9 @@ export default function ProductsPage() {
                       <SelectValue placeholder="Select a brand" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Zoo Performance">Zoo Performance</SelectItem>
                       <SelectItem value="Elite Fabworx">Elite Fabworx</SelectItem>
+                      <SelectItem value="Realtime Data Monitoring">Realtime Data Monitoring</SelectItem>
+                      <SelectItem value="Zoo Performance">Zoo Performance</SelectItem>
                     </SelectContent>
                   </Select>
                   <p className="text-xs text-zinc-400 mt-1">
