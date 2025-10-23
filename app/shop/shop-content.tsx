@@ -38,16 +38,19 @@ export function ShopContent({ initialData }: ShopContentProps) {
   const [settings] = useState<any>(initialData.settings)
   const [filteredProducts, setFilteredProducts] = useState<{
     elite: Product[],
+    rdm: Product[],
     zoo: Product[]
   }>(() => {
     return {
       elite: initialData.products.filter(p => p.brand === "Elite Fabworx"),
-      zoo: initialData.products.filter(p => p.brand !== "Elite Fabworx")
+      rdm: initialData.products.filter(p => p.brand === "Realtime Data Monitoring"),
+      zoo: initialData.products.filter(p => p.brand !== "Elite Fabworx" && p.brand !== "Realtime Data Monitoring")
     }
   })
   
   // Move these inside useEffect to avoid infinite re-renders
   const [eliteCategories, setEliteCategories] = useState<string[]>([])
+  const [rdmCategories, setRdmCategories] = useState<string[]>([])
   const [zooCategories, setZooCategories] = useState<string[]>([])
   
   const [categoryTree, setCategoryTree] = useState<Map<string, CategoryLevel>>(() => {
@@ -104,7 +107,8 @@ export function ShopContent({ initialData }: ShopContentProps) {
     if (searchQuery === "") {
       setFilteredProducts({
         elite: products.filter(p => p.brand === "Elite Fabworx"),
-        zoo: products.filter(p => p.brand !== "Elite Fabworx")
+        rdm: products.filter(p => p.brand === "Realtime Data Monitoring"),
+        zoo: products.filter(p => p.brand !== "Elite Fabworx" && p.brand !== "Realtime Data Monitoring")
       })
     } else {
       const query = searchQuery.toLowerCase()
@@ -115,7 +119,8 @@ export function ShopContent({ initialData }: ShopContentProps) {
       )
       setFilteredProducts({
         elite: filtered.filter(p => p.brand === "Elite Fabworx"),
-        zoo: filtered.filter(p => p.brand !== "Elite Fabworx")
+        rdm: filtered.filter(p => p.brand === "Realtime Data Monitoring"),
+        zoo: filtered.filter(p => p.brand !== "Elite Fabworx" && p.brand !== "Realtime Data Monitoring")
       })
     }
   }, [searchQuery, products])
@@ -123,9 +128,11 @@ export function ShopContent({ initialData }: ShopContentProps) {
   // Update categories when filteredProducts changes
   useEffect(() => {
     const newEliteCategories = Array.from(new Set(filteredProducts.elite.map(p => p.category)))
+    const newRdmCategories = Array.from(new Set(filteredProducts.rdm.map(p => p.category)))
     const newZooCategories = Array.from(new Set(filteredProducts.zoo.map(p => p.category)))
     
     setEliteCategories(newEliteCategories)
+    setRdmCategories(newRdmCategories)
     setZooCategories(newZooCategories)
   }, [filteredProducts]);
 
@@ -146,6 +153,16 @@ export function ShopContent({ initialData }: ShopContentProps) {
       initialLoadingMore[categoryKey] = false
     });
 
+    // RDM categories
+    rdmCategories.forEach((categoryName) => {
+      const categoryKey = `rdm-${categoryName}`;
+      const categoryProducts = getFilteredProductsByCategory(categoryName, 'rdm');
+      initialVisibleProducts[categoryKey] = categoryProducts.slice(0, ITEMS_PER_PAGE)
+      initialPage[categoryKey] = 1
+      initialHasMore[categoryKey] = categoryProducts.length > ITEMS_PER_PAGE
+      initialLoadingMore[categoryKey] = false
+    });
+
     // Zoo categories
     zooCategories.forEach((categoryName) => {
       const categoryKey = `zoo-${categoryName}`;
@@ -160,7 +177,7 @@ export function ShopContent({ initialData }: ShopContentProps) {
     setPage(initialPage)
     setHasMore(initialHasMore)
     setIsLoadingMore(initialLoadingMore)
-  }, [eliteCategories, zooCategories, filteredProducts]);
+  }, [eliteCategories, rdmCategories, zooCategories, filteredProducts]);
 
   // Set up intersection observer for infinite scrolling
   useEffect(() => {
@@ -267,9 +284,11 @@ export function ShopContent({ initialData }: ShopContentProps) {
   const getFilteredProductsByCategory = (category: string, brand?: string) => {
     const productsToFilter = brand === 'elite' 
       ? filteredProducts.elite 
-      : brand === 'zoo' 
-        ? filteredProducts.zoo 
-        : products;
+      : brand === 'rdm'
+        ? filteredProducts.rdm
+        : brand === 'zoo' 
+          ? filteredProducts.zoo 
+          : products;
         
     return productsToFilter
       .filter(product => {
@@ -412,6 +431,50 @@ export function ShopContent({ initialData }: ShopContentProps) {
                 )}
               </div>
 
+              {/* RDM Logo in Mobile Categories */}
+              <div className="mb-4">
+                <div className="w-full max-w-[140px] mx-auto mb-2">
+                  <Image 
+                    src="/RDM Logo.png" 
+                    alt="Realtime Data Monitoring" 
+                    width={140} 
+                    height={70} 
+                    className="w-full h-auto"
+                  />
+                </div>
+                <div className="w-full h-0.5 bg-zinc-800 my-2"></div>
+                <div className="space-y-2 my-3">
+                  {rdmCategories.map((category) => (
+                    <div 
+                      key={`rdm-mobile-${category}`}
+                      className={`
+                        px-4 py-3 
+                        rounded-xl
+                        cursor-pointer 
+                        ${activeCategory === `rdm-${category}` ? 'bg-orange-500/20 text-orange-400 font-medium' : 'text-white hover:bg-zinc-800/50'} 
+                        transition-colors
+                        border border-zinc-800/50 hover:border-orange-500/30
+                        flex items-center justify-between
+                      `}
+                      onClick={() => {
+                        handleCategoryClick(`rdm-${category}`);
+                        setShowMobileFilters(false);
+                      }}
+                    >
+                      <span className="select-none">{category}</span>
+                      <span className="text-sm text-zinc-500">
+                        {filteredProducts.rdm.filter(p => p.category === category).length}
+                      </span>
+                  </div>
+                ))}
+                </div>
+                {rdmCategories.length === 0 && (
+                  <div className="text-zinc-400 text-xs text-center italic mb-4">
+                    No RDM categories available
+                  </div>
+                )}
+              </div>
+
               {/* Zoo Performance Logo in Mobile Categories */}
               <div className="mb-4">
                 <div className="w-full max-w-[140px] mx-auto mb-2">
@@ -507,6 +570,43 @@ export function ShopContent({ initialData }: ShopContentProps) {
                       </span>
                     </div>
                   ))}
+                </div>
+                
+                {/* RDM Section */}
+                <div className="flex flex-col items-center mb-4">
+                  <div className="w-full max-w-[160px] mb-2">
+                    <Image 
+                      src="/RDM Logo.png" 
+                      alt="Realtime Data Monitoring" 
+                      width={160} 
+                      height={80} 
+                      className="w-full h-auto"
+                    />
+                  </div>
+                  <div className="w-full h-0.5 bg-zinc-800 mt-1"></div>
+                </div>
+                
+                <div className="space-y-3 mb-6">
+                  {rdmCategories.map((category) => (
+                    <div 
+                      key={`rdm-${category}`}
+                      className={`
+                        px-4 py-3 
+                        rounded-lg 
+                        cursor-pointer 
+                        ${activeCategory === `rdm-${category}` ? 'bg-orange-500/20 text-orange-400 font-medium' : 'text-white hover:bg-zinc-800/50'} 
+                        transition-colors
+                        border border-zinc-800/50 hover:border-orange-500/30
+                        flex items-center justify-between
+                      `}
+                      onClick={() => handleCategoryClick(`rdm-${category}`)}
+                    >
+                      <span className="select-none">{category}</span>
+                      <span className="text-sm text-zinc-500">
+                        {filteredProducts.rdm.filter(p => p.category === category).length}
+                      </span>
+                  </div>
+                ))}
                 </div>
                 
                 {/* Zoo Performance Section */}
@@ -676,6 +776,129 @@ export function ShopContent({ initialData }: ShopContentProps) {
                                   variant="outline"
                                   className="border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white"
                                   onClick={() => loadMoreProducts('elite', category)}
+                                >
+                                  Load More
+                                </Button>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {/* RDM Products */}
+                {rdmCategories.length > 0 && (
+                  <div className="mt-24 mb-16">
+                    <div className="relative flex flex-col items-center justify-center mb-10">
+                      <div className="mb-6 w-full max-w-[300px]">
+                        <Image 
+                          src="/RDM Logo.png" 
+                          alt="Realtime Data Monitoring" 
+                          width={300} 
+                          height={150} 
+                          className="w-full h-auto"
+                        />
+                      </div>
+                      <p className="text-zinc-400 text-center max-w-2xl mb-8">
+                        Advanced real-time data monitoring solutions for performance tracking and analysis.
+                      </p>
+                    </div>
+
+                    {rdmCategories.map((category) => {
+                      const categoryKey = `rdm-${category}`;
+                      return (
+                        <div key={categoryKey} id={categoryKey} ref={setRef('rdm', category)} className="mb-16">
+                          <h3 className="text-2xl font-bold mb-6">{category}</h3>
+                          <div className="grid grid-cols-2 gap-2 sm:gap-4 md:gap-6 lg:grid-cols-4">
+                            {filteredProducts.rdm
+                              .filter(p => p.category === category)
+                              .slice(0, visibleProducts[categoryKey]?.length || ITEMS_PER_PAGE)
+                              .map((product) => (
+                                <button 
+                                  key={product.id} 
+                                  className="group text-left w-full"
+                                  onClick={() => handleProductClick(product.id)}
+                                >
+                                  <Card className="bg-zinc-900/50 border-zinc-800 backdrop-blur-sm overflow-hidden hover:border-orange-500/50 transition-colors h-full">
+                                    <div className="aspect-square relative bg-zinc-800 overflow-hidden">
+                                      {product.images && product.images[0] ? (
+                                        <>
+                                          <Image
+                                            src={product.images && product.images[0] ? (
+                                              product.images[0].includes('cloudinary')
+                                                ? product.images[0].replace('/upload/', '/upload/w_400,q_auto,f_auto,dpr_auto/')
+                                                : product.images[0].includes('shopify')
+                                                  ? product.images[0].includes('?')
+                                                    ? `${product.images[0]}&width=400&height=400&crop=center&format=webp&quality=75`
+                                                    : `${product.images[0]}?width=400&height=400&crop=center&format=webp&quality=75`
+                                                  : product.images[0]
+                                            ) : "/placeholder.svg"}
+                                            alt={product.name}
+                                            className="object-cover transition-transform duration-300 group-hover:scale-110"
+                                            width={400}
+                                            height={400}
+                                            loading="lazy"
+                                            decoding="async"
+                                            sizes="(max-width: 640px) 90vw, (max-width: 1024px) 33vw, 25vw"
+                                          />
+                                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:scale-105" />
+                                        </>
+                                      ) : (
+                                        <div className="absolute inset-0 flex items-center justify-center text-zinc-600">
+                                          No Image
+                                        </div>
+                                      )}
+                                    </div>
+                                    <CardContent className="p-2 sm:p-4">
+                                      <div className="mb-1 sm:mb-2">
+                                        <span className="text-[10px] sm:text-xs text-orange-400 font-medium block mb-0.5 sm:mb-1">
+                                          {product.brand || "Realtime Data Monitoring"}
+                                        </span>
+                                        <h3 className="font-semibold text-sm sm:text-lg line-clamp-2 group-hover:text-orange-400 transition-colors">
+                                          {product.name}
+                                        </h3>
+                                      </div>
+                                      <p className="text-xs sm:text-sm text-zinc-400 line-clamp-2 mb-2 sm:mb-4">
+                                        {product.description}
+                                      </p>
+                                      <div className="mt-auto text-right">
+                                        <p className="text-base md:text-xl font-bold text-orange-400">
+                                          ${(() => {
+                                            // Ensure we have a valid number
+                                            let price = typeof product.price === 'number' ? product.price : Number(product.price);
+                                            if (isNaN(price)) return '0';
+                                            
+                                            // Format the price properly
+                                            if (price % 1 === 0) {
+                                              return Math.round(price).toString();
+                                            } else {
+                                              return price.toFixed(2).replace(/\.?0+$/, '');
+                                            }
+                                          })()}
+                                        </p>
+                                      </div>
+                                    </CardContent>
+                                  </Card>
+                                </button>
+                              ))}
+                          </div>
+                          
+                          {/* Load More Button */}
+                          {hasMore[categoryKey] && (
+                            <div 
+                              ref={loadMoreRef} 
+                              data-category={`rdm-${category}`}
+                              className="flex justify-center mt-8"
+                            >
+                              {isLoadingMore[categoryKey] ? (
+                                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-orange-500"></div>
+                              ) : (
+                                <Button
+                                  variant="outline"
+                                  className="border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white"
+                                  onClick={() => loadMoreProducts('rdm', category)}
                                 >
                                   Load More
                                 </Button>
