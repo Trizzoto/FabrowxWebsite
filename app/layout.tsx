@@ -28,6 +28,11 @@ export const metadata: Metadata = {
   alternates: {
     canonical: '/',
   },
+  icons: {
+    icon: '/EFicon.png',
+    shortcut: '/EFicon.png',
+    apple: '/EFicon.png',
+  },
   openGraph: {
     type: 'website',
     locale: 'en_AU',
@@ -75,6 +80,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <link rel="icon" href="/EFicon.png" />
+        <link rel="shortcut icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" href="/EFicon.png" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
