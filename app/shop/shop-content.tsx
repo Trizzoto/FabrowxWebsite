@@ -802,7 +802,7 @@ export function ShopContent({ initialData }: ShopContentProps) {
                         />
                       </div>
                       <p className="text-zinc-400 text-center max-w-2xl mb-8">
-                        Advanced real-time data monitoring solutions for performance tracking and analysis.
+                        Professional automotive dashboard solutions and accessories designed for precision and reliability.
                       </p>
                     </div>
 
